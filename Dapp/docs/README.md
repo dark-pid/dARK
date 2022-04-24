@@ -13,3 +13,16 @@ drawio files
 
 - publication url
 - Authorization 
+
+
+## ID generartion rule
+
+ID generation rule for *Researcher* and *Publication* are detailed above:
+
+### Researcher ID
+
+The researcher id strategy is generate a keccak256 of the researcher name.
+
+### Publication ID
+
+_name,_year,_authors,_publication_type
