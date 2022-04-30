@@ -14,7 +14,7 @@ python3 -m venv web3
 ```
 
 ```
-pip install -r requeirements.txt 
+pip install -r requirements.txt 
 ```
 
 ## configure
