@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.4.0 <0.9.0;
+import "../libs/UnorderedKeySet.sol";
 
 /**
  *
@@ -8,7 +9,6 @@ pragma solidity >=0.4.0 <0.9.0;
 library Entities {
 
     
-    string constant dpi_schema_name = "Dpi";
 
     struct ExternalPID {
         bytes32 id;
@@ -18,12 +18,6 @@ library Entities {
     }
     //
 
-    struct SearchTerm {
-        bytes32 id;
-        string term;
-        address owner;
-    }
-
     struct ResourceType{
         string id;
         string name;
@@ -32,18 +26,27 @@ library Entities {
 
     }
 
+    struct SearchTerm {
+        bytes32 id;
+        string word;
+        address owner;
+    }
+
     struct PID{
 
         // ID - X dígitos hexadecimais (2 são reservados para verificação de validez, exemplo: c1bd-d228-1cf9-7d99)
         bytes16 uuid;
-        string schema;
-        ExternalPID[] extarnalPIDs;
 
-        
+        ExternalPID[] extarnalPIDs;
+        uint8 preferedExternalPid;
+
         string[] externalLinks; //TRANSFORMAR EM OBJETS EXTERNOS
-        uint16 preferedLink; 
-        SearchTerm[] searchTerms;
-        uint16 preferedExternalPid;
+        uint8 preferedLink; 
+        
+        // mapping(bytes32 => SearchTerm) searchTerms;
+        // SearchTerm[] searchTerms;
+        bytes32[] searchTerms;
+        
         ResourceType resourceType;
 
         // JSON

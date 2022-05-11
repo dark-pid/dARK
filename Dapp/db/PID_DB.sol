@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 // ola mundo
-pragma solidity >=0.4.0 <0.9.0;
+pragma solidity ^0.8.0;
 
 import "../libs/UnorderedKeySet.sol";
 // import "./libs/EntitiesLib.sol" as entities;
@@ -31,13 +31,13 @@ contract PID_DB {
      */
     constructor() {
         //usar para controle de acesso
-        owner = msg.sender; 
+        owner = msg.sender;
     }
 
     /**
-     * Create a researcher. 
-     * - _name the researcher name
-     * - return Dπ id of the researcher
+    *  Assing a new Dπ PID
+    *
+    * - return :: Dπ uuid (bytes16)
     **/
     function assing_uuid()
     public 
@@ -56,23 +56,60 @@ contract PID_DB {
 
         pid_set.insert(uuid);
         Entities.PID storage pid = pid_db[uuid];
+        
         pid.uuid = uuid;
-        pid.owner = msg.sender;
+        // pid.owner = msg.sender;
+        pid.owner = tx.origin;
 
         emit UUID(pid.uuid, pid.owner, block.timestamp);
 
         return uuid;
     }
 
-    function get_pid(bytes16 uuid)
-    public view
-    returns(Entities.PID memory)
+    /**
+     * Add a SearchTerm to a  Dπ PID.
+     * params::
+     * - uuid (bytes16)
+     * - searchTerm_id (bytes32)
+     *
+     * case uuid is unsee throws expcetion  :: id does not exist
+     *
+     */
+    function add_search_term(bytes16 uuid,bytes32 searchTerm_id)
+    public
     {
+        get(uuid);
+        Entities.PID storage pid = pid_db[uuid];
+        pid.searchTerms.push(searchTerm_id);
+    }
 
-        require( pid_set.exists(uuid), "unable to create unique uuid try again later");
+    /**
+     * Return Dπ PID for a given uuid.
+     * - uuid (bytes16)
+     * case uuid is unsee throws expcetion  :: id does not exist
+     *
+     * return Entities.PID
+     */
+    function get(bytes16 uuid)
+    public view
+    returns(Entities.PID memory pid)
+    {
+        require( pid_set.exists(uuid), "uuid does not exists");
         Entities.PID memory pid = pid_db[uuid];
+    }
 
-        return pid;
+    /**
+     * Return the PID at a especific index position
+     */
+    function get_by_index(uint256 index) public view returns(bytes32 key) {
+        return pid_set.keyAtIndex(index);
+    }
+
+    /**
+     * count the number of PID
+     */
+    function count() public view returns(uint256) {
+        return pid_set.count();
     }
 
 
@@ -81,7 +118,7 @@ contract PID_DB {
     public 
     returns(bytes4 a,bytes2 b, bytes2 c, bytes2 d, bytes6 node)
     {
-        Entities.PID memory p = get_pid(uuid);
+        Entities.PID memory p = get(uuid);
         return Entities.parse(p);
     }
 
