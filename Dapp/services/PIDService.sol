@@ -1,18 +1,20 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.0;
 
+//db
 import "../util/EntitiesLib.sol";
 import "../db/PID_DB.sol";
+//services
 import "./SearchTermService.sol";
+import "./ExternalPIDService.sol";
 
 
 contract PIDService {
 
-
     address private owner;
     address private pid_db_addr;
     address private searchterm_service_addr;
-
+    address private externalpid_service_addr;
 
     constructor() {
         owner = msg.sender;
@@ -29,7 +31,15 @@ contract PIDService {
     /**
      * set the PID DB address
      */
-    function set_search_term_service(address addr) 
+    function set_externalpid_service(address addr) 
+    public {
+        externalpid_service_addr = addr;
+    }
+
+    /**
+     * set the PID DB address
+     */
+    function set_searchterm_service(address addr) 
     public {
         searchterm_service_addr = addr;
     }
@@ -42,7 +52,7 @@ contract PIDService {
      *  Assing a new Dπ uuid to the tx.origin
      *  - return uuid (bytes19)
      */
-    function assing_uuid()
+    function assingUUID()
     public
     returns(bytes16 uuid)
     {
@@ -54,11 +64,11 @@ contract PIDService {
      * Add a SearchTerm to a  Dπ PID.
      * params::
      * - uuid (bytes16)
-     * - searchTerm_id (bytes32)
+     * - searchTerm (string)
      *
      * case uuid is unsee throws expcetion  :: id does not exist
      */
-    function add_search_term(bytes16 uuid,string memory search_term)
+    function addSearchTerm(bytes16 uuid,string memory search_term)
     public
     {
         PID_DB db = PID_DB(pid_db_addr);
@@ -82,10 +92,32 @@ contract PIDService {
         }
 
         if (insert_flag) {
-            db.add_search_term(uuid, st_id);
+            db.add_searchTerm(uuid, st_id);
             sts.add_pid_to_search_term(st_id, uuid);
         }
         
+    }
+
+    /**
+     * Add a ExternalPID to a Dπ PID.
+     * params::
+     * - uuid (bytes16)
+     * - schema (string)
+     * - external_pid (string)
+     *
+     * case uuid is unsee throws expcetion  :: id does not exist
+     */
+    function addExternalPid(bytes16 uuid,string memory schema,string memory external_pid)
+    public
+    {
+        //TODO: validar os schemas
+        PID_DB db = PID_DB(pid_db_addr);
+        ExternalPIDService epid_service = ExternalPIDService(searchterm_service_addr);
+
+        db.get(uuid); //valida o uuid
+        bytes32 epid_id = epid_service.get_or_create_externalPid(schema,external_pid,uuid);
+
+        db.add_externalPid(uuid,epid_id);
     }
     
     

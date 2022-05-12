@@ -67,23 +67,6 @@ contract PID_DB {
     }
 
     /**
-     * Add a SearchTerm to a  Dπ PID.
-     * params::
-     * - uuid (bytes16)
-     * - searchTerm_id (bytes32)
-     *
-     * case uuid is unsee throws expcetion  :: id does not exist
-     *
-     */
-    function add_search_term(bytes16 uuid,bytes32 searchTerm_id)
-    public
-    {
-        get(uuid);
-        Entities.PID storage pid = pid_db[uuid];
-        pid.searchTerms.push(searchTerm_id);
-    }
-
-    /**
      * Return Dπ PID for a given uuid.
      * - uuid (bytes16)
      * case uuid is unsee throws expcetion  :: id does not exist
@@ -110,6 +93,40 @@ contract PID_DB {
      */
     function count() public view returns(uint256) {
         return pid_set.count();
+    }
+
+    /**
+     * Add a SearchTerm to a  Dπ PID.
+     * params::
+     * - uuid (bytes16)
+     * - searchTerm_id (bytes32)
+     *
+     * case uuid is unsee throws expcetion  :: id does not exist
+     *
+     */
+    function add_searchTerm(bytes16 uuid,bytes32 searchTerm_id)
+    public
+    {
+        get(uuid);
+        Entities.PID storage pid = pid_db[uuid];
+        pid.searchTerms.push(searchTerm_id);
+    }
+
+    /**
+     * Add a ExternalPID to a  Dπ PID.
+     * params::
+     * - uuid (bytes16)
+     * - ExternalPID_id (bytes32)
+     *
+     * case uuid is unsee throws expcetion  :: id does not exist
+     *
+     */
+    function add_externalPid(bytes16 uuid,bytes32 searchTerm_id)
+    public
+    {
+        get(uuid);
+        Entities.PID storage pid = pid_db[uuid];
+        pid.searchTerms.push(searchTerm_id);
     }
 
 
