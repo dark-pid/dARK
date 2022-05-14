@@ -5,7 +5,7 @@ import "../libs/HitchensUnorderedKeySet.sol";
 import "../libs/UnorderedKeySet.sol";
 import "../libs/strings.sol";
 
-import "../util/EntitiesLib.sol";
+import "../util/Entities.sol";
 // import {Entities.Person} from "./libs/EntitiesLib.sol";
 
 contract ExternalPidDB

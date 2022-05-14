@@ -8,12 +8,13 @@ import "../libs/UnorderedKeySet.sol";
  */
 library Entities {
 
-    
-
     struct ExternalPID {
         bytes32 id;
+        bytes16 dpi_uuid;
+
         string pid;
         string schema;
+
         address owner;
     }
     //
@@ -37,15 +38,17 @@ library Entities {
         // ID - X dígitos hexadecimais (2 são reservados para verificação de validez, exemplo: c1bd-d228-1cf9-7d99)
         bytes16 uuid;
 
-        ExternalPID[] extarnalPIDs;
+        // mapping(bytes32 => SearchTerm) searchTerms;
+        // SearchTerm[] searchTerms;
+        bytes32[] searchTerms;
+
+        ExternalPID[256] extarnalPIDs;
         uint8 preferedExternalPid;
 
         string[] externalLinks; //TRANSFORMAR EM OBJETS EXTERNOS
         uint8 preferedLink; 
         
-        // mapping(bytes32 => SearchTerm) searchTerms;
-        // SearchTerm[] searchTerms;
-        bytes32[] searchTerms;
+        
         
         ResourceType resourceType;
 

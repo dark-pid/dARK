@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 //db
-import "../util/EntitiesLib.sol";
-import "../db/PID_DB.sol";
+import "../util/Entities.sol";
+import "../db/PidDB.sol";
 //services
 import "./SearchTermService.sol";
 import "./ExternalPIDService.sol";
@@ -23,7 +23,7 @@ contract PIDService {
     /**
      * set the PID DB address
      */
-    function set_pid_db(address addr) 
+    function set_db(address addr) 
     public {
         pid_db_addr = addr;
     }
@@ -56,7 +56,7 @@ contract PIDService {
     public
     returns(bytes16 uuid)
     {
-        PID_DB db = PID_DB(pid_db_addr);
+        PidDB db = PidDB(pid_db_addr);
         uuid = db.assing_uuid();
     }
 
@@ -71,7 +71,7 @@ contract PIDService {
     function addSearchTerm(bytes16 uuid,string memory search_term)
     public
     {
-        PID_DB db = PID_DB(pid_db_addr);
+        PidDB db = PidDB(pid_db_addr);
         SearchTermService sts = SearchTermService(searchterm_service_addr);
         
         Entities.PID memory pid = db.get(uuid);
@@ -111,7 +111,7 @@ contract PIDService {
     public
     {
         //TODO: validar os schemas
-        PID_DB db = PID_DB(pid_db_addr);
+        PidDB db = PidDB(pid_db_addr);
         ExternalPIDService epid_service = ExternalPIDService(searchterm_service_addr);
 
         db.get(uuid); //valida o uuid

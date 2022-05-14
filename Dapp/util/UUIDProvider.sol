@@ -3,18 +3,35 @@
 pragma solidity ^0.8.0;
 
 // import "../libs/strings.sol";
-import "./random.sol";
+// import "./Random.sol";
 
+// library Random {
 
-library UUIDProvider {
+//     /**
+//     *   return a random number (uint8) from 0 to 250
+//     */
+//     function random() public view returns (uint8 random_int) {
+//             return uint8(uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, msg.sender )))%251);
+//     }
 
-    // events
-    // event UUID(bytes16 uuid);
+// }
 
+contract UUIDProvider {
+
+    address private owner;
+
+    constructor() {
+        //usar para controle de acesso
+        owner = msg.sender;
+    }
+
+    function random() public view returns (uint8 random_int) {
+            return uint8(uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, msg.sender )))%251);
+    }
 
     function getEntropy() public view returns (bytes32 key) {
 
-        uint r1 = Random.random();
+        uint r1 = random();
         bytes32 random_key_part;
         random_key_part = keccak256(abi.encodePacked(block.timestamp,r1));
         // nao funciona na simulacao
@@ -24,7 +41,7 @@ library UUIDProvider {
         //     random_key_part = blockhash(block.number);
         // }
 
-        uint op = Random.random() % 8; // %8 NUMERO DE OPCOES DE ENTROPIA
+        uint op = random() % 8; // %8 NUMERO DE OPCOES DE ENTROPIA
         
 
         if (op == 0) {
@@ -59,7 +76,7 @@ library UUIDProvider {
     function getUUID4() public view returns (bytes16 uuid,bytes16 alternative_uuid) {
 
 
-        bytes16 seed = bytes16(keccak256(abi.encodePacked(msg.sender, block.timestamp , Random.random() , getEntropy())));
+        bytes16 seed = bytes16(keccak256(abi.encodePacked(msg.sender, block.timestamp , random() , getEntropy())));
         
         bytes32 buf =  keccak256(abi.encodePacked(seed, getEntropy()));
         uuid = bytes16(buf);
