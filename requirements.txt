@@ -4,6 +4,7 @@ ipykernel
 ipywidgets
 jupyter
 tqdm
+pytest
 
 # pip install web3 --only-binary :all:
 web3>=5.29.0
