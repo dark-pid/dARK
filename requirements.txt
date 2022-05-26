@@ -17,3 +17,4 @@ py-evm
 flask
 flask-sqlalchemy
 flask_jwt_extended
+gunicorn

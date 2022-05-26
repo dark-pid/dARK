@@ -1,0 +1,1 @@
+web: gunicorn --pythonpath pyDpi api_server:app
