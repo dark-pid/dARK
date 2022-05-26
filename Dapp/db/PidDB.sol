@@ -130,4 +130,38 @@ contract PidDB {
         pid.searchTerms.push(searchTerm_id);
     }
 
+    /**
+     * set Dπ PID payload.
+     * params::
+     * - uuid (bytes16)
+     * - payload (string)
+     *
+     * case uuid is unsee throws expcetion  :: id does not exist
+     *
+     */
+    function set_payload(bytes16 uuid,string memory pid_payload)
+    public
+    {
+        get(uuid);
+        Entities.PID storage pid = pid_db[uuid];
+        pid.payload = pid_payload;
+    }
+
+    /**
+     * Add a externalLinks to a  Dπ PID.
+     * params::
+     * - uuid (bytes16)
+     * - url (string)
+     *
+     * case uuid is unsee throws expcetion  :: id does not exist
+     *
+     */
+    function add_externalLinks(bytes16 uuid,string memory url)
+    public
+    {
+        get(uuid);
+        Entities.PID storage pid = pid_db[uuid];
+        pid.externalLinks.push(url);
+    }
+
 }
