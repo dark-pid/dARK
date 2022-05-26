@@ -26,6 +26,11 @@ PROJECT_ROOT = os.path.join(PROJECT_ROOT.split('D-pi')[0], 'D-pi')
 config_file = os.path.join(PROJECT_ROOT,'config.ini')
 deployed_contracts_config = os.path.join(PROJECT_ROOT,'deployed_contracts.ini')
 
+
+#debug
+logging.info(config_file)
+print(config_file)
+
 def load_blockchain_driver():
     """
         Load the blockchain driver.
