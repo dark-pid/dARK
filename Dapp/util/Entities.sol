@@ -50,7 +50,7 @@ library Entities {
         // SearchTerm[] searchTerms;
         bytes32[] searchTerms;
 
-        ExternalPID[256] extarnalPIDs;
+        bytes32[] extarnalPIDs;
         uint8 preferedExternalPid;
 
         string[] externalLinks; //TODO:TRANSFORMAR EM OBJETS EXTERNOS

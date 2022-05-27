@@ -52,5 +52,7 @@ contract SearchTermService {
         SearchTermDB db = SearchTermDB(db_addr);
         db.save(search_term_id,pid_uuid);
     }
+
+    
     
 }

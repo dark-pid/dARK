@@ -128,5 +128,26 @@ contract SearchTermDB
     function count() public view returns(uint256) {
         return searchterm_set.count();
     }
+
+    /**
+     * get pids (bytes16 pid_uuid) from a search_term
+     *
+     */
+    function get_pids(bytes32 search_word_id)
+    public view
+    returns ( bytes16[] memory uuids)
+    {
+        get(search_word_id);
+        UnorderedKeySetLib.Set storage pids = pid_set[search_word_id];
+
+        uint256 num = pids.count();
+        bytes16[] memory uuid_list = new bytes16[](num);
+
+        for ( uint i = 0; i < num ; i++){
+            uuid_list[i] = pids.keyAtIndex(i);
+        }
+
+        return uuid_list;
+    }
     
 }

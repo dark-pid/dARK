@@ -127,24 +127,7 @@ contract PidDB {
     {
         get(uuid);
         Entities.PID storage pid = pid_db[uuid];
-        pid.searchTerms.push(searchTerm_id);
-    }
-
-    /**
-     * set Dπ PID payload.
-     * params::
-     * - uuid (bytes16)
-     * - payload (string)
-     *
-     * case uuid is unsee throws expcetion  :: id does not exist
-     *
-     */
-    function set_payload(bytes16 uuid,string memory pid_payload)
-    public
-    {
-        get(uuid);
-        Entities.PID storage pid = pid_db[uuid];
-        pid.payload = pid_payload;
+        pid.extarnalPIDs.push(searchTerm_id);
     }
 
     /**
@@ -162,6 +145,23 @@ contract PidDB {
         get(uuid);
         Entities.PID storage pid = pid_db[uuid];
         pid.externalLinks.push(url);
+    }
+
+    /**
+     * set Dπ PID payload.
+     * params::
+     * - uuid (bytes16)
+     * - payload (string)
+     *
+     * case uuid is unsee throws expcetion  :: id does not exist
+     *
+     */
+    function set_payload(bytes16 uuid,string memory pid_payload)
+    public
+    {
+        get(uuid);
+        Entities.PID storage pid = pid_db[uuid];
+        pid.payload = pid_payload;
     }
 
 }
