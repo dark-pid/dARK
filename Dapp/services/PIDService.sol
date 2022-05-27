@@ -117,7 +117,7 @@ contract PIDService {
 
         db.get(uuid); //valida o uuid
         bytes32 epid_id = epid_service.get_or_create_externalPid(schema,external_pid,uuid);
-
+        //todo: verificar se o link nao existe
         db.add_externalPid(uuid,epid_id);
     }
 
@@ -150,7 +150,8 @@ contract PIDService {
     public
     {
         PidDB db = PidDB(pid_db_addr);
-        db.set_payload(uuid, url);
+        //todo: verificar se o link nao existe
+        db.add_externalLinks(uuid, url);
     }
     
     
