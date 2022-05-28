@@ -1,8 +1,8 @@
 import sys
 import os
+import requests
 
-
-from flask import Flask , jsonify , render_template
+from flask import Flask , jsonify , render_template, send_file, abort
 # from flask import render_template, request, Flask, g, send_from_directory, abort, jsonify
 
 from web3 import Web3
@@ -12,6 +12,7 @@ import json
 # import pandas as pd
 # from web3 import Web3
 
+from web_app.util import import_itens_dspace, summary
 from util import setup
 from util.libs import invoke_contract
 
@@ -114,5 +115,85 @@ def get_pid(dpi_id):
     
     return resp, 200    
 
+@app.get('/import/dspace/collection/<url>/<colection_id>')
+def import_dspace_collection(url,colection_id):
+    if 'http' in url:
+        resp = jsonify({
+                        'status' : 'failed',
+                        'msg'    : 'invalid input (http/https in url). please use url without http or https'
+                })
+        return resp , 503
+
+    url_base = 'https://'+url+'/rest'
+    cmd_url = '/collections/'+str(colection_id)+'/items'
+    headers = {'Accept': 'application/json'}
+    
+    url = url_base + cmd_url
+    try:
+        r = requests.get(url, headers=headers)
+    except:
+        resp = jsonify({
+                        'status' : 'failed',
+                        'msg'    : 'can access the rest interface',
+                        'url'    : url_base
+                })
+        return resp , 404
+
+    itens = json.loads(r.text)
+    
+    try:
+        author_db, item_db = import_itens_dspace(w3,account,chain_id,
+                                                dpid_service,sets_service,
+                                                headers,url_base,itens)
+    except Exception as e:
+        resp = jsonify({
+                        'status'               : 'failed',
+                        'msg'                  : 'problem while processing the itens',
+                        'block_chain_error'    : str(e)
+                })
+        return resp , 503
+
+    df = summary(author_db, item_db)
+
+    resp = jsonify({'status' : 'imported',
+                    'imported_objects'         : df.to_dict()
+                })
+    return resp, 200
+
+
+@app.get('/import/dspace/item/<url>/<item_id>')
+def import_dspace(url,item_id):
+    if 'http' in url:
+        resp = jsonify({
+                        'status' : 'failed',
+                        'msg'    : 'invalid input (http/https in url). please use url without http or https'
+                })
+        return resp , 503
+
+    url_base = 'https://'+url+'/rest'
+    cmd_url = '/collections/'+str(item_id)+'/items'
+    headers = {'Accept': 'application/json'}
+
+    itens = [{'id':str(item_id)}]
+    
+    try:
+        author_db, item_db = import_itens_dspace(w3,account,chain_id,
+                                                dpid_service,sets_service,
+                                                headers,url_base,itens)
+    except Exception as e:
+        resp = jsonify({
+                        'status'               : 'failed',
+                        'msg'                  : 'problem while processing the itens',
+                        'block_chain_error'    : str(e)
+                })
+        return resp , 503
+
+    df = summary(author_db, item_db)
+
+    resp = jsonify({'status' : 'imported',
+                    'imported_objects'         : df.to_dict()
+                })
+
+    return resp, 200
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080)
