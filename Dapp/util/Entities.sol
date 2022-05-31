@@ -19,6 +19,14 @@ library Entities {
     }
     //
 
+    // struct ExternalLink {
+    //     bytes32 id;
+    //     bytes16 dpi_uuid;
+    //     string url;
+    //     string schema;
+    //     address owner;
+    // }
+
     struct ResourceType{
         string id;
         string name;
@@ -42,10 +50,10 @@ library Entities {
         // SearchTerm[] searchTerms;
         bytes32[] searchTerms;
 
-        ExternalPID[256] extarnalPIDs;
+        bytes32[] extarnalPIDs;
         uint8 preferedExternalPid;
 
-        string[] externalLinks; //TRANSFORMAR EM OBJETS EXTERNOS
+        string[] externalLinks; //TODO:TRANSFORMAR EM OBJETS EXTERNOS
         uint8 preferedLink; 
         
         

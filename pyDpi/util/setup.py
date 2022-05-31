@@ -9,8 +9,7 @@
 import os
 import configparser
 import logging
-from weakref import WeakValueDictionary
-
+import ast
 
 from web3 import Web3, IPCProvider
 from web3.middleware import geth_poa_middleware
@@ -22,9 +21,11 @@ from .libs import compile_all,get_contract,deploy_contract_besu,populate_file_li
 
 #TODO: Definir melhor
 PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
-PROJECT_ROOT = PROJECT_ROOT.split('D-pi')[0] + 'D-pi'
+PROJECT_ROOT = os.path.join(PROJECT_ROOT.split('D-pi')[0], 'D-pi')
 
 config_file = os.path.join(PROJECT_ROOT,'config.ini')
+deployed_contracts_config = os.path.join(PROJECT_ROOT,'deployed_contracts.ini')
+
 
 def load_blockchain_driver():
     """
@@ -33,17 +34,18 @@ def load_blockchain_driver():
         The drive is used to connect the application to the blockchain.
         The configuration is defined in config.ini file.
     """
-    print(PROJECT_ROOT)
+    #debug
+    logging.info(config_file)
+    print(config_file)
+
     config = configparser.ConfigParser()
     config.read(config_file)
-    print(PROJECT_ROOT)
-    print(PROJECT_ROOT)
     blockchain_net = config['base']['blockchain_net']
 
     if blockchain_net == 'EthereumTesterPyEvm':
         return Web3(EthereumTesterProvider(PyEVMBackend()))
-    elif blockchain_net == 'dpi-dev':
-        blockchain_config = config['dpi-dev']
+    elif 'dpi-' in blockchain_net:
+        blockchain_config = config[blockchain_net]
         blockchain_config['url']
         w3 = Web3(Web3.HTTPProvider(blockchain_config['url']))
         w3.middleware_onion.inject(geth_poa_middleware, layer=0)
@@ -108,12 +110,12 @@ def deploy_contracts(w3,compiled_contracts):
         }
         w3.eth.send_transaction(tx)
         
-    elif blockchain_net == 'dpi-dev':
-        pk = config['dpi-dev']['account_priv_key']
+    elif 'dpi-' in blockchain_net:
+        pk = config[blockchain_net]['account_priv_key']
         account = w3.eth.account.privateKeyToAccount(pk)
-        chain_id = int(config['dpi-dev']['chain_id'])
+        chain_id = int(config[blockchain_net]['chain_id'])
         #TODO: passar como parametro para os metodos de deploy
-        min_gas_price = int(config['EthereumTesterPyEvm']['min_gas_price'])
+        min_gas_price = int(config[blockchain_net]['min_gas_price'])
     else:
         raise RuntimeError('This shouldnt happend :: Not implemented')
     
@@ -155,8 +157,8 @@ def configure_env(w3,deployed_contract_dict):
     
     if config['base']['blockchain_net'] == 'EthereumTesterPyEvm':
         blockchain_conf = config['EthereumTesterPyEvm']
-    elif config['base']['blockchain_net'] == 'dpi-dev':
-        blockchain_conf = config['dpi-dev']
+    elif 'dpi-' in config['base']['blockchain_net']:
+        blockchain_conf = config[config['base']['blockchain_net']]
     else:
         raise RuntimeError('This shouldnt happend :: Not implemented')
     
@@ -228,7 +230,7 @@ def configure_env(w3,deployed_contract_dict):
 ###
 ### 
 def get_exec_parameters():
-    print(PROJECT_ROOT)
+    
     config = configparser.ConfigParser()
     config.read(config_file)
 
@@ -240,8 +242,46 @@ def get_exec_parameters():
     pk = blockchain_conf['account_priv_key']
     return chain_id,min_gas_price,pk
 
-def save_smart_contract():
-    pass
+def save_smart_contract(deployed_contracts):
+    """
+        Save the deployed smart contracts
+        - inputs the deploed_contracts dict
+
+        - It is essential to configure the contract prior to its usage
+        - Please only use this method to save configured contracts
+    """
+    config = configparser.ConfigParser()
+
+    for k in deployed_contracts.keys():
+        addr = deployed_contracts[k][0] # addr
+        v2 = deployed_contracts[k][1].copy()
+        del v2['bin']
+        del v2['bin-runtime']
+        config[k] = { 'addr': addr , 'abi' : v2}
+
+    with open(deployed_contracts_config, 'w') as configfile:
+        config.write(configfile)
+
+def load_deployed_smart_contracts(w3):
+    """
+        Save the deployed smart contracts
+        - Ity is essential notice that it is important to configure the smart contract
+    """
+    
+
+    c2 = configparser.ConfigParser()
+    c2.read(deployed_contracts_config)
+
+    contracts_dict = {}
+    for k in list(c2.keys()):
+        if k != 'DEFAULT':
+            addr = c2[k]['addr']
+            c_abi = ast.literal_eval(c2[k]['abi'])['abi']
+            contracts_dict[k] = w3.eth.contract(address=addr, abi=c_abi)
+    
+    return contracts_dict
+
+
 
 def setup_from_scratch():
     w3 = load_blockchain_driver()

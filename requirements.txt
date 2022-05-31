@@ -13,3 +13,8 @@ eth-tester >= 0.6.0b6
 py-evm
 
 
+# webservice
+flask
+flask-sqlalchemy
+flask_jwt_extended
+gunicorn

@@ -74,22 +74,23 @@ contract PIDService {
         PidDB db = PidDB(pid_db_addr);
         SearchTermService sts = SearchTermService(searchterm_service_addr);
         
-        Entities.PID memory pid = db.get(uuid);
+        // Entities.PID memory pid = db.get(uuid);
 
         bytes32 st_id = sts.get_or_create_search_term(search_term);        
 
-        bool insert_flag = false;
-        if (pid.searchTerms.length == 0 ){
-            insert_flag = true;
-        }
+        bool insert_flag = true;
+        // bool insert_flag = false;
+        // if (pid.searchTerms.length == 0 ){
+        //     insert_flag = true;
+        // }
 
-        uint16 i = 0;
-        while (!insert_flag || i < pid.searchTerms.length){
-            if ( pid.searchTerms[i] == st_id ){
-                    insert_flag = true;
-                }
-            i++;
-        }
+        // while (!insert_flag || i < pid.searchTerms.length){
+        // for (uint16 i = 0; i < pid.searchTerms.length - 1; i++) {
+        //     if ( pid.searchTerms[i] == st_id ){
+        //             insert_flag = false;
+        //         }
+        //     i++;
+        // }
 
         if (insert_flag) {
             db.add_searchTerm(uuid, st_id);
@@ -112,12 +113,45 @@ contract PIDService {
     {
         //TODO: validar os schemas
         PidDB db = PidDB(pid_db_addr);
-        ExternalPIDService epid_service = ExternalPIDService(searchterm_service_addr);
+        ExternalPIDService epid_service = ExternalPIDService(externalpid_service_addr);
 
         db.get(uuid); //valida o uuid
         bytes32 epid_id = epid_service.get_or_create_externalPid(schema,external_pid,uuid);
-
+        //todo: verificar se o link nao existe
         db.add_externalPid(uuid,epid_id);
+    }
+
+    /**
+     * set Dπ PID payload.
+     * params::
+     * - uuid (bytes16)
+     * - payload (string)
+     *
+     * case uuid is unsee throws expcetion  :: id does not exist
+     *
+     */
+    function set_payload(bytes16 uuid,string memory pid_payload)
+    public
+    {
+        PidDB db = PidDB(pid_db_addr);
+        db.set_payload(uuid, pid_payload);
+    }
+
+    /**
+     * Add a externalLinks to a  Dπ PID.
+     * params::
+     * - uuid (bytes16)
+     * - url (string)
+     *
+     * case uuid is unsee throws expcetion  :: id does not exist
+     *
+     */
+    function add_externalLinks(bytes16 uuid,string memory url)
+    public
+    {
+        PidDB db = PidDB(pid_db_addr);
+        //todo: verificar se o link nao existe
+        db.add_externalLinks(uuid, url);
     }
     
     
