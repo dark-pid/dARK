@@ -41,6 +41,10 @@ app.config['JSON_SORT_KEYS'] = False #prevent sorting json
 def index():
     return render_template('home.html')
 
+@app.route('/form')
+def form():
+    return render_template('form.html')
+
 @app.get('/search/<term>')
 def search(term):
     try:
