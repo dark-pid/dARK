@@ -7,52 +7,64 @@
     
 <body>
     <div class="testbox">
-        <form action="/">
-        <div class="banner">
-            <h1>Create your Persistent Identifier</h1>
-        </div>
-        <div class="item">
-            <label for="name">Title<span>*</span></label>
-            <input id="name" type="text" name="name" placeholder="Ex: Blockchain applied in nanosatellites" required/>
-        </div>
-        <!-- <div class="item">
-            <label for="bdate">Date of Birth<span>*</span></label>
-            <input id="bdate" type="date" name="bdate" required/>
-            <i class="fas fa-calendar-alt"></i>
-        </div> -->
-        <div class="item">
-            <div class="name-item">
-            <div>
-                <label for="year">Year</label>
-                <input id="year" type="text" name="year"/>
+        <form method="get">
+            <div class="banner">
+                <h1>Create your Persistent Identifier</h1>
             </div>
-            <div>
-                <label for="publication_type">Publication Type</label>
-                <input id="publication_type" type="tel" name="publication_type" />
+            <div class="item">
+                <label for="name">Title<span>*</span></label>
+                <input id="name" type="text" name="name" placeholder="Ex: Blockchain applied in nanosatellites" required/>
             </div>
+            <div class="item">
+                <div class="name-item">
+                <div>
+                    <label for="year">Year</label>
+                    <input id="year" type="text" name="year"/>
+                </div>
+                <div>
+                    <label for="publication_type">Publication Type</label>
+                    <input id="publication_type" type="tel" name="publication_type" />
+                </div>
+                </div>
             </div>
-        </div>
-        <div class="item">
-            <div class="name-item">
-            <div>
-                <label for="authors">Authors<span>*</span></label>
-                <input id="authors" type="text" name="authors" required/>
+            <div class="item">
+                <div class="name-item">
+                <div>
+                    <label for="authors">Authors<span>*</span></label>
+                    <input id="authors" type="text" name="authors" required/>
+                </div>
+                <div>
+                    <label for="advisor">Advisor</label>
+                    <input id="advisor" type="text" name="advisor" />
+                </div>
+                </div>
             </div>
-            <div>
-                <label for="advisor">Advisor</label>
-                <input id="advisor" type="text" name="advisor" />
+            <div class="item">
+                <label for="dataset">Upload DataSet<span></span></label>
+                <input  id="dataset" type="file"/>
             </div>
+            <div class="btn-block">
+                <button onclick="getData()">Submit</button>
             </div>
-        </div>
-        <div class="item">
-            <label for="dataset">Upload DataSet<span></span></label>
-            <input  id="dataset" type="file"/>
-        </div>
-        <div class="btn-block">
-            <button type="submit" href="/">Submit</button>
-          </div>
         </form>
     </div>
     </body>
+<script type="text/javascript">
+    function getData() {
+        var name = document.getElementById("name").value;
+        var year = document.getElementById("year").value;
+        var publication_type = document.getElementById("publication_type").value;
+        var authors = document.getElementById("authors").value;
+        var advisor = document.getElementById("advisor").value;
+        alert(
+            "Check this informations: " + "\n" + 
+            "\nTitle: " + name + "\n" + 
+            "\nyear: " + year +
+            "\nPublication Type: " + publication_type +
+            "\nAuthor(s): " + authors +
+            "\nAdvisor: " + advisor
+        );
+    }
+</script>
 </html>
 {% endblock %}
