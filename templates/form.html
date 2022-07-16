@@ -4,36 +4,52 @@
 
 <!DOCTYPE html>
 <html>
-  <body>
+    
+<body>
     <div class="testbox">
-      <form action="/">
-        <h1>Create your persistent identifier</h1>
-        <!-- <h4>Do you have another identifier?<span>*</span></h4>
-        <select>
-          <option value=""></option>
-          <option value="">DOI</option>
-          <option value="2">Handle</option>
-          <option value="3">xpto1</option>
-          <option value="4">xpto2</option>
-        </select> -->
-        <h4>Name<span>*</span></h4>
-        <input type="text" name="name" />
-        <h4>Year<span>*</span></h4>
-        <input type="text" name="year" />
-        <h4>Publication Type<span>*</span></h4>
-        <input type="text" name="publication_type"/>
-        <h4>Autors</h4>
-        <input type="text" name="authors"/>
-        <h4>Advisor</h4>
-        <input type="text" name="advisors"/>
-        <h4>Keys Words</h4>
-        <p class="small">Use commas to separate</small>
-          <textarea rows="5"></textarea>
-        <div class="btn-block">
-          <button type="submit" href="/">Submmit</button>
+        <form action="/">
+        <div class="banner">
+            <h1>Create your Persistent Identifier</h1>
         </div>
-      </form>
+        <div class="item">
+            <label for="name">Title<span>*</span></label>
+            <input id="name" type="text" name="name" placeholder="Ex: Blockchain applied in nanosatellites" required/>
+        </div>
+        <!-- <div class="item">
+            <label for="bdate">Date of Birth<span>*</span></label>
+            <input id="bdate" type="date" name="bdate" required/>
+            <i class="fas fa-calendar-alt"></i>
+        </div> -->
+        <div class="item">
+            <div class="name-item">
+            <div>
+                <label for="year">Year<span>*</span></label>
+                <input id="year" type="text" name="year"/>
+            </div>
+            <div>
+                <label for="publication_type">Publication Type</label>
+                <input id="publication_type" type="tel" name="publication_type" />
+            </div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="name-item">
+            <div>
+                <label for="authors">Authors</label>
+                <input id="authors" type="text" name="authors" required/>
+            </div>
+            <div>
+                <label for="advisor">Advisor</label>
+                <input id="advisor" type="text" name="advisor" />
+            </div>
+            </div>
+        </div>
+        <div class="item">
+            <label for="dataset">Upload DataSet<span></span></label>
+            <input  id="dataset" type="file"/>
+        </div>
+        </form>
     </div>
-  </body>
+    </body>
 </html>
 {% endblock %}
