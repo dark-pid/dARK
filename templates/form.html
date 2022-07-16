@@ -29,20 +29,36 @@
             </div>
             <div class="item">
                 <div class="name-item">
-                <div>
-                    <label for="authors">Authors<span>*</span></label>
-                    <input id="authors" type="text" name="authors" required/>
-                </div>
-                <div>
-                    <label for="advisor">Advisor</label>
-                    <input id="advisor" type="text" name="advisor" />
-                </div>
+                    <div>
+                        <label for="authors">Authors<span>*</span></label>
+                        <input id="authors" type="text" name="authors" required/>
+                    </div>
+                    <div>
+                        <label for="advisor">Advisor</label>
+                        <input id="advisor" type="text" name="advisor" />
+                    </div>
                 </div>
             </div>
             <div class="item">
+                <div class="name-item">
+                    <div>
+                        <label for="ext_pid">External PID<span>*</span></label>
+                        <input id="ext_pid" type="text" name="ext_pid" required/>
+                    </div>
+                    <div>
+                     <label for="url">Url</label>
+                     <input id="url" type="text" name="url" />
+                    </div>
+                </div>
+                <div class="item">
+                    <label for="search_keys">Search keys<span>*</span></label>
+                    <input id="search_keys" type="text" name="search_keys" placeholder="Ex: Blockchain; nanosatellites; communications" required/>
+                </div>
+            </div>
+            <!-- <div class="item">
                 <label for="dataset">Upload DataSet<span></span></label>
                 <input  id="dataset" type="file"/>
-            </div>
+            </div> -->
             <div class="btn-block">
                 <button onclick="getData()">Submit</button>
             </div>
@@ -56,13 +72,19 @@
         var publication_type = document.getElementById("publication_type").value;
         var authors = document.getElementById("authors").value;
         var advisor = document.getElementById("advisor").value;
+        var ext_pid = document.getElementById("ext_pid").value;
+        var url = document.getElementById("url").value;
+        var search_keys = document.getElementById("search_keys").value;
         alert(
-            "Check this informations: " + "\n" + 
-            "\nTitle: " + name + "\n" + 
+            "Check this informations: " +
+            "\nTitle: " + name  + 
             "\nyear: " + year +
             "\nPublication Type: " + publication_type +
             "\nAuthor(s): " + authors +
-            "\nAdvisor: " + advisor
+            "\nAdvisor: " + advisor +
+            "\nExternal PID: " + ext_pid +
+            "\nUrl: " + url +
+            "\nSearch Keys: " +search_keys
         );
     }
 </script>
