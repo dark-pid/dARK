@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+import logo from './blocks.jpg';
 import {useState} from 'react';
 import './App.css';
 import {ethers} from 'ethers';
@@ -6,7 +6,7 @@ import {ethers} from 'ethers';
 
 function App() {
 
-  const[message, setMessage] = useState('');
+  const[message, setMessage] = useState('Status Connection: Waiting...');
 
   async function connect(){
     if(!window.ethereum)
@@ -20,6 +20,8 @@ function App() {
 
     const balance = await provider.getBalance('0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73');
 
+    const signer = provider.getSigner();
+
     setMessage('O Saldo de sua carteira é: ' + ethers.utils.formatEther(balance.toString())+'  pi');
 
   }
@@ -30,17 +32,18 @@ function App() {
   <header >
     <div className="App" >
       <img src={logo} className="App-logo" alt="logo" />
-      <p>
-        <b>Welcome</b><code> To DPi!</code> <small>Connect to your wallet to proceed!</small>
-      </p>
-      <input type="button" value="Connect" onClick={evt => connect()} />
-      <p>{JSON.stringify(message)}</p>
+      <p></p>
     </div>
     <div class="testbox">
       <form method="get">
           <div class="banner">
               <h1>Create your Persistent Identifier</h1>
           </div>
+          <p>
+            <b>Welcome</b><code> To DPi!</code> <small><font color="red">Connect to your wallet to proceed!</font></small>
+          </p>
+          <input type="button" value="Connect" onClick={evt => connect()} />
+          <p class="App"><font color="red">{JSON.stringify(message)}</font></p>
           <div class="item">
               <label for="name">Title<span>*</span></label>
               <input id="name" type="text" name="name" placeholder="Ex: Blockchain applied in nanosatellites" required/>

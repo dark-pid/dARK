@@ -2,8 +2,20 @@
   text-align: center;
 }
 
+.Center {
+  text-align: center;
+  align-items: center;
+  width: 350px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background: #0160dd;
+  font-size: 16px;
+  color: #fff;
+}
+
 .App-logo {
-  height: 40vmin;
+  height: 20vmin;
   pointer-events: none;
 }
 
