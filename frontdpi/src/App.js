@@ -1,12 +1,17 @@
 import logo from './blocks.jpg';
-import {useState} from 'react';
+import {useState, useEffect } from 'react';
 import './App.css';
 import {ethers} from 'ethers';
+import abiContract from './abiContract.json';
+import ErrorMessage from "./ErrorMessage";
 
 
 function App() {
 
   const[message, setMessage] = useState('Status Connection: Waiting...');
+  const[messageU, setMessageU] = useState('Wait UUID...');
+  const [error, setError] = useState();
+  
 
   async function connect(){
     if(!window.ethereum)
@@ -20,12 +25,28 @@ function App() {
 
     const balance = await provider.getBalance('0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73');
 
-    const signer = provider.getSigner();
-
     setMessage('O Saldo de sua carteira é: ' + ethers.utils.formatEther(balance.toString())+'  pi');
 
   }
 
+  async function getUuid(){
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer =  provider.getSigner();
+    const signerAddress = await signer.getAddress();
+    const addU = '0xE6a114ba4eC2397b0960De6bE270178F3D5c9892';
+    const abiU = abiContract; 
+    // let contractInstance = new ethers.Contract(abiU,addU);
+    // let encoded = contractInstance.method.UUIDProvider(signerAddress)
+    
+    //const getU = new ethers.Contract(addU, abiU ,provider);
+    setMessageU({
+      address: signerAddress,
+
+    });
+
+  }
+  
   return (
     
     
@@ -43,7 +64,10 @@ function App() {
             <b>Welcome</b><code> To DPi!</code> <small><font color="red">Connect to your wallet to proceed!</font></small>
           </p>
           <input type="button" value="Connect" onClick={evt => connect()} />
-          <p class="App"><font color="red">{JSON.stringify(message)}</font></p>
+          <p class="txt-center"><font color="red">{JSON.stringify(message)}</font></p>
+          <p></p>
+          <input type="button" value="Get UUID" onClick={evt => getUuid()} />
+          <p class="txt-center"><font color="success">{JSON.stringify(messageU)}</font></p>
           <div class="item">
               <label for="name">Title<span>*</span></label>
               <input id="name" type="text" name="name" placeholder="Ex: Blockchain applied in nanosatellites" required/>
@@ -90,7 +114,7 @@ function App() {
           </div>
           <div class="row">
             <div class="btn-block">
-                <button onclick="getData()">Submit</button>
+                <button> Submit</button>
             </div>
           </div>
       </form>
