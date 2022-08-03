@@ -7,42 +7,51 @@ import ErrorMessage from "./ErrorMessage";
 
 const FrontEnd = () => {
 
-const[message, setMessage] = useState('Status Connection: Waiting...');
-  const[messageU, setMessageU] = useState('Wait UUID...');
-  const [error, setError] = useState();
-  const [contractInfo, setContractInfo] = useState({
-    address: "-"
-  });
+    const[message, setMessage] = useState('Status Connection: Waiting...');
+    const[messageU, setMessageU] = useState('Wait UUID...');
+    const [error, setError] = useState();
+    const [contractInfo, setContractInfo] = useState({
+        address: "-"
+    });
 
-  async function connect(){
-    if(!window.ethereum)
-      return setMessage('No Meta Mask installed!');
+    async function connect(){
+        if(!window.ethereum)
+        return setMessage('No Meta Mask installed!');
 
-    setMessage('Trying to connect...');
+        setMessage('Trying to connect...');
 
-    await window.ethereum.send('eth_requestAccounts');
+        await window.ethereum.send('eth_requestAccounts');
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    const balance = await provider.getBalance('0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73');
+        const balance = await provider.getBalance('0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73');
 
-    setMessage('O Saldo de sua carteira é: ' + ethers.utils.formatEther(balance.toString())+'  pi');
+        setMessage('O Saldo de sua carteira é: ' + ethers.utils.formatEther(balance.toString())+'  pi');
 
-  }
+    }
 
-  const handleUuid = async (e) => {
-    //e.preventDefault();
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    const signer = await provider.getSigner();
-    const signerAddress = await signer.getAddress();
-    const addU = '0xB1299c45954EBEfb363A952e99A8dbbE4139a47e';
-    const getU = new ethers.Contract(addU, abiContract, signer);
-    const uuidPi = await getU.assingUUID();
-    setMessageU({
-        UUID: uuidPi,  
-      });
-  };
+    const handleUuid = async (e) => {
+        //e.preventDefault();
+        var myAddress = "0xfe3b557e8fb62b89f4916b721be55ceb828dbd73";
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = await provider.getSigner();
+        const signerAddress = await signer.getAddress();
+        const addU = '0x35edddC7dA46ffbFAE7a92e5C858C4152430EEa9';
+        const constract = new ethers.Contract(addU, abiContract, signer);
+        const uuidPi = await constract.assingUUID();
+        const txReceipt = await provider.getTransactionReceipt(uuidPi.hash);
+        console.log(txReceipt.logs[0].topics[1]);
+        const uuidFull = txReceipt.logs[0].topics[1];
+        console.log(uuidFull);
+        const uuid = uuidFull.substring(0,31);
+        console.log(uuid);
+        
+        setMessageU({
+            UUID: uuid,
+            
+        });
+    }
   return ( 
     <header >
         <div className="App" >
