@@ -41,11 +41,11 @@ const FrontEnd = () => {
         const constract = new ethers.Contract(addU, abiContract, signer);
         const uuidPi = await constract.assingUUID();
         const txReceipt = await provider.getTransactionReceipt(uuidPi.hash);
-        console.log(txReceipt.logs[0].topics[1]);
+        //console.log(txReceipt.logs[0].topics[1]);
         const uuidFull = txReceipt.logs[0].topics[1];
-        console.log(uuidFull);
-        const uuid = uuidFull.substring(0,31);
-        console.log(uuid);
+        //console.log(uuidFull);
+        const uuid = uuidFull.substring(0,34);
+        //console.log(uuid);
         
         setMessageU({
             UUID: uuid,
