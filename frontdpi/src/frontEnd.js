@@ -39,18 +39,31 @@ const FrontEnd = () => {
         const signerAddress = await signer.getAddress();
         const addU = '0x35edddC7dA46ffbFAE7a92e5C858C4152430EEa9';
         const constract = new ethers.Contract(addU, abiContract, signer);
+        //atribuindo um uuid
         const uuidPi = await constract.assingUUID();
         const txReceipt = await provider.getTransactionReceipt(uuidPi.hash);
-        //console.log(txReceipt.logs[0].topics[1]);
+        console.log(txReceipt);
         const uuidFull = txReceipt.logs[0].topics[1];
-        //console.log(uuidFull);
+        console.log(uuidFull);
         const uuid = uuidFull.substring(0,34);
-        //console.log(uuid);
+        //este é o uuid e será usado nos outros metodos.
+        console.log(uuid);
+        //atribuindo um link externo
+        const setExtLink = await constract.add_externalLinks( uuid , 'um_link_externo_qualquer');
+        console.log(setExtLink);
+        //atribuindo um payload
+        const setPaylod = await constract.set_payload( uuid , 'payload_qualquer');
+        console.log(setPaylod);
+        //atribuindo um pid externo
+        // const setSearcTerm = await constract.add_searchTerm( uuid , 'termo_de_busca');
+        // console.log(setSearcTerm);
+        //atribuindo um pid externo
+
         
-        setMessageU({
-            UUID: uuid,
+        // setMessageU({
+        //     UUID: uuid,
             
-        });
+        // });
     }
   return ( 
     <header >
@@ -69,8 +82,8 @@ const FrontEnd = () => {
             <input type="button" value="Connect" onClick={evt => connect()} />
             <p className="txt-center"><font color="red">{JSON.stringify(message)}</font></p>
             <p></p>
-            <input type="button" value="Get UUID" onClick={evt => handleUuid()} />
-            <p className="txt-center"><font color="success">{JSON.stringify(messageU)}</font></p>
+            {/* <input type="button" value="Get UUID" onClick={evt => handleUuid()} /> */}
+            {/* <p className="txt-center"><font color="success">{JSON.stringify(messageU)}</font></p> */}
             <div className="item">
                 <label htmlFor="name">Title<span>*</span></label>
                 <input id="name" type="text" name="name" placeholder="Ex: Blockchain applied in nanosatellites" required/>
@@ -91,7 +104,7 @@ const FrontEnd = () => {
                 <div className="name-item">
                     <div>
                         <label htmlFor="authors">Authors<span>*</span></label>
-                        <input id="authors" type="text" name="authors" required/>
+                        <input id="authors" type="text" name="authors"/>
                     </div>
                     <div>
                         <label htmlFor="advisor">Advisor</label>
@@ -103,7 +116,7 @@ const FrontEnd = () => {
                 <div className="name-item">
                     <div>
                         <label htmlFor="ext_pid">External PID<span>*</span></label>
-                        <input id="ext_pid" type="text" name="ext_pid" required/>
+                        <input id="ext_pid" type="text" name="ext_pid"/>
                     </div>
                     <div>
                         <label htmlFor="url">Url</label>
@@ -112,14 +125,15 @@ const FrontEnd = () => {
                 </div>
                 <div className="item">
                     <label htmlFor="search_keys">Search keys<span>*</span></label>
-                    <input id="search_keys" type="text" name="search_keys" placeholder="Ex: Blockchain; nanosatellites; communications" required/>
+                    <input id="search_keys" type="text" name="search_keys" placeholder="Ex: Blockchain; nanosatellites; communications"/>
                 </div>
             </div>
-            <div className="row">
+            {/* <div className="row">
                 <div className="btn-block">
                     <button> Submit</button>
                 </div>
-            </div>
+            </div> */}
+            <input type="button" value="Get UUID" onClick={evt => handleUuid()} />
         </form>
         </div>
     </header>
