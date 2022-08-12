@@ -33,8 +33,7 @@ const FrontEnd = () => {
     }
 
     const handleUuid = async (e) => {
-        console.log(`Você digitou o título: ${title}`);
-        console.log(`Você digitou o link externo: ${urlExternal}`);
+        
 
         //e.preventDefault();
         var myAddress = "0xfe3b557e8fb62b89f4916b721be55ceb828dbd73";
@@ -42,7 +41,9 @@ const FrontEnd = () => {
         await provider.send("eth_requestAccounts", []);
         const signer = await provider.getSigner();
         const signerAddress = await signer.getAddress();
-        const addU = '0xdf0BE6dDd6f09379251880ef64F1cE72733eC401';
+        const addU = '0x9c38Cc6C0b6B7DCEC3a8417c2811F87acbD37c2B';
+        console.log(`Você digitou o título: ${title}`);
+        console.log(`Você digitou o link externo: ${urlExternal}`);
         const constract = new ethers.Contract(addU, abiContract, signer);
         //atribuindo um uuid
         const uuidPi = await constract.assingUUID();
