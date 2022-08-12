@@ -85,32 +85,8 @@ const FrontEnd = () => {
             {/* <input type="button" value="Get UUID" onClick={evt => handleUuid()} /> */}
             {/* <p className="txt-center"><font color="success">{JSON.stringify(messageU)}</font></p> */}
             <div className="item">
-                <label htmlFor="name">Title<span>*</span></label>
+                <label htmlFor="name">Title (Payload)<span>*</span></label>
                 <input id="name" type="text" name="name" placeholder="Ex: Blockchain applied in nanosatellites" required/>
-            </div>
-            <div className="item">
-                <div className="name-item">
-                <div>
-                    <label htmlFor="year">Year</label>
-                    <input id="year" type="text" name="year"/>
-                </div>
-                <div>
-                    <label htmlFor="publication_type">Publication Type</label>
-                    <input id="publication_type" type="tel" name="publication_type" />
-                </div>
-                </div>
-            </div>
-            <div className="item">
-                <div className="name-item">
-                    <div>
-                        <label htmlFor="authors">Authors<span>*</span></label>
-                        <input id="authors" type="text" name="authors"/>
-                    </div>
-                    <div>
-                        <label htmlFor="advisor">Advisor</label>
-                        <input id="advisor" type="text" name="advisor" />
-                    </div>
-                </div>
             </div>
             <div className="item">
                 <div className="name-item">
@@ -119,7 +95,7 @@ const FrontEnd = () => {
                         <input id="ext_pid" type="text" name="ext_pid"/>
                     </div>
                     <div>
-                        <label htmlFor="url">Url</label>
+                        <label htmlFor="url">Url (External Link)</label>
                         <input id="url" type="text" name="url" />
                     </div>
                 </div>
