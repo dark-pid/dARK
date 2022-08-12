@@ -10,6 +10,8 @@ const FrontEnd = () => {
     const[message, setMessage] = useState('Status Connection: Waiting...');
     const[messageU, setMessageU] = useState('Wait UUID...');
     const [error, setError] = useState();
+    const [title, setTitle] = useState('');
+    const [urlExternal, setUrlExternal] = useState('');
     const [contractInfo, setContractInfo] = useState({
         address: "-"
     });
@@ -31,13 +33,16 @@ const FrontEnd = () => {
     }
 
     const handleUuid = async (e) => {
+        console.log(`Você digitou o título: ${title}`);
+        console.log(`Você digitou o link externo: ${urlExternal}`);
+
         //e.preventDefault();
         var myAddress = "0xfe3b557e8fb62b89f4916b721be55ceb828dbd73";
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         const signer = await provider.getSigner();
         const signerAddress = await signer.getAddress();
-        const addU = '0x35edddC7dA46ffbFAE7a92e5C858C4152430EEa9';
+        const addU = '0xdf0BE6dDd6f09379251880ef64F1cE72733eC401';
         const constract = new ethers.Contract(addU, abiContract, signer);
         //atribuindo um uuid
         const uuidPi = await constract.assingUUID();
@@ -49,10 +54,10 @@ const FrontEnd = () => {
         //este é o uuid e será usado nos outros metodos.
         console.log(uuid);
         //atribuindo um link externo
-        const setExtLink = await constract.add_externalLinks( uuid , 'um_link_externo_qualquer');
+        const setExtLink = await constract.add_externalLinks( uuid , urlExternal);
         console.log(setExtLink);
         //atribuindo um payload
-        const setPaylod = await constract.set_payload( uuid , 'payload_qualquer');
+        const setPaylod = await constract.set_payload( uuid , title);
         console.log(setPaylod);
         //atribuindo um pid externo
         // const setSearcTerm = await constract.add_searchTerm( uuid , 'termo_de_busca');
@@ -85,22 +90,22 @@ const FrontEnd = () => {
             {/* <input type="button" value="Get UUID" onClick={evt => handleUuid()} /> */}
             {/* <p className="txt-center"><font color="success">{JSON.stringify(messageU)}</font></p> */}
             <div className="item">
-                <label htmlFor="name">Title (Payload)<span>*</span></label>
-                <input id="name" type="text" name="name" placeholder="Ex: Blockchain applied in nanosatellites" required/>
+                <label htmlFor="title">Title (Payload)<span>*</span></label>
+                <input id="title" type="text" name="title" onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Blockchain applied in nanosatellites" required/>
             </div>
             <div className="item">
                 <div className="name-item">
                     <div>
-                        <label htmlFor="ext_pid">External PID<span>*</span></label>
+                        <label htmlFor="ext_pid">External PID<span></span></label>
                         <input id="ext_pid" type="text" name="ext_pid"/>
                     </div>
                     <div>
-                        <label htmlFor="url">Url (External Link)</label>
-                        <input id="url" type="text" name="url" />
+                        <label htmlFor="urlExternal">Url (External Link)<span>*</span></label>
+                        <input id="urlExternal" type="text" name="urlExternal" onChange={(e) => setUrlExternal(e.target.value)} />
                     </div>
                 </div>
                 <div className="item">
-                    <label htmlFor="search_keys">Search keys<span>*</span></label>
+                    <label htmlFor="search_keys">Search keys<span></span></label>
                     <input id="search_keys" type="text" name="search_keys" placeholder="Ex: Blockchain; nanosatellites; communications"/>
                 </div>
             </div>
