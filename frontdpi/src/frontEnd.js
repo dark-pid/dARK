@@ -11,6 +11,7 @@ const FrontEnd = () => {
     const[messageU, setMessageU] = useState('Wait UUID...');
     const [error, setError] = useState();
     const [title, setTitle] = useState('');
+    const [metaData, setMetadata] = useState('');
     const [urlExternal, setUrlExternal] = useState('');
     const [contractInfo, setContractInfo] = useState({
         address: "-"
@@ -42,7 +43,7 @@ const FrontEnd = () => {
         const signer = await provider.getSigner();
         const signerAddress = await signer.getAddress();
         const addU = '0x9c38Cc6C0b6B7DCEC3a8417c2811F87acbD37c2B';
-        console.log(`Você digitou o título: ${title}`);
+        console.log(`Você digitou o metadado: ${metaData}`);
         console.log(`Você digitou o link externo: ${urlExternal}`);
         const constract = new ethers.Contract(addU, abiContract, signer);
         //atribuindo um uuid
@@ -58,7 +59,7 @@ const FrontEnd = () => {
         const setExtLink = await constract.add_externalLinks( uuid , urlExternal);
         console.log(setExtLink);
         //atribuindo um payload
-        const setPaylod = await constract.set_payload( uuid , title);
+        const setPaylod = await constract.set_payload( uuid , metaData);
         console.log(setPaylod);
         //atribuindo um pid externo
         // const setSearcTerm = await constract.add_searchTerm( uuid , 'termo_de_busca');
@@ -91,8 +92,8 @@ const FrontEnd = () => {
             {/* <input type="button" value="Get UUID" onClick={evt => handleUuid()} /> */}
             {/* <p className="txt-center"><font color="success">{JSON.stringify(messageU)}</font></p> */}
             <div className="item">
-                <label htmlFor="title">Title (Payload)<span>*</span></label>
-                <input id="title" type="text" name="title" onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Blockchain applied in nanosatellites" required/>
+                <label htmlFor="title">Title<span>*</span></label>
+                <input id="title" type="text" name="title" placeholder="Ex: Blockchain applied in nanosatellites" required/>
             </div>
             <div className="item">
                 <div className="name-item">
@@ -109,13 +110,18 @@ const FrontEnd = () => {
                     <label htmlFor="search_keys">Search keys<span></span></label>
                     <input id="search_keys" type="text" name="search_keys" placeholder="Ex: Blockchain; nanosatellites; communications"/>
                 </div>
+                <div className="item">
+                    <label htmlFor="metaData">Metadatas (Payload)<span></span></label>
+                    <input id="metaData" type="text" name="metaData" onChange={(e) => setMetadata(e.target.value)} placeholder="Ex: Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+                                                                                                                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, "/>
+                </div>
             </div>
             {/* <div className="row">
                 <div className="btn-block">
                     <button> Submit</button>
                 </div>
             </div> */}
-            <input type="button" value="Get UUID" onClick={evt => handleUuid()} />
+            <input type="button" value="Submeter" onClick={evt => handleUuid()} />
         </form>
         </div>
     </header>
