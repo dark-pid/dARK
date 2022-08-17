@@ -131,7 +131,7 @@ def deploy_contracts(w3,compiled_contracts):
     deployed_contract_dict = {}
     
     for contract_name in lista:
-        if contract_name not in ['Entities.sol']:
+        if contract_name not in ['Entities.sol' , 'NoidProvider.sol']:
             logging.info("    deploying : " + str(contract_name) + "..." )
             deployed_contract_dict[str(contract_name)] = deploy(
                                                         w3,account,
@@ -172,16 +172,27 @@ def configure_env(w3,deployed_contract_dict):
     acc_balance = str(Web3.fromWei(w3.eth.get_balance(account.address),'ether'))
     logging.info("    using account : " + account.address )
     logging.info("    account initial balance : " + acc_balance )
+
+    ### Authorities Service
+    logging.info("    Configuring AuthoritiesService:")
+    auth_db_addr = deployed_contract_dict['AuthoritiesDB.sol'][0]
+    contract_addr = deployed_contract_dict['AuthoritiesService.sol'][0]
+    contract_interface = deployed_contract_dict['AuthoritiesService.sol'][1]
+    auth_service = w3.eth.contract(address=contract_addr, abi=contract_interface["abi"])
+    invoke_contract(w3,account,chain_id, auth_service , 'set_db' ,(auth_db_addr) )
+    logging.info("        - db configured")
+    logging.info("        - AuthoritiesService configured")
+    configured_contracts['AuthoritiesService'] = auth_service
     
 
     ### pid db
     logging.info("    Configuring D-pi PiD Database:")
-    uuid_provider_addr = deployed_contract_dict['UUIDProvider.sol'][0]
+    # uuid_provider_addr = deployed_contract_dict['UUIDProvider.sol'][0]
     contract_addr = deployed_contract_dict['PidDB.sol'][0]
     contract_interface = deployed_contract_dict['PidDB.sol'][1]
     pid_db = w3.eth.contract(address=contract_addr, abi=contract_interface["abi"])
-    invoke_contract(w3,account,chain_id, pid_db , 'set_uuid_provider' ,(uuid_provider_addr) )
-    logging.info("        - uuid provider configured")
+    # invoke_contract(w3,account,chain_id, pid_db , 'set_uuid_provider' ,(uuid_provider_addr) )
+    # logging.info("        - uuid provider configured")
     configured_contracts['PidDB'] = pid_db
     
     ### Search TermService
@@ -217,6 +228,8 @@ def configure_env(w3,deployed_contract_dict):
     logging.info("        - ExternalPIDService configured")
     invoke_contract(w3,account,chain_id, pid_service , 'set_searchterm_service' ,(st_service.address) )
     logging.info("        - SearchTermService configured")
+    invoke_contract(w3,account,chain_id, pid_service , 'set_auth_service' ,(auth_service.address) )
+    logging.info("        - authoritiesService configured")
     configured_contracts['PIDService'] = pid_service
 
     ### all set
