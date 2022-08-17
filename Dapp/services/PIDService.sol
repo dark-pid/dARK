@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.0;
 
+//util
+
 //db
 import "../util/Entities.sol";
 import "../db/PidDB.sol";
 //services
 import "./SearchTermService.sol";
 import "./ExternalPIDService.sol";
-
+import "./AuthoritiesService.sol";
 
 contract PIDService {
 
@@ -15,6 +17,9 @@ contract PIDService {
     address private pid_db_addr;
     address private searchterm_service_addr;
     address private externalpid_service_addr;
+    address private auth_service_addr;
+
+    event log_id(bytes32 id);
 
     constructor() {
         owner = msg.sender;
@@ -26,6 +31,15 @@ contract PIDService {
     function set_db(address addr) 
     public {
         pid_db_addr = addr;
+    }
+
+    /**
+     * set the PID DB address
+     */
+     //TODO: COLOCAR NO SETUP
+    function set_auth_service(address addr) 
+    public {
+        auth_service_addr = addr;
     }
 
     /**
@@ -52,12 +66,19 @@ contract PIDService {
      *  Assing a new Dπ uuid to the tx.origin
      *  - return uuid (bytes19)
      */
-    function assingUUID()
+    function assingID(address sender)
     public
-    returns(bytes16 uuid)
+    returns(bytes32 uuid)
     {
+        AuthoritiesService aths = AuthoritiesService(auth_service_addr);
         PidDB db = PidDB(pid_db_addr);
-        uuid = db.assing_uuid();
+
+        // address proveider_addr = aths.get_proveider_addr(msg.sender);
+        address proveider_addr = aths.get_proveider_addr(sender);
+        
+        uuid = db.assing_id(proveider_addr);
+        emit log_id(uuid);
+        return uuid;
     }
 
     /**
@@ -68,7 +89,7 @@ contract PIDService {
      *
      * case uuid is unsee throws expcetion  :: id does not exist
      */
-    function addSearchTerm(bytes16 uuid,string memory search_term)
+    function addSearchTerm(bytes32 uuid,string memory search_term)
     public
     {
         PidDB db = PidDB(pid_db_addr);
@@ -108,7 +129,7 @@ contract PIDService {
      *
      * case uuid is unsee throws expcetion  :: id does not exist
      */
-    function addExternalPid(bytes16 uuid,string memory schema,string memory external_pid)
+    function addExternalPid(bytes32 uuid,string memory schema,string memory external_pid)
     public
     {
         //TODO: validar os schemas
@@ -130,7 +151,7 @@ contract PIDService {
      * case uuid is unsee throws expcetion  :: id does not exist
      *
      */
-    function set_payload(bytes16 uuid,string memory pid_payload)
+    function set_payload(bytes32 uuid,string memory pid_payload)
     public
     {
         PidDB db = PidDB(pid_db_addr);
@@ -146,7 +167,7 @@ contract PIDService {
      * case uuid is unsee throws expcetion  :: id does not exist
      *
      */
-    function add_externalLinks(bytes16 uuid,string memory url)
+    function add_externalLinks(bytes32 uuid,string memory url)
     public
     {
         PidDB db = PidDB(pid_db_addr);
