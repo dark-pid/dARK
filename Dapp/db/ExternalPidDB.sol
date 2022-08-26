@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "../libs/HitchensUnorderedKeySet.sol";
-import "../libs/UnorderedKeySet.sol";
 import "../libs/strings.sol";
 
 import "../util/Entities.sol";
@@ -12,9 +11,6 @@ contract ExternalPidDB
  {
     
     using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;
-    using UnorderedKeySetLib for UnorderedKeySetLib.Set;
-    
-    
     HitchensUnorderedKeySetLib.Set externalPid_set;
 
     address private owner;
@@ -22,7 +18,7 @@ contract ExternalPidDB
     mapping(bytes32 => Entities.ExternalPID) private externalPid_db;
     
     // logs
-    event createExternalPID(bytes32 indexed id,bytes16 indexed dpi_uuid, address indexed owner);
+    event createExternalPID(bytes32 indexed id,bytes32 indexed dpi_uuid, address indexed owner);
 
 
     /**
@@ -43,7 +39,7 @@ contract ExternalPidDB
      *
      * - return id of the searth term
      **/
-    function save(string memory schema, string memory pid,bytes16 dpi_uuid)
+    function save(string memory schema, string memory pid,bytes32 dpi_uuid)
     public 
     returns(bytes32)
     {

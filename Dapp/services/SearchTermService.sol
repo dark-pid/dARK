@@ -46,7 +46,7 @@ contract SearchTermService {
      * - bytes32 search_term_id
      * - bytes16 pid uuid
      */
-    function add_pid_to_search_term(bytes32 search_term_id,bytes16 pid_uuid)
+    function add_pid_to_search_term(bytes32 search_term_id,bytes32 pid_uuid)
     public
     {
         SearchTermDB db = SearchTermDB(db_addr);

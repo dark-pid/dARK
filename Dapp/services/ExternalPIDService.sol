@@ -25,7 +25,7 @@ contract ExternalPIDService {
      * If the ExternalPID is new (not stored in the db) this methods creates a new search term and return the id (bytes32) of the search term.
      * 
      */
-    function get_or_create_externalPid(string memory schema,string memory pid,bytes16 dpi_uuid)
+    function get_or_create_externalPid(string memory schema,string memory pid,bytes32 dpi_uuid)
     public
     returns(bytes32 term_id)
     {

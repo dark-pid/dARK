@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "../libs/HitchensUnorderedKeySet.sol";
-import "../libs/UnorderedKeySet.sol";
 import "../libs/strings.sol";
 
 import "../util/Entities.sol";
@@ -12,7 +11,6 @@ contract SearchTermDB
  {
     
     using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;
-    using UnorderedKeySetLib for UnorderedKeySetLib.Set;
     
     
     HitchensUnorderedKeySetLib.Set searchterm_set;
@@ -22,11 +20,11 @@ contract SearchTermDB
     
     // UnorderedKeySetLib.Set pid_set;
     // mapping(bytes16 => Entities.PID) private pid_db;
-    mapping(bytes32 => UnorderedKeySetLib.Set) private pid_set;
+    mapping(bytes32 => HitchensUnorderedKeySetLib.Set) private pid_set;
 
     // logs
     event createSearchTerm(bytes32 indexed id,string indexed word, address indexed owner);
-    event addPID2SearchTerm(bytes32 search_word_id, bytes16 pid_uuid, address user);
+    event addPID2SearchTerm(bytes32 search_word_id, bytes32 pid_uuid, address user);
 
 
     /**
@@ -67,12 +65,12 @@ contract SearchTermDB
      * save pid (bytes16 pid_uuid) to a a search term set
      *
      */
-    function save(bytes32 search_word_id, bytes16 pid_uuid)
+    function save(bytes32 search_word_id, bytes32 pid_uuid)
     public 
     {
         get(search_word_id);
         
-        UnorderedKeySetLib.Set storage pids = pid_set[search_word_id];
+        HitchensUnorderedKeySetLib.Set storage pids = pid_set[search_word_id];
         if ( !pids.exists(pid_uuid) ) {
             pids.insert(pid_uuid);
             emit addPID2SearchTerm(search_word_id, pid_uuid, tx.origin);
@@ -135,13 +133,13 @@ contract SearchTermDB
      */
     function get_pids(bytes32 search_word_id)
     public view
-    returns ( bytes16[] memory uuids)
+    returns ( bytes32[] memory uuids)
     {
         get(search_word_id);
-        UnorderedKeySetLib.Set storage pids = pid_set[search_word_id];
+        HitchensUnorderedKeySetLib.Set storage pids = pid_set[search_word_id];
 
         uint256 num = pids.count();
-        bytes16[] memory uuid_list = new bytes16[](num);
+        bytes32[] memory uuid_list = new bytes32[](num);
 
         for ( uint i = 0; i < num ; i++){
             uuid_list[i] = pids.keyAtIndex(i);

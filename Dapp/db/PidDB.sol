@@ -1,28 +1,24 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
 
-import "../libs/UnorderedKeySet.sol";
+
+import "../util/NoidProvider.sol";
+import "../libs/HitchensUnorderedKeySet.sol";
 import "../util/Entities.sol";
-import "../util/UUIDProvider.sol";
+// import "../util/UUIDProvider.sol";
 
 contract PidDB {
     
-    using UnorderedKeySetLib for UnorderedKeySetLib.Set;
+    using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;
     
     address private owner;
-    address private UUIDProvider_addr;
 
-    UnorderedKeySetLib.Set pid_set;
-    mapping(bytes16 => Entities.PID) private pid_db;
+    HitchensUnorderedKeySetLib.Set pid_set;
+    mapping(bytes32 => Entities.PID) private pid_db;
     
     // logs
-    event UUID(bytes16 indexed uuid, address indexed owner, uint timestamp);
+    event ID(bytes32 indexed uuid, address indexed owner, uint timestamp);
 
-    function set_uuid_provider(address addr) 
-    public
-    {
-        UUIDProvider_addr = addr;
-    }
 
     /**
      * @dev Set contract deployer as owner
@@ -38,33 +34,27 @@ contract PidDB {
     *
     * - return :: Dπ uuid (bytes16)
     **/
-    function assing_uuid()
+    function assing_id(address proveider_addr)
     public 
-    returns(bytes16)
-    {
-        bytes16 uuid;
-        bytes16 uuid_alternativo;
-        
-        UUIDProvider provider= UUIDProvider(UUIDProvider_addr);
+    returns(bytes32)
+    {        
+        NoidProvider noid_provider = NoidProvider(proveider_addr);
 
-        (uuid,uuid_alternativo) = provider.getUUID4();
+        string memory noid = noid_provider.gen();
+        bytes32 b32_noid = keccak256(abi.encodePacked(noid));
 
-        if ( pid_set.exists(uuid) ){
-            uuid = uuid_alternativo;
-        } 
+        require( !pid_set.exists(b32_noid), "unable to create unique uuid try again later");
 
-        require( !pid_set.exists(uuid), "unable to create unique uuid try again later");
-
-        pid_set.insert(uuid);
-        Entities.PID storage pid = pid_db[uuid];
-        
-        pid.uuid = uuid;
+        pid_set.insert(b32_noid);
+        Entities.PID storage pid = pid_db[b32_noid];
+        pid.uuid = b32_noid;
+        pid.noid = noid;
         // pid.owner = msg.sender;
         pid.owner = tx.origin;
 
-        emit UUID(pid.uuid, pid.owner, block.timestamp);
+        emit ID(pid.uuid, pid.owner, block.timestamp);
 
-        return uuid;
+        return b32_noid;
     }
 
     /**
@@ -74,10 +64,26 @@ contract PidDB {
      *
      * return Entities.PID
      */
-    function get(bytes16 uuid)
+    function get(bytes32 uuid)
     public view
     returns(Entities.PID memory pid)
     {
+        require( pid_set.exists(uuid), "uuid does not exists");
+        pid = pid_db[uuid];
+    }
+
+    /**
+     * Return Dπ PID for a given uuid.
+     * - uuid (bytes16)
+     * case uuid is unsee throws expcetion  :: id does not exist
+     *
+     * return Entities.PID
+     */
+    function get_by_noid(string memory noid)
+    public view
+    returns(Entities.PID memory pid)
+    {
+        bytes32 uuid = keccak256(abi.encodePacked(noid));
         require( pid_set.exists(uuid), "uuid does not exists");
         pid = pid_db[uuid];
     }
@@ -105,7 +111,7 @@ contract PidDB {
      * case uuid is unsee throws expcetion  :: id does not exist
      *
      */
-    function add_searchTerm(bytes16 uuid,bytes32 searchTerm_id)
+    function add_searchTerm(bytes32 uuid,bytes32 searchTerm_id)
     public
     {
         get(uuid);
@@ -122,7 +128,7 @@ contract PidDB {
      * case uuid is unsee throws expcetion  :: id does not exist
      *
      */
-    function add_externalPid(bytes16 uuid,bytes32 searchTerm_id)
+    function add_externalPid(bytes32 uuid,bytes32 searchTerm_id)
     public
     {
         get(uuid);
@@ -139,7 +145,7 @@ contract PidDB {
      * case uuid is unsee throws expcetion  :: id does not exist
      *
      */
-    function add_externalLinks(bytes16 uuid,string memory url)
+    function add_externalLinks(bytes32 uuid,string memory url)
     public
     {
         get(uuid);
@@ -156,7 +162,7 @@ contract PidDB {
      * case uuid is unsee throws expcetion  :: id does not exist
      *
      */
-    function set_payload(bytes16 uuid,string memory pid_payload)
+    function set_payload(bytes32 uuid,string memory pid_payload)
     public
     {
         get(uuid);
