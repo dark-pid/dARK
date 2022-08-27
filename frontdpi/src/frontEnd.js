@@ -53,12 +53,12 @@ const FrontEnd = () => {
         console.log('Montando JSON para payload....');
         /*Setando dados no payload  */
         let payloadJson = 
-            `{
-                "title": ${title},` +
-                `"External PID: " ${pidExternal},` +
-                `"Enternal Url" : ${urlExternal},` +
-                `"Search Terms" : ${searchTerm},` +
-            `}`;
+            "{" +
+                "title:" + `${title},` +
+                "External PID: " + `${pidExternal},` +
+                "Enternal Url: " +  `${urlExternal},` +
+                "Search Terms:" +  `${searchTerm},` +
+            "}"
         console.log(payloadJson);
         const constract = new ethers.Contract(addU, abiContract, signer);
         //atribuindo um uuid
