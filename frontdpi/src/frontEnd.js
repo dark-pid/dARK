@@ -13,6 +13,8 @@ const FrontEnd = () => {
     const [title, setTitle] = useState('');
     const [metaData, setMetadata] = useState('');
     const [urlExternal, setUrlExternal] = useState('');
+    const [pidExternal, setPidExternal] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [contractInfo, setContractInfo] = useState({
         address: "-"
     });
@@ -44,15 +46,34 @@ const FrontEnd = () => {
         //console.log(signer);
         const signerAddress = await signer.getAddress();
         const addU = '0x0e57a9Cd6f39Db35876a34C9C8Ec117eE4d51D60'; //pedando este addr do notebook
-        console.log(`Você digitou o metadado: ${title}`);
+        console.log(`Você digitou o titulo: ${title}`);
+        console.log(`Você digitou o pid externo: ${pidExternal}`);
         console.log(`Você digitou o link externo: ${urlExternal}`);
+        console.log(`Você digitou os termos: ${searchTerm}`);
+        console.log('Montando JSON para payload....');
+        /*Setando dados no payload  */
+        let payloadJson = 
+            `{
+                "title": ${title},` +
+                `"External PID: " ${pidExternal},` +
+                `"Enternal Url" : ${urlExternal},` +
+                `"Search Terms" : ${searchTerm},` +
+            `}`;
+        console.log(payloadJson);
         const constract = new ethers.Contract(addU, abiContract, signer);
         //atribuindo um uuid
         const darkId = await constract.assingID(signerAddress);
         console.log(darkId);
         const txReceipt = await provider.getTransactionReceipt(darkId.hash);
         const darkReceipt = txReceipt.logs[0].topics[1];
-        console.log(`O recibo da transação ${darkReceipt}`);
+        console.log(`O recibo da transação da criacao de um dArk: ${darkReceipt}`);
+        
+        
+        console.log("Adicionando payload....");
+        const payload = await constract.set_payload(darkReceipt, payloadJson);
+        console.log(payload);
+
+
         // const setExtLink = await constract.add_externalLinks( uuid , urlExternal);
         // console.log(setExtLink);
         // //atribuindo um payload
@@ -96,7 +117,7 @@ const FrontEnd = () => {
                 <div className="name-item">
                     <div>
                         <label htmlFor="ext_pid">External PID<span></span></label>
-                        <input id="ext_pid" type="text" name="ext_pid"/>
+                        <input id="ext_pid" type="text" name="ext_pid"  onChange={(e) => setPidExternal(e.target.value)}/>
                     </div>
                     <div>
                         <label htmlFor="urlExternal">Url (External Link)<span>*</span></label>
@@ -105,7 +126,7 @@ const FrontEnd = () => {
                 </div>
                 <div className="item">
                     <label htmlFor="search_keys">Search keys<span></span></label>
-                    <input id="search_keys" type="text" name="search_keys" placeholder="Ex: Blockchain; nanosatellites; communications"/>
+                    <input id="search_keys" type="text" name="search_keys" onChange={(e) => setSearchTerm(e.target.value)} placeholder="Ex: Blockchain; nanosatellites; communications"/>
                 </div>
             </div>
             {/* <div className="row">
