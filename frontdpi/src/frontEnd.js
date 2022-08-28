@@ -5,11 +5,12 @@ import {ethers} from 'ethers';
 import abiContract from './abiContract.json';
 import ErrorMessage from "./ErrorMessage";
 
+var contract, addU, signer, provider,input,signerAddress,darkReceipt;
 
 const FrontEnd = () => {
 
-    const[message, setMessage] = useState('Status Connection: Waiting...');
-    const[messageU, setMessageU] = useState('Your dArkId is ...');
+    const[message, setMessage] = useState('');
+    const[messageU, setMessageU] = useState('Here will appear your Dark...');
     const [error, setError] = useState();
     const [title, setTitle] = useState('');
     const [metaData, setMetadata] = useState('');
@@ -19,44 +20,57 @@ const FrontEnd = () => {
     const [contractInfo, setContractInfo] = useState({
         address: "-"
     });
+    const [darkReceiptTransp, setdarkReceiptTransp ] = useState('');
+
+    
+
 
     async function connect(){
-        if(!window.ethereum)
-        return setMessage('No Meta Mask installed!');
-
-        setMessage('Trying to connect...');
-
-        await window.ethereum.send('eth_requestAccounts');
-
+        
+        input = document.querySelector('#disabledInput');
+        input.disabled = true;
         const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = await provider.getSigner();
+        //console.log(signer);
+        signerAddress = await signer.getAddress();
+        addU = '0x0e57a9Cd6f39Db35876a34C9C8Ec117eE4d51D60'; //pedando este addr do notebook
+        
+        contract = new ethers.Contract(addU, abiContract, signer);
+        //atribuindo um dark
+        const darkId = await contract.assingID(signerAddress);
+        console.log(darkId);
+        const txReceipt = await provider.getTransactionReceipt(darkId.hash);
+        darkReceipt = txReceipt.logs[0].topics[1];
+        console.log(`O recibo da transação da criacao de um dArk: ${darkReceipt}`);
+        //trazendo a informação no formato 8083/210......
+        const response =  await axios.get(`http://127.0.0.1:8080/get/${darkReceipt}`)
+        console.log(response.data['noid']);
 
-        const balance = await provider.getBalance('0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73');
+        setMessageU({
+          Dark  : response.data['noid'].substring(5,18)    
+        }); 
 
-        setMessage('O Saldo de sua carteira é: ' + ethers.utils.formatEther(balance.toString())+'  pi');
+        setdarkReceiptTransp(darkReceipt);
 
     }
 
     const handleUuid = async (e) => {
         
-
-        //e.preventDefault();
-        var myAddress = "0xfe3b557e8fb62b89f4916b721be55ceb828dbd73";
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         const signer = await provider.getSigner();
         //console.log(signer);
         const signerAddress = await signer.getAddress();
         const addU = '0x0e57a9Cd6f39Db35876a34C9C8Ec117eE4d51D60'; //pedando este addr do notebook
+        console.log("prox passo");
+        console.log(darkReceipt);
+        console.log(typeof(darkReceipt));
         console.log(`Você digitou o titulo: ${title}`);
         console.log(`Você digitou o pid externo: ${pidExternal}`);
         console.log(`Você digitou o link externo: ${urlExternal}`);
         console.log(`Você digitou os termos: ${searchTerm}`);
-        const response =  await axios.get('http://127.0.0.1:8080/get/0x5b0e8d68a6e469b71ee11f7e8cfe618c11bd45167d255911d338eecf84bef44e')
-        console.log(response.data['noid']);
-
-        setMessageU({
-            dArkID: response.data['noid']    
-        }); 
+        
         console.log('Montando JSON para payload....');
         /*Setando dados no payload  */
         let payloadString = JSON.stringify(
@@ -64,20 +78,11 @@ const FrontEnd = () => {
                 'Search Terms:' +  `${searchTerm}` + '}');
         const payloadJson = JSON.parse(payloadString);
         console.log(payloadJson);
-        const constract = new ethers.Contract(addU, abiContract, signer);
-        //atribuindo um uuid
-        const darkId = await constract.assingID(signerAddress);
-        console.log(darkId);
-        const txReceipt = await provider.getTransactionReceipt(darkId.hash);
-        const darkReceipt = txReceipt.logs[0].topics[1];
-        console.log(`O recibo da transação da criacao de um dArk: ${darkReceipt}`);
         
-        //"https://http://127.0.0.1:8080/get/8003/fkwff3000141"
-        
-        
-        // console.log("Adicionando payload....");
-        // const payload = await constract.set_payload(darkReceipt, payloadJson);
-        // console.log(payload);
+            
+        console.log("Adicionando payload....");
+        const payload = await contract.set_payload(darkReceipt, payloadJson);
+        console.log(payload);
 
 
         // const setExtLink = await constract.add_externalLinks( uuid , urlExternal);
@@ -106,11 +111,17 @@ const FrontEnd = () => {
             <p>
                 <b>Welcome</b><code> To DPi!</code> <small><font color="red">Connect to your wallet to proceed!</font></small>
             </p>
-            <input type="button" value="Connect" onClick={evt => connect()} />
-            <p className="txt-center"><font color="red">{JSON.stringify(message)}</font></p>
-            <p></p>
-            {/* <input type="button" value="Get UUID" onClick={evt => handleUuid()} />  */}
-            
+            <input type="button" value="Obter Dark" onClick={evt => connect()} />
+            {/* <p className="txt-center"><font color="red">{JSON.stringify(message)}</font></p> */}
+            <p></p>            
+            <div className="item">
+                <div className="name-item">
+                    <div>
+                        <label htmlFor="ext_pid">Dark<span></span></label>
+                        <input className="form-control" id="disabledInput" type="text" placeholder={JSON.stringify(messageU)}  />
+                    </div>
+                </div>
+            </div>
                 <label htmlFor="title">Title<span>*</span></label>
                 <input id="title" type="text" name="title" onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Blockchain applied in nanosatellites" required/>
             <div className="item">
@@ -135,7 +146,7 @@ const FrontEnd = () => {
                 </div>
             </div> */}
             <input type="button" value="Submeter" onClick={evt => handleUuid()} />
-            <p className="txt-center"><font color="success">{JSON.stringify(messageU)}</font></p>
+            {/* <p className="txt-center"><font color="success">{JSON.stringify(messageU)}</font></p> */}
         </form>
         </div>
     </header>
