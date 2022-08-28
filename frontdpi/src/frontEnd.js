@@ -1,5 +1,6 @@
 import logo from './blocks.jpg';
-import {useState, useEffect } from 'react';
+import {useState, useEffect, response  } from 'react';
+import axios from 'axios';
 import {ethers} from 'ethers';
 import abiContract from './abiContract.json';
 import ErrorMessage from "./ErrorMessage";
@@ -8,7 +9,7 @@ import ErrorMessage from "./ErrorMessage";
 const FrontEnd = () => {
 
     const[message, setMessage] = useState('Status Connection: Waiting...');
-    const[messageU, setMessageU] = useState('Wait UUID...');
+    const[messageU, setMessageU] = useState('Your dArkId is ...');
     const [error, setError] = useState();
     const [title, setTitle] = useState('');
     const [metaData, setMetadata] = useState('');
@@ -50,6 +51,12 @@ const FrontEnd = () => {
         console.log(`Você digitou o pid externo: ${pidExternal}`);
         console.log(`Você digitou o link externo: ${urlExternal}`);
         console.log(`Você digitou os termos: ${searchTerm}`);
+        const response =  await axios.get('http://127.0.0.1:8080/get/0x5b0e8d68a6e469b71ee11f7e8cfe618c11bd45167d255911d338eecf84bef44e')
+        console.log(response.data['noid']);
+
+        setMessageU({
+            dArkID: response.data['noid']    
+        }); 
         console.log('Montando JSON para payload....');
         /*Setando dados no payload  */
         let payloadString = JSON.stringify(
@@ -65,10 +72,12 @@ const FrontEnd = () => {
         const darkReceipt = txReceipt.logs[0].topics[1];
         console.log(`O recibo da transação da criacao de um dArk: ${darkReceipt}`);
         
+        //"https://http://127.0.0.1:8080/get/8003/fkwff3000141"
         
-        console.log("Adicionando payload....");
-        const payload = await constract.set_payload(darkReceipt, payloadJson);
-        console.log(payload);
+        
+        // console.log("Adicionando payload....");
+        // const payload = await constract.set_payload(darkReceipt, payloadJson);
+        // console.log(payload);
 
 
         // const setExtLink = await constract.add_externalLinks( uuid , urlExternal);
@@ -82,10 +91,6 @@ const FrontEnd = () => {
         //atribuindo um pid externo
 
         
-        // setMessageU({
-        //     UUID: uuid,
-            
-        // });
     }
   return ( 
     <header >
@@ -96,7 +101,7 @@ const FrontEnd = () => {
         <div className="testbox">
         <form method="get">
             <div className="banner">
-                <h1>Create your Persistent Identifier</h1>
+                <h1>dArk - Persistent Identifier in Blockchain</h1>
             </div>
             <p>
                 <b>Welcome</b><code> To DPi!</code> <small><font color="red">Connect to your wallet to proceed!</font></small>
@@ -104,12 +109,10 @@ const FrontEnd = () => {
             <input type="button" value="Connect" onClick={evt => connect()} />
             <p className="txt-center"><font color="red">{JSON.stringify(message)}</font></p>
             <p></p>
-            {/* <input type="button" value="Get UUID" onClick={evt => handleUuid()} /> */}
-            {/* <p className="txt-center"><font color="success">{JSON.stringify(messageU)}</font></p> */}
-            <div className="item">
+            {/* <input type="button" value="Get UUID" onClick={evt => handleUuid()} />  */}
+            
                 <label htmlFor="title">Title<span>*</span></label>
                 <input id="title" type="text" name="title" onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Blockchain applied in nanosatellites" required/>
-            </div>
             <div className="item">
                 <div className="name-item">
                     <div>
@@ -132,6 +135,7 @@ const FrontEnd = () => {
                 </div>
             </div> */}
             <input type="button" value="Submeter" onClick={evt => handleUuid()} />
+            <p className="txt-center"><font color="success">{JSON.stringify(messageU)}</font></p>
         </form>
         </div>
     </header>
