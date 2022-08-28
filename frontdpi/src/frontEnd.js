@@ -11,6 +11,7 @@ const FrontEnd = () => {
 
     const[message, setMessage] = useState('');
     const[messageU, setMessageU] = useState('Here will appear your Dark...');
+    const[messageLast, setMessageLast] = useState('Last transactions...');
     const [error, setError] = useState();
     const [title, setTitle] = useState('');
     const [metaData, setMetadata] = useState('');
@@ -47,9 +48,7 @@ const FrontEnd = () => {
         const response =  await axios.get(`http://127.0.0.1:8080/get/${darkReceipt}`)
         console.log(response.data['noid']);
 
-        setMessageU({
-          Dark  : response.data['noid'].substring(5,18)    
-        }); 
+        setMessageU(response.data['noid'].substring(5,18)); 
 
         setdarkReceiptTransp(darkReceipt);
 
@@ -84,70 +83,79 @@ const FrontEnd = () => {
         const payload = await contract.set_payload(darkReceipt, payloadJson);
         console.log(payload);
 
+        const responseT =  await axios.get(`http://127.0.0.1:8080/get/${darkReceipt}`)
 
-        // const setExtLink = await constract.add_externalLinks( uuid , urlExternal);
-        // console.log(setExtLink);
-        // //atribuindo um payload
-        // const setPaylod = await constract.set_payload( uuid , metaData);
-        // console.log(setPaylod);
-        //atribuindo um pid externo
-        // const setSearcTerm = await constract.add_searchTerm( uuid , 'termo_de_busca');
-        // console.log(setSearcTerm);
-        //atribuindo um pid externo
 
+        setMessageLast({
+          Dark:  responseT.data['noid'].substring(5,18),
+          Datas: responseT.data['payload']
+        }); 
+
+        
         
     }
   return ( 
     <header >
         <div className="App" >
-        <img src={logo} className="App-logo" alt="logo" />
-        <p></p>
+            {/* <img src={logo} className="App-logo" alt="logo" />
+            <p></p> */}
+            <div className="testbox">
+                <form method="get">
+                    <div className="banner">
+                        <h1>dArk - Persistent Identifier in Blockchain</h1>
+                    </div>
+                    <p>
+                        <b>Welcome</b><code> To DPi!</code> <small><font color="red">Connect to your wallet to proceed!</font></small>
+                    </p>
+                    <input type="button" value="Obter Dark" onClick={evt => connect()} />
+                    {/* <p className="txt-center"><font color="red">{JSON.stringify(message)}</font></p> */}
+                    <p></p>            
+                    <div className="item">
+                        <div className="name-item">
+                            <div>
+                                <label htmlFor="ext_pid">Dark<span></span></label>
+                                <input className="form-control" id="disabledInput" type="text" placeholder={JSON.stringify(messageU)}  />
+                            </div>
+                        </div>
+                    </div>
+                        <label htmlFor="title">Title<span>*</span></label>
+                        <input id="title" type="text" name="title" onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Blockchain applied in nanosatellites" required/>
+                    <div className="item">
+                        <div className="name-item">
+                            <div>
+                                <label htmlFor="ext_pid">External PID<span></span></label>
+                                <input id="ext_pid" type="text" name="ext_pid"  onChange={(e) => setPidExternal(e.target.value)}/>
+                            </div>
+                            <div>
+                                <label htmlFor="urlExternal">Url (External Link)<span>*</span></label>
+                                <input id="urlExternal" type="text" name="urlExternal" onChange={(e) => setUrlExternal(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="item">
+                            <label htmlFor="search_keys">Search keys<span></span></label>
+                            <input id="search_keys" type="text" name="search_keys" onChange={(e) => setSearchTerm(e.target.value)} placeholder="Ex: Blockchain; nanosatellites; communications"/>
+                        </div>
+                    </div>
+                    {/* <div className="row">
+                        <div className="btn-block">
+                            <button> Submit</button>
+                        </div>
+                    </div> */}
+                    <input type="button" value="Submeter" onClick={evt => handleUuid()} />
+                    {/* <p className="txt-center"><font color="success">{JSON.stringify(messageU)}</font></p> */}
+                </form>
+            </div>
         </div>
-        <div className="testbox">
-        <form method="get">
-            <div className="banner">
-                <h1>dArk - Persistent Identifier in Blockchain</h1>
-            </div>
-            <p>
-                <b>Welcome</b><code> To DPi!</code> <small><font color="red">Connect to your wallet to proceed!</font></small>
-            </p>
-            <input type="button" value="Obter Dark" onClick={evt => connect()} />
-            {/* <p className="txt-center"><font color="red">{JSON.stringify(message)}</font></p> */}
-            <p></p>            
-            <div className="item">
-                <div className="name-item">
-                    <div>
-                        <label htmlFor="ext_pid">Dark<span></span></label>
-                        <input className="form-control" id="disabledInput" type="text" placeholder={JSON.stringify(messageU)}  />
-                    </div>
-                </div>
-            </div>
-                <label htmlFor="title">Title<span>*</span></label>
-                <input id="title" type="text" name="title" onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Blockchain applied in nanosatellites" required/>
-            <div className="item">
-                <div className="name-item">
-                    <div>
-                        <label htmlFor="ext_pid">External PID<span></span></label>
-                        <input id="ext_pid" type="text" name="ext_pid"  onChange={(e) => setPidExternal(e.target.value)}/>
-                    </div>
-                    <div>
-                        <label htmlFor="urlExternal">Url (External Link)<span>*</span></label>
-                        <input id="urlExternal" type="text" name="urlExternal" onChange={(e) => setUrlExternal(e.target.value)} />
-                    </div>
-                </div>
-                <div className="item">
-                    <label htmlFor="search_keys">Search keys<span></span></label>
-                    <input id="search_keys" type="text" name="search_keys" onChange={(e) => setSearchTerm(e.target.value)} placeholder="Ex: Blockchain; nanosatellites; communications"/>
-                </div>
-            </div>
-            {/* <div className="row">
-                <div className="btn-block">
-                    <button> Submit</button>
-                </div>
-            </div> */}
-            <input type="button" value="Submeter" onClick={evt => handleUuid()} />
-            {/* <p className="txt-center"><font color="success">{JSON.stringify(messageU)}</font></p> */}
-        </form>
+        <div className="App" >
+            {/* <a target="_blank"
+                href="http://127.0.0.1:8080/get/" >
+                <i></i> Conferir
+            </a> */}
+            <p>Transações recentes:</p>
+            <p>{JSON.stringify(messageLast)}</p>
+
+
+
         </div>
     </header>
   );
