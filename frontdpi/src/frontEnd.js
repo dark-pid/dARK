@@ -12,12 +12,14 @@ const FrontEnd = () => {
     const[message, setMessage] = useState('');
     const[messageU, setMessageU] = useState('Here will appear your Dark...');
     const[messageLast, setMessageLast] = useState('Last transactions...');
+    const[messageSearch, setMessageSearch] = useState('Search...');
     const [error, setError] = useState();
     const [title, setTitle] = useState('');
     const [metaData, setMetadata] = useState('');
     const [urlExternal, setUrlExternal] = useState('');
     const [pidExternal, setPidExternal] = useState('');
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(''); //para montar no payload
+    const [searchKey, setSearchKey] = useState(''); //para barra de busca
     const [contractInfo, setContractInfo] = useState({
         address: "-"
     });
@@ -82,30 +84,63 @@ const FrontEnd = () => {
         console.log("Adicionando payload....");
         const payload = await contract.set_payload(darkReceipt, payloadJson);
         console.log(payload);
+        
+        console.log("Adicionando search term....");
+        const searchT = await contract.addSearchTerm(darkReceipt, searchTerm);
+        console.log(searchT);
 
         const responseT =  await axios.get(`http://127.0.0.1:8080/get/${darkReceipt}`)
 
 
         setMessageLast({
           Dark:  responseT.data['noid'].substring(5,18),
-          Datas: responseT.data['payload']
+          Datas: responseT.data['payload'], 
         }); 
 
         
         
     }
+
+    const search = async (e) => {
+        
+        console.log(`Você digitou o termo: ${searchKey}`);
+        const querryKey =  await axios.get(`http://127.0.0.1:8080/search/${searchKey}`);
+        const darkPidSearch = querryKey.data["pids"];
+        console.log(darkPidSearch);
+        const responseS =  await axios.get(`http://127.0.0.1:8080/get/${darkPidSearch}`);
+        console.log(responseS);
+
+
+        setMessageSearch({
+          Dark:  responseS.data['noid'].substring(5,18),
+          Datas: responseS.data['payload']
+        });  
+    }
   return ( 
     <header >
+        <div className="App" >
+            <div className="testbox">
+                <form method="get">
+                    <div className="item">
+                        <label htmlFor="searchKeys">Search keys<span></span></label>
+                        <input id="searchKeys" type="text" name="searchKeys" onChange={(e) => setSearchKey(e.target.value)} placeholder="Ex: Blockchain"/>
+                    </div>
+                    <input type="button" value="Pesquisar" onClick={evt => search()} />
+                        <h2><p><b>Pesquisar</b></p></h2>
+                        <h2><p>{JSON.stringify(messageSearch)}</p></h2>
+                </form>
+            </div>
+        </div>
         <div className="App" >
             {/* <img src={logo} className="App-logo" alt="logo" />
             <p></p> */}
             <div className="testbox">
                 <form method="get">
                     <div className="banner">
-                        <h1>dArk - Persistent Identifier in Blockchain</h1>
+                        <h1>dArk - Descentralized ARK</h1>
                     </div>
                     <p>
-                        <b>Welcome</b><code> To DPi!</code> <small><font color="red">Connect to your wallet to proceed!</font></small>
+                        <b>Welcome</b><code> To dArk!</code>
                     </p>
                     <input type="button" value="Obter Dark" onClick={evt => connect()} />
                     {/* <p className="txt-center"><font color="red">{JSON.stringify(message)}</font></p> */}
@@ -113,8 +148,8 @@ const FrontEnd = () => {
                     <div className="item">
                         <div className="name-item">
                             <div>
-                                <label htmlFor="ext_pid">Dark<span></span></label>
-                                <input className="form-control" id="disabledInput" type="text" placeholder={JSON.stringify(messageU)}  />
+                                <label htmlFor="dark_pid">Dark<span></span></label>
+                                <h3><input className="form-control" id="disabledInput" type="text" placeholder={JSON.stringify(messageU)}  /></h3>
                             </div>
                         </div>
                     </div>
@@ -151,11 +186,8 @@ const FrontEnd = () => {
                 href="http://127.0.0.1:8080/get/" >
                 <i></i> Conferir
             </a> */}
-            <p>Transações recentes:</p>
-            <p>{JSON.stringify(messageLast)}</p>
-
-
-
+            <h2><p><b>Resposta:</b></p></h2>
+            <h2><p>{JSON.stringify(messageLast)}</p></h2>
         </div>
     </header>
   );

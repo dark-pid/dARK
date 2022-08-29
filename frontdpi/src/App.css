@@ -32,6 +32,7 @@
   color: #61dafb;
 }
 
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -65,7 +66,7 @@ html, body {
   margin: 0;
   outline: none;
   font-family: Roboto, Arial, sans-serif;
-  font-size: 13px;
+  font-size: 18px;
   color: #666;
   line-height: 22px;
   }
@@ -77,6 +78,18 @@ html, body {
   color: #fff;
   z-index: 2;
   }
+  h2 {
+
+    font-size: 20px;
+    color: #000000;
+
+  }
+  h3 {
+
+    font-size: 16px;
+    color: #000000;
+
+  }
   .testbox {
   display: flex;
   justify-content: center;
@@ -85,17 +98,18 @@ html, body {
   padding: 20px;
   }
   form {
-  width: 100%;
+  width: 80%;
   padding: 20px;
   border-radius: 6px;
   background: #fff;
   box-shadow: 0 0 20px 0  #0160dd;
+  text-align: left;
   }
 
   .banner {
   position: relative;
-  height: 420px;
-  background-image: url("https://repositorio.cedia.edu.ec/assets/cedia/images/logo_icono_x2.png");  
+  height: 120px;
+  background-image: url("https://bitnoticias.com.br/wp-content/uploads/2019/04/blockchain.png");  
   background-size: cover;
   display: flex;
   justify-content: center;
