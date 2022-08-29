@@ -91,11 +91,14 @@ const FrontEnd = () => {
 
         const responseT =  await axios.get(`http://127.0.0.1:8080/get/${darkReceipt}`)
 
+        if(responseT){
+            setMessageLast("Data saved successfully"); 
+        }else{
+            setMessageLast("Error writing data");
+        }
 
-        setMessageLast({
-          Dark:  responseT.data['noid'].substring(5,18),
-          Datas: responseT.data['payload'], 
-        }); 
+
+        
 
         
         
@@ -105,16 +108,21 @@ const FrontEnd = () => {
         
         console.log(`Você digitou o termo: ${searchKey}`);
         const querryKey =  await axios.get(`http://127.0.0.1:8080/search/${searchKey}`);
+        //console.log(querryKey);
+
         const darkPidSearch = querryKey.data["pids"];
-        console.log(darkPidSearch);
         const responseS =  await axios.get(`http://127.0.0.1:8080/get/${darkPidSearch}`);
-        console.log(responseS);
+        //console.log(responseS);
 
-
-        setMessageSearch({
-          Dark:  responseS.data['noid'].substring(5,18),
-          Datas: responseS.data['payload']
-        });  
+        if(darkPidSearch != undefined){
+            setMessageSearch({
+                Dark:  responseS.data['noid'].substring(5,18),
+                Datas: responseS.data['payload']
+            });
+        }
+        else{
+            setMessageSearch("No data found");
+        }         
     }
   return ( 
     <header >
