@@ -128,7 +128,3 @@ dmypy.json
 # Pyre type checker
 .pyre/
 Dapp/contracts/artifacts/
-
-#others
-.vscode/
-
