@@ -21,7 +21,7 @@ from .libs import compile_all,get_contract,deploy_contract_besu,populate_file_li
 
 #TODO: Definir melhor
 PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
-PROJECT_ROOT = os.path.join(PROJECT_ROOT.split('D-pi')[0], 'D-pi')
+PROJECT_ROOT = os.path.join(PROJECT_ROOT.split('dark')[0], 'dark')
 
 config_file = os.path.join(PROJECT_ROOT,'config.ini')
 deployed_contracts_config = os.path.join(PROJECT_ROOT,'deployed_contracts.ini')
