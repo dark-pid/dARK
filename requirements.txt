@@ -3,8 +3,10 @@ pip
 ipykernel
 ipywidgets
 jupyter
+nbconvert>=6.5.0
 tqdm
 pytest
+ijson>=3.1.4      
 
 # pip install web3 --only-binary :all:
 web3>=5.29.0
