@@ -36,7 +36,7 @@ def load_blockchain_driver():
     """
     #debug
     logging.info(config_file)
-    print(config_file)
+    # print(config_file)
 
     config = configparser.ConfigParser()
     config.read(config_file)
