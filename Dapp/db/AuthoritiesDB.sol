@@ -185,7 +185,7 @@ contract AuthoritiesDB
      * @param ror_id bytes32 id
      * @return dnma Struct Entities.DecentralizedNameMappingAuthority 
      */
-    function get_dnma(string memory ror_id) 
+    function get_dnma_by_ror(string memory ror_id) 
     public view 
     returns(Entities.DecentralizedNameMappingAuthority memory dnma) {
         ror_id = strings.lower(ror_id);
