@@ -52,7 +52,7 @@ contract AuthoritiesService {
         bool exist_flag = db.exist_dnma(ror_id);
 
         if ( exist_flag ) {
-            Entities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(ror_id);
+            Entities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma_by_ror(ror_id);
             dnma_id = dnma.id;
         } else {
             dnma_id = db.save_dnma(ror_id,s_prefix,responsable);
@@ -76,7 +76,7 @@ contract AuthoritiesService {
     {
         AuthoritiesDB db = AuthoritiesDB(db_addr);
         ror_id = strings.lower(ror_id);
-        Entities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(ror_id);
+        Entities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma_by_ror(ror_id);
         //TODO: check sma_sprefix compatibility with betanumeric
         sma_sprefix = strings.lower(sma_sprefix);
 

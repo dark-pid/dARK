@@ -101,7 +101,7 @@ contract AuthoritiesDB
 
 
         //Note: it will fail automatically if the key already exists.
-        Entities.DecentralizedNameMappingAuthority memory mdnma = get_dnma(ror_id_dnma);
+        Entities.DecentralizedNameMappingAuthority memory mdnma = get_dnma_by_ror(ror_id_dnma);
         Entities.DecentralizedNameMappingAuthority storage dnma = dnma_db[mdnma.id];
 
         bytes32 id_sma = keccak256(abi.encodePacked(dnma.id,sma_sprefix));

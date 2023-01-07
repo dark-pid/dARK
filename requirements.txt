@@ -12,7 +12,7 @@ ijson>=3.1.4
 web3>=5.29.0
 py-solc-x >= 1.1.1
 eth-tester >= 0.6.0b6
-py-evm
+py-evm >=0.5.0a3
 
 
 # webservice
