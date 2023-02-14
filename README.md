@@ -1,5 +1,5 @@
-# D-pi
-Dπ App
+# dARK
+dARK App
 
 ## Install
 
@@ -10,7 +10,8 @@ conda create --name web3 python=3.8 --file requirements.txt
 ```
 
 ```
-python3 -m venv web3
+$ python3 -m venv web3
+$ source venv/web3/bin/activate
 ```
 
 ```
@@ -24,10 +25,10 @@ pip install -r requirements.txt
 
 ### Configure the wallet (metamask)
 
- - **Network Name**: Dπ-dev
+ - **Network Name**: dARK-dev
  - **RPC URL** : http://127.0.0.1:8545
  - **CHAIN ID** : 1337
- - **Currency Symbol** : π 
+ - **Currency Symbol** : dARK 
  - **Block Explorer URL** : http://127.0.0.1:25000
 
 #### Import an account (with credit)

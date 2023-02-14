@@ -182,3 +182,22 @@ def invoke_contract(w3,account,chain_id,
     tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
     receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
     return receipt
+
+def invoke_contract_experimental(w3,account,chain_id,
+            smart_contract,method,*args):
+    """
+        invoke_contract(w3,account,61, st_service , 'set_db' ,(contract_addr) )
+    """
+
+    #get the gas needed
+    est_gas = smart_contract.get_function_by_name(method)(*args).estimateGas()
+    #gen the tc header
+    tx_params = get_tx_params(w3,est_gas,account,chain_id=chain_id)
+    #build the transaction
+    tx = smart_contract.get_function_by_name(method)(*args).buildTransaction(tx_params)
+    #sign the transatiopn
+    signed_tx = account.signTransaction(tx)
+    # send the transaction
+    tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
+    receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    return receipt , est_gas

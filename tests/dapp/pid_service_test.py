@@ -5,9 +5,9 @@ from web3 import Web3
 import sys
 # sys.path.append('../../')
 
-from pyDpi.util import setup
+from dARK.util import setup
 # compile_all,get_contract,deploy_contract_besu,populate_file_list,get_tx_params,
-from pyDpi.util.libs import invoke_contract
+from dARK.util.libs import invoke_contract
 
 # @pytest.fixture
 # def w3():
