@@ -36,6 +36,7 @@ Metodos para configuração
 	- add_external_pid : 
 	- add_external_links : 
 	- set_payload : 
+	- update_pid_metadata : //TODO (nao implementar na primeira POC)
 
 #### Assing PID
 
