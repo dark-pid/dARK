@@ -92,7 +92,8 @@ Description here
 
 ### PID Desing
 
-TODO
+
+dARK is based on the ARK PID system. Due to the decentralized capalities of the dARK it has unique characteristic. This characteristic are detailed in the [PID Desing](./dARK_pid/) documents.
 
 ### Blockchain Desing
 TODO
@@ -115,25 +116,25 @@ flowchart LR
     classDef allwhite fill:white,stroke:#fff,stroke-width:2px,color:#000
 
 
-    subgraph un[Universe]
+    subgraph un[Universe \n ]
         subgraph br[fa:fa-star BR Galaxy]
             direction LR
-            a[fa:fa-building-columns]
-            b[fa:fa-building-columns]
+            a[fa:fa-building-columns Org A]
+            b[fa:fa-building-columns Org B]
             a .- b
         end
 
         subgraph latam[fa:fa-star Latam Galaxy]
             direction LR
-            sa[fa:fa-building-columns]
-            sb[fa:fa-building-columns]
+            sa[fa:fa-building-columns Org A]
+            sb[fa:fa-building-columns Org B]
             sa .- sb
         end
 
         subgraph ue[fa:fa-star UE Galaxy]
             direction LR
-            ua[fa:fa-building-columns]
-            ub[fa:fa-building-columns]
+            ua[fa:fa-building-columns Org A]
+            ub[fa:fa-building-columns Org B]
             ua .- ub
         end
 
