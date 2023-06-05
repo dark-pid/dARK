@@ -21,25 +21,58 @@ Need to be detailed :
 classDiagram
 
     class dARK{
-        +bytes16 uuid
-        +String payload
-        +address owner
+        -uuid: bytes16
+        -owner: address
+        
+        List~bytes32~search_terms
+        List~bytes32~external_pids
+        List~bytes32~urls
     }
 
     class SearchTerm{
-        +bytes32 id
-        +String value
+        -id : bytes32
+        -value : string
     }
 
     class ExternalPID{
-        +bytes32 id
-        +String value
+        -id : bytes32
+        -value : string
     }
 
     class URL{
-        +bytes32 id
-        +String value
+        -id : bytes32
+        -value : string
     }
+
+    class Payload{
+        -id: address
+        -payload: string
+        -payload_type
+        -List~Relation_Type~payload_relations
+    }
+
+    
+    class Payload_Relation{
+        -id: address
+        -relation_type: address
+        -related_to: address
+    }
+
+    class Relation_Type{
+        -id : address
+        -type_name: string
+    }
+
+    class Payload_Type{
+        <<enumeration>>
+        PERSON
+        ARTICLE
+    }
+
+    dARK "1" --o "*" Payload : has
+    Payload "1" --o "1" Payload_Type : has
+    Payload "1" --o "1" Payload_Relation : has
+    Payload_Relation "1" --o "1" Relation_Type : has
 
     dARK "1" *--  "*" SearchTerm
     dARK "1" *--  "*" ExternalPID
