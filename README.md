@@ -13,7 +13,7 @@ or
 python3 -m venv web3
 ```
 ```sh
-source venv/web3/bin/activate
+source web3/bin/activate
 ```
 
 ```
