@@ -4,21 +4,28 @@ dARK App
 ## Install
 
 ### python 
-
+Virtual Enviroment
 ```
 conda create --name web3 python=3.8 --file requirements.txt
 ```
-
+or
+```sh
+python3 -m venv web3
 ```
-$ python3 -m venv web3
-$ source venv/web3/bin/activate
+```sh
+source venv/web3/bin/activate
 ```
 
 ```
 pip install -r requirements.txt 
 ```
 
-## configure
+## configure .ini
+
+Create new files and call them config.ini and deployed_contracts.ini.
+Copy the information from the examples into it.
+
+Attention: Make sure the path is correct.
 
 ### start dev env
 
