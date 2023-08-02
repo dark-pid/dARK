@@ -1,0 +1,70 @@
+classDiagram
+
+    class dARK{
+        -hash_id: bytes16
+        -ark_id: string
+        -draft: bool 
+        -owner: address
+
+        -List~bytes32~external_pids
+        -List~bytes32~urls
+        
+        +is_a_draft() bool
+    }
+
+    class ExternalPID{
+        -id : bytes32
+        -value : string
+    }
+
+    class URL{
+        -id : bytes32
+        -value : string
+    }
+
+    class Payload{
+        -id: address
+        -payload: string
+    }
+
+    dARK "1" --o "*" Payload : has
+    
+    dARK "1" *--  "*" ExternalPID
+    dARK "1" *--  "*" URL
+
+
+    class DecentralizedNameMappingAuthority{
+        -id: bytes32
+        -ror_id: string
+        -shoulde_prefix: string
+        -noid_proveider_addr: address
+        -responsable: address
+        -List~bytes32~section_authorities
+    }
+
+    class SectionMappingAuthority {
+        -id: bytes32
+        -string shoulder_prefix;
+        -dNMA_id: bytes32
+        -noid_proveider_addr: address
+        -responsable: address
+    }
+
+    class NoidProvider{
+        -nam: bytes
+        -dnam: bytes
+        -sec_nam: bytes
+        -sep_token: bytes1
+        -noid_len: uint8
+
+        +gen() string
+    }
+
+    DecentralizedNameMappingAuthority "1" --o "1" NoidProvider: has
+    SectionMappingAuthority "1" --o "1" NoidProvider: has
+
+    DecentralizedNameMappingAuthority "1" --o "*" SectionMappingAuthority: has
+
+
+
+

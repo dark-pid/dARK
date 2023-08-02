@@ -1,0 +1,74 @@
+classDiagram
+
+    class AuthoritiesDB{
+        -Set~bytes32~DecentralizedNameMappingAuthority
+        -Set~bytes32~SectionMappingAuthority
+        -Set~bytes32~responsable_db
+
+        +save_responsable(obj_id: bytes32, responsable: address)
+        +save_dnma(ror_id: string, s_prefix : string, responsable: address)
+        +set_dnma_noid(dnma_id: bytes32, noid_provides_addr: address)
+        +save_sma(ror_id_dnma: string, sma_sprefix : string, responsable: address)
+        +set_sma_noid(sma_id: bytes32, noid_provides_addr: address)
+        
+        +get_sma(id: bytes32) SectionMappingAuthority
+        +get_sma(sma_sprefix: string, dnma_id: bytes32) SectionMappingAuthority
+
+        +get_dma(id: bytes32) DecentralizedNameMappingAuthority
+        +get_sma(ror_id: string) SectionMappingAuthority
+    }
+
+    class ExternalPidDB{
+        -Set~bytes32~ExternalPID
+
+        +save(schema:string, pid:string, dark_pid_hash:bytes32) bytes32
+        +exist(pid:string) bool
+        +get(id:bytes32) ExternalPID
+        +get(pid:string) ExternalPID
+        +get_by_index(index:uint256) ExternalPID
+        +count() uint256
+    }
+
+    class PidDB{
+        -Set~bytes32~dARK
+        +assing_id(noid_provider_addr:address) bytes32
+        
+        +add_externalPid(pid_hash:bytes32, epid_addr:bytes32)
+        +add_externalLinks(pid_hash:bytes32, url:string)
+        +add_externalLinks(set_payload:bytes32, payload:string)
+
+        +get(pid_hash:bytes32) dARK
+        +get_by_ark(ark: string) dARK
+        +get_by_index(index:uint256) dARK
+        +count() uint256
+    }
+
+
+    class AuthoritiesService{
+        +create_dnam(ror_id: string, s_prefix : string, responsable: address) bytes32
+        +create_sma(ror_id: string, sma_sprefix : string, responsable: address) bytes32
+        +configure_noid_provider_dnma(nam:string, auth_id:bytes32, noid_len: uint8, type: uint8) address
+        +get_proveider_addr(rep_addr:address) address
+    }
+
+    AuthoritiesService "1" *--  "1" AuthoritiesDB
+
+    class PidService{
+        +assingID(sender:address) bytes32
+        +addExternalPid(pid_hash:bytes32, schema:string, external_pid:string)
+        +add_externalLinks(pid_hash:bytes32, url:string)
+        +set_payload(pid_hash:bytes32, payload:string)
+
+    }
+
+    PidService "1" *--  "1" AuthoritiesService
+    PidService "1" *--  "1" ExternalPidService
+    PidService "1" *--  "1" PidDB
+
+    class ExternalPidService{
+        +get_or_create_externalPid(schema:string, pid: string, pid_hash:bytes32) bytes32
+    }
+
+    ExternalPidService "1" *--  "1" ExternalPidDB
+
+    
