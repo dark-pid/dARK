@@ -27,10 +27,10 @@ classDiagram
         -payload: string
     }
 
-    dARK "1" --o "*" Payload : has
+    dARK "1" o-- "0..1" Payload : has
     
-    dARK "1" *--  "*" ExternalPID
-    dARK "1" *--  "*" URL
+    dARK "1" *--  "0..*" ExternalPID
+    dARK "1" *--  "1" URL
 
 
     class DecentralizedNameMappingAuthority{
