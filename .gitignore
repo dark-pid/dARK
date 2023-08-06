@@ -138,3 +138,4 @@ Dapp/contracts/artifacts/
 ## .ini
 config.ini
 deployed_contracts.ini
+noid_provider_config.ini

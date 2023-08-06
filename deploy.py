@@ -7,6 +7,9 @@ import ast
 from util import DarkDeployer
 from dark.gateway import DarkGateway
 
+###
+### Class Methods
+###
 
 def get_contract(contract_name,contracts_dicts):
     contract_name = contract_name.split('.')[0]
@@ -54,16 +57,15 @@ def save_smart_contract(deployed_contracts_dict,compiled_contracts_dict,deployed
 
 
 
-
-
-# PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
-# PROJECT_ROOT = os.path.join(PROJECT_ROOT.split('dark')[0], 'dark')
+###
+### VARIABLES
+###
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 config_file_path = os.path.join(PROJECT_ROOT,'config.ini')
 deployed_contracts_config_path = os.path.join(PROJECT_ROOT,'deployed_contracts.ini')
-
+# noid_provider_config_path = os.path.join(PROJECT_ROOT,'noid_provider_config.ini')
 
 
 #LOG SETUP 
@@ -87,10 +89,6 @@ dbs_paths = populate_file_list(DB_PATH,config['smartcontracts']['dbs_files'].spl
 services_path = populate_file_list(SERVICE_PATH,config['smartcontracts']['service_files'].split())
 
 
-# blockchain_net = config['base']['blockchain_net']
-# smart_contract_config = config['smartcontracts']?
-# blockchain_config = config[blockchain_net]
-
 #DarkGateWay
 dark_gw = DarkGateway(config)
 #DarDeployer
@@ -103,4 +101,3 @@ dc = dark_deployer.deploy_contracts(compiled_contracts)
 
 # save smart contracts in a confi file
 save_smart_contract(dc,compiled_contracts,deployed_contracts_config_path)
-
