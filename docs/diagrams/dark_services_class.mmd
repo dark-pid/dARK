@@ -34,8 +34,8 @@ classDiagram
         +assing_id(noid_provider_addr:address) bytes32
         
         +add_externalPid(pid_hash:bytes32, epid_addr:bytes32)
-        +add_externalLinks(pid_hash:bytes32, url:string)
-        +add_externalLinks(set_payload:bytes32, payload:string)
+        +add_url(pid_hash:bytes32, url:string)
+        +add_url(set_payload:bytes32, payload:string)
 
         +get(pid_hash:bytes32) dARK
         +get_by_ark(ark: string) dARK
@@ -56,7 +56,7 @@ classDiagram
     class PidService{
         +assingID(sender:address) bytes32
         +addExternalPid(pid_hash:bytes32, schema:string, external_pid:string)
-        +add_externalLinks(pid_hash:bytes32, url:string)
+        +set_url(pid_hash:bytes32, url:string)
         +set_payload(pid_hash:bytes32, payload:string)
 
     }
@@ -66,9 +66,27 @@ classDiagram
     PidService "1" *--  "1" PidDB
 
     class ExternalPidService{
-        +get_or_create_externalPid(schema:string, pid: string, pid_hash:bytes32) bytes32
+        +get_or_create_external_pud(schema:string, pid: string, pid_hash:bytes32) bytes32
     }
 
     ExternalPidService "1" *--  "1" ExternalPidDB
 
+    PidService "1" *--  "1" URLService
+    
+    class URLService{
+        +get_or_create_url(url: string, pid_hash:bytes32) bytes32
+    }
+    
+    URLService "1" *--  "1" UrlDB
+
+    class UrlDB{
+        -Set~bytes32~URL
+
+        +save(url:string, dark_pid_hash:bytes32) bytes32
+        +exist(url:string) bool
+        +get(id:bytes32) ExternalPID
+        +get(url:string) ExternalPID
+        +get_by_index(index:uint256) ExternalPID
+        +count() uint256
+    }
     

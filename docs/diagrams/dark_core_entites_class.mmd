@@ -10,6 +10,7 @@ classDiagram
 
     class ExternalPID{
         -id : bytes32
+        -type: bytes1
         -value : string
     }
 
@@ -60,8 +61,4 @@ classDiagram
     SectionMappingAuthority "1" --o "1" NoidProvider: has
 
     DecentralizedNameMappingAuthority "1" --o "*" SectionMappingAuthority: has
-
-
-
-
 
