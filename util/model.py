@@ -136,18 +136,18 @@ class DarkDeployer:
         ##
         ## Search TermService
         ##
-        logging.info("    Configuring SearchTermService:")
-        st_db_addr = smart_contract_config['SearchTermDB.sol']['addr']
-        contract_addr = smart_contract_config['SearchTermService.sol']['addr']
-        contract_interface = smart_contract_config['SearchTermService.sol']['abi']
-        st_service = self.dark_gateway.w3.eth.contract(address=contract_addr, abi=ast.literal_eval(contract_interface))
+        logging.info("    Configuring dARK UrlService:")
+        url_db_addr = smart_contract_config['UrlDB.sol']['addr']
+        contract_addr = smart_contract_config['UrlService.sol']['addr']
+        contract_interface = smart_contract_config['UrlService.sol']['abi']
+        url_service = self.dark_gateway.w3.eth.contract(address=contract_addr, abi=ast.literal_eval(contract_interface))
         #send tx
-        sign_tx = self.dark_gateway.signTransaction(st_service,'set_db' ,(auth_db_addr))
+        sign_tx = self.dark_gateway.signTransaction(url_service,'set_db' ,(url_db_addr))
         receipt, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
         #TODO CHECK receipt['status'] == 1
 
         logging.info("        - db configured")
-        configured_contracts['SearchTermService'] = st_service
+        configured_contracts['UrlService'] = url_service
 
         ##
         ## ExternalPID Service
@@ -178,9 +178,9 @@ class DarkDeployer:
         sign_tx = self.dark_gateway.signTransaction(pid_service,'set_externalpid_service' ,(epid_service.address))
         receipt, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
         logging.info("        - ExternalPIDService configured")
-        sign_tx = self.dark_gateway.signTransaction(pid_service,'set_searchterm_service' ,(st_service.address))
+        sign_tx = self.dark_gateway.signTransaction(pid_service,'set_url_service' ,(url_service.address))
         receipt, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
-        logging.info("        - SearchTermService configured")
+        logging.info("        - UrlService configured")
         sign_tx = self.dark_gateway.signTransaction(pid_service,'set_auth_service' ,(auth_service.address))
         receipt, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
         logging.info("        - authoritiesService configured")
@@ -196,7 +196,7 @@ class DarkDeployer:
 
     
     def configure_noid_provider(self,deployed_contracts_config_path,noid_config_path):
-        logging.info("> Configure noid probider...")
+        logging.info("> Configure noid provider...")
         # read deployd contracts
         smart_contract_config = ConfigParser()
         smart_contract_config.read(deployed_contracts_config_path)
