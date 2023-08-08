@@ -1,14 +1,49 @@
 # dARK
-dARK App
 
-## Install
+> Table of contents :
+>  - [How to run](#how-to-run)
+>  - [dARK Parameters](#dark-parameters)
 
-### python 
-Virtual Enviroment
+dARK
+
+## How to run
+
+In this section we detail how to deploy the dARK.
+
+> dARK deployment steps:
+>  1. [Configuring dARK](#dark-configuration)
+>  1. [Requirement install procedures](#requirements-install-procedure)
+>  1. [dARK deployment](#how-to-deploy-dark-on-the-blockchain)
+
+
+<details>
+<summary>System Requirements</summary>
+    <ul>
+        <li> python 3.10 </li>
+        <li> pip </li>
+        <li> docker </li>
+        <li> docker-compose </li>
+    </ul>
+</details>
+
+### dARK configuration
+
+Rename the the example_config.ini to config.ini in project root directory of the project.
+
+```bash
+cp example_config.ini config.ini
 ```
-conda create --name web3 python=3.8 --file requirements.txt
+
+The default parameters in the  __config.ini__ file assumes tha the [dark env](https://github.com/dark-pid/) is runing on the local machine. Thus, if you are using a diferent setup update the __config.ini__ file.
+
+We also prove a [noid provider config file](./example_noid_provider_config.ini). Rename the example_noid_provider_config.ini to noid_provider_config.ini.
+
+```bash
+cp example_noid_provider_config.ini noid_provider_config.ini
 ```
-or
+
+### Requirements Install Procedure
+
 ```sh
 python3 -m venv web3
 ```
@@ -16,30 +51,34 @@ python3 -m venv web3
 source web3/bin/activate
 ```
 
-```
+```bash
 pip install -r requirements.txt 
 ```
 
-## configure .ini
+### How to deploy dARK on the blockchain
 
-Create new files and call them config.ini and deployed_contracts.ini.
-Copy the information from the examples into it.
+To deploy the dARK first you have to compile and deploy and configure the dARK contracts.
 
-Attention: Make sure the path is correct.
+**Deploy contracts on chain**
+```bash
+python.exe .\deploy.py
+```
 
-### start dev env
+**Configure the dARK Services and DataBases on Chain**
+```bash
+python.exe .\configure.py
+```
 
+This scripts will employ the config parameters to configure and deploy the dARK.
 
-### Configure the wallet (metamask)
+## dARK Parameters
 
- - **Network Name**: dARK-dev
- - **RPC URL** : http://127.0.0.1:8545
- - **CHAIN ID** : 1337
- - **Currency Symbol** : dARK 
- - **Block Explorer URL** : http://127.0.0.1:25000
+details of the dARK parameters
+TODO
+- config.ini
+- example_noid_provider_config.ini
 
-#### Import an account (with credit)
-
+### Availabels Wallets
 To import an account chose one of the accounts listed in the genesis.json and copy the private key. For instance;
 
 ```
