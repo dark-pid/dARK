@@ -1,1 +1,0 @@
-Noid Check Digit Algorithm 

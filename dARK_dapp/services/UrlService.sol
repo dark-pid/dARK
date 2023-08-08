@@ -47,7 +47,7 @@ contract UrlService {
     returns(Entities.URL memory url_obj)
     {
         UrlDB db = UrlDB(db_addr);
-        Entities.URL memory url_obj = db.get(url_id);
+        url_obj = db.get(url_id);
     }
 
     

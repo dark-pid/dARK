@@ -25,6 +25,25 @@ contract PIDService {
         owner = msg.sender;
     }
 
+    function is_a_draft(Entities.PID memory p)
+    public pure
+    returns (bool draft_flag){
+        if (p.url == bytes32(0)) {
+            draft_flag = false;
+        } else {
+            draft_flag = true;
+        }
+    }
+
+    /**
+     * check if a pid is not a draft
+     */
+    function is_a_valid_pid(Entities.PID memory p)
+    public pure {
+        // bool draft_flag = is_a_draft(p);
+        require( is_a_draft(p) == true, 'This PID is a draft.');
+    }
+
     /**
      * set the PID DB address
      */
@@ -95,13 +114,12 @@ contract PIDService {
         PidDB db = PidDB(pid_db_addr);
         UrlService url_serv = UrlService(url_service_addr);
 
-        Entities.PID memory pid = db.get(pid_hash); //valida o uuid
+        db.get(pid_hash); //valida o uuid
 
         bytes32 url_id = url_serv.get_or_create_url(url,pid_hash);
 
-        Entities.URL memory url_obj = url_serv.get(url_id);
-
-        require(url_obj.pid_hash == pid_hash, 'URL already linked to other pid');
+        // Entities.URL memory url_obj = url_serv.get(url_id);
+        // require(url_obj.pid_hash == pid_hash, 'URL already linked to other pid');
 
         db.add_url(pid_hash, url_id);
         
@@ -123,7 +141,8 @@ contract PIDService {
         PidDB db = PidDB(pid_db_addr);
         ExternalPIDService epid_service = ExternalPIDService(externalpid_service_addr);
 
-        db.get(pid_hash); //valida o uuid
+        Entities.PID memory p = db.get(pid_hash); //valida o uuid
+        is_a_valid_pid(p); // check if pid is a draft
         bytes32 epid_id = epid_service.get_or_create_externalPid(schema,external_pid,pid_hash);
         //todo: verificar se o link nao existe
         db.add_externalPid(pid_hash,epid_id);
@@ -142,6 +161,8 @@ contract PIDService {
     public
     {
         PidDB db = PidDB(pid_db_addr);
+        Entities.PID memory p = db.get(pid_hash); //valida o uuid
+        is_a_valid_pid(p); // check if pid is a draft
         db.set_payload(pid_hash, pid_payload);
     }
     
