@@ -134,7 +134,7 @@ class DarkDeployer:
         configured_contracts['PidDB'] = pid_db
 
         ##
-        ## Search TermService
+        ## URl Service
         ##
         logging.info("    Configuring dARK UrlService:")
         url_db_addr = smart_contract_config['UrlDB.sol']['addr']
