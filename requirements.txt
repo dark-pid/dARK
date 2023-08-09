@@ -3,21 +3,13 @@ pip
 ipykernel
 ipywidgets
 jupyter
-nbconvert==6.5.0
+nbconvert>=6.5.0
 tqdm
-pytest
-ijson==3.1.4      
+ijson>=3.1.4      
 
 # pip install web3 --only-binary :all:
 web3==5.29.0
-py-solc-x == 1.1.1
-eth-tester == 0.6.0b6
-py-evm ==0.5.0a3
+py-solc-x >= 1.1.1
 
-
-# webservice
-flask
-flask-sqlalchemy
-flask_jwt_extended
-gunicorn
-Flask
+# dark
+dark-gateway==0.1.0
