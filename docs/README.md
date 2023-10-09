@@ -57,14 +57,15 @@ IPFS Code
 | module | submodule | status | PoC   | release |
 | ---    | ---       | ---  | :---: | :---: |
 | dARK Governance Layer | - | - | - | - |
-| dARK Core Layer | dARK | working | [v1](https://doi.org/10.5281/zenodo.7442743) | - |
+| dARK Core Layer | dARK | updating | [v1](https://doi.org/10.5281/zenodo.7442743) | - |
 | dARK Core Layer | PiD Metadata | working | [v1](https://doi.org/10.5281/zenodo.7442743)  | - |
-| dARK Core Layer | dARK Metadata Storage | working | - | - |
+| dARK Core Layer | dARK Metadata Storage | on hold | - | - |
 | dARK Service Layer | Data Extractor* | working | - | - |
 | dARK Service Layer | Search Service | - | - | - |
 | dARK Service Layer | Quality Service | - | - | - |
-| dARK Users | HyperDrive | waiting for found | - | - |
+| dARK Users | HyperDrive | working | - | - |
 
+HyperDrive : Founded by RNP
 
 ## Project Proof Of Concept (PoC)
 
