@@ -101,6 +101,29 @@ contract PIDService {
     }
 
     /**
+     * Bulk assing 100 pids
+     * 
+     * - return 
+     */
+    function bulk_assingID(address sender)
+    public
+    returns(bytes32[100] memory pid_hashes)
+    {
+        AuthoritiesService aths = AuthoritiesService(auth_service_addr);
+        PidDB db = PidDB(pid_db_addr);
+
+        // address proveider_addr = aths.get_proveider_addr(msg.sender);
+        address proveider_addr = aths.get_proveider_addr(sender);
+        
+        for (uint i = 0; i < 100; i++) {
+            pid_hashes[i] = db.assing_id(proveider_addr);
+            emit log_id(pid_hashes[i]);
+        }
+        
+        return pid_hashes;
+    }
+
+    /**
      * Add a SearchTerm to a  Dπ PID.
      * params::
      * - uuid (bytes16)
