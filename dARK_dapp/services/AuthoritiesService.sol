@@ -40,58 +40,22 @@ contract AuthoritiesService {
      *
      * @return dnma_id id of the Dnam
      */
-    function create_dnam(string memory ror_id, string memory s_prefix, address responsable)
+    function create_dnma(string memory name, string memory email, string naan, address responsable)
     public
     returns(bytes32 dnma_id)
     {
         AuthoritiesDB db = AuthoritiesDB(db_addr);
-        ror_id = strings.lower(ror_id);
-        //TODO: check s_prefix compatibility with betanumeric
-        s_prefix = strings.lower(s_prefix);
         
-        bool exist_flag = db.exist_dnma(ror_id);
+        bool exist_flag = db.exist_dnma(naan);
 
         if ( exist_flag ) {
-            Entities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma_by_ror(ror_id);
+            SystemEntities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma_by_ror(naan);
             dnma_id = dnma.id;
         } else {
-            dnma_id = db.save_dnma(ror_id,s_prefix,responsable);
+            dnma_id = db.save_dnma(name,email,naan,'000',responsable);
         }
         // REORETORNA O DNMA ID SE EXISTIR
         emit log_id(dnma_id);
-    }
-
-    /**
-     * @dev create a Section Mapping Authority (sma)
-     *
-     * @param ror_id ror_id of the authority
-     * @param sma_sprefix shoulder prefix that need to be beta 
-     * @param responsable address of the responsble for the sma
-     *
-     * @return sma_id id of the sma
-     */
-    function create_sma(string memory ror_id, string memory sma_sprefix, address responsable)
-    public
-    returns(bytes32 sma_id)
-    {
-        AuthoritiesDB db = AuthoritiesDB(db_addr);
-        ror_id = strings.lower(ror_id);
-        Entities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma_by_ror(ror_id);
-        //TODO: check sma_sprefix compatibility with betanumeric
-        sma_sprefix = strings.lower(sma_sprefix);
-
-        
-        bytes32 id_sma = keccak256(abi.encodePacked(dnma.id,sma_sprefix));
-        
-        bool exist_flag = db.exist_sma(id_sma);
-
-        if ( exist_flag ) {
-            Entities.SectionMappingAuthority memory sma = db.get_sma(id_sma);
-            sma_id = sma.id;
-        } else {
-            sma_id = db.save_sma(ror_id,sma_sprefix,responsable);
-        }
-        emit log_id(sma_id);
     }
 
 
