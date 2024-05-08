@@ -20,6 +20,7 @@ contract NoidProvider {
     // Dados do dono
     bytes nam;
     bytes dnam;
+    //TODO REMOVER sec_nam
     bytes sec_nam;
     bytes1 sep_token;
 
@@ -48,7 +49,7 @@ contract NoidProvider {
     function configure(uint8 tamanho,
                        string memory _nam, 
                        string memory dnam_id, 
-                       string memory secnam_id,
+                    //    string memory secnam_id,
                        string memory _sep_token)
     public {
         require(configured == false,"noid already configured");
@@ -71,7 +72,8 @@ contract NoidProvider {
         }
 
         dnam = bytes(dnam_id);
-        sec_nam = bytes(secnam_id);
+        // sec_nam = bytes(secnam_id);
+        sec_nam = bytes('');
         sep_token = bytes1(bytes(_sep_token));
         
     }

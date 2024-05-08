@@ -51,7 +51,7 @@ contract AuthoritiesDB
         responsable_db[responsable] = obj_id;
     }
 
-    function save_dnma(string memory name, string memory email, string naan, 
+    function save_dnma(string memory name, string memory email, string memory naan, 
                         string memory shoulder,
                         address responsable)
     public 
@@ -75,7 +75,7 @@ contract AuthoritiesDB
         SystemEntities.DecentralizedNameMappingAuthority storage dnma = dnma_db[id];
         dnma.id = id;
         dnma.name = name;
-        dnma.email = email;
+        dnma.mail = email;
         dnma.naan = naan;
         dnma.shoulder = shoulder;
         dnma.responsable = responsable;

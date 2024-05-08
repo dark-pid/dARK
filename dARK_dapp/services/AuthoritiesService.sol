@@ -40,7 +40,7 @@ contract AuthoritiesService {
      *
      * @return dnma_id id of the Dnam
      */
-    function create_dnma(string memory name, string memory email, string naan, address responsable)
+    function create_dnma(string memory name, string memory email, string memory naan, address responsable)
     public
     returns(bytes32 dnma_id)
     {
@@ -49,7 +49,7 @@ contract AuthoritiesService {
         bool exist_flag = db.exist_dnma(naan);
 
         if ( exist_flag ) {
-            SystemEntities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma_by_ror(naan);
+            SystemEntities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(naan);
             dnma_id = dnma.id;
         } else {
             dnma_id = db.save_dnma(name,email,naan,'000',responsable);
@@ -66,38 +66,43 @@ contract AuthoritiesService {
     public 
     returns (address provider_addr)
     {
-        require(_type == 1 || _type == 2,"use type=1 for dnma or type=2 for sma");
+        require(_type == 1 || _type == 2,"use type=1 for dnma");
         
         AuthoritiesDB db = AuthoritiesDB(db_addr);
         
         
-        string memory _dnma;
-        string memory _sma;
+        string memory _naan;
+        string memory _shoulder;
         string memory _sep_token = '3';
 
         NoidProvider provider = new NoidProvider();
-
+        // 
         
 
         if ( _type == 1){
-            Entities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(auth_id);
-            _dnma = dnma.shoulder_prefix;
-            _sma = 'f';
+            SystemEntities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(auth_id);
+            _naan = dnma.naan;
+            _shoulder = dnma.shoulder;
 
             db.set_dnma_noid(dnma.id, address(provider));
         }
-
-        if ( _type == 2){
-            Entities.SectionMappingAuthority memory sma = db.get_sma(auth_id);
-            Entities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(sma.dNMA_id);
-            _dnma = dnma.shoulder_prefix;
-            _sma = sma.shoulder_prefix;
-
-            db.set_sma_noid(sma.id, address(provider));
+        else{
+            revert("Not Implemented");
         }
+
+
+        // if ( _type == 2){
+        //     SystemEntities.SectionMappingAuthority memory sma = db.get_sma(auth_id);
+        //     SystemEntities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(sma.dNMA_id);
+        //     _dnma = dnma.shoulder_prefix;
+        //     _sma = sma.shoulder_prefix;
+
+        //     db.set_sma_noid(sma.id, address(provider));
+        // }
         
-        
-        provider.configure(noid_len,nam,_dnma, _sma, _sep_token);
+        //TODO AJUSTAR ESSE PONTO
+        // provider.configure(noid_len,nam,_dnma, _sma, _sep_token);
+        provider.configure(noid_len,_naan, _shoulder,  _sep_token);
         provider_addr = address(provider);
         emit log_addr(provider_addr);
     }
