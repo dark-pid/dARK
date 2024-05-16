@@ -128,12 +128,12 @@ contract AuthoritiesDB
     /// SMA
     ///
 
-    /**
-     * @dev Return a decentralized name mapping authority for a given id
-     * 
-     * @param _id bytes32 id
-     * @return dnma Struct Entities.DecentralizedNameMappingAuthority 
-     */
+    // /**
+    //  * @dev Return a decentralized name mapping authority for a given id
+    //  * 
+    //  * @param _id bytes32 id
+    //  * @return dnma Struct Entities.DecentralizedNameMappingAuthority 
+    //  */
     function get_dnma(bytes32 _id) 
     public view 
     returns(SystemEntities.DecentralizedNameMappingAuthority memory dnma) {
@@ -141,22 +141,36 @@ contract AuthoritiesDB
         return dnma_db[_id];
     }
 
+    // /**
+    //  * @dev Return a decentralized name mapping authority for a given id
+    //  * 
+    //  * @param _id bytes32 id
+    //  * @return dnma Struct Entities.DecentralizedNameMappingAuthority 
+    //  */
+    function get_dnma(string memory naan) 
+    public view 
+    returns(SystemEntities.DecentralizedNameMappingAuthority memory dnma) {
+        bytes32 _id = keccak256(abi.encodePacked(naan));
+        require(dnma_set.exists(_id), "Can't retrive an Authority that doesn't exist.");
+        return dnma_db[_id];
+    }
 
-    /**
-     * @dev Return a decentralized name mapping authority id (key) for a given id
-     * 
-     * @param index bytes32 id
-     * @return key id bytes32
-     */
+
+    // /**
+    //  * @dev Return a decentralized name mapping authority id (key) for a given id
+    //  * 
+    //  * @param index bytes32 id
+    //  * @return key id bytes32
+    //  */
     function get_dnma_by_index(uint256 index) public view returns(bytes32 key) {
         return dnma_set.keyAtIndex(index);
     }
 
-    /**
-     * @dev Return the number of decentralized name mapping authority stored in db
-     * 
-     * @return count number of dnma
-     */
+    // /**
+    //  * @dev Return the number of decentralized name mapping authority stored in db
+    //  * 
+    //  * @return count number of dnma
+    //  */
     function count_dnma() public view returns(uint256) {
         return dnma_set.count();
     }
@@ -165,12 +179,12 @@ contract AuthoritiesDB
     // responsable_set
     //
 
-    /**
-     * @dev check if the addres has 
-     * 
-     * @param rep_addr string ror id
-     * @return status boolean
-     */
+    // /**
+    //  * @dev check if the addres has 
+    //  * 
+    //  * @param rep_addr string ror id
+    //  * @return status boolean
+    //  */
     function exist(address rep_addr)
     public view 
     returns(bool status) {
@@ -178,12 +192,12 @@ contract AuthoritiesDB
         status = responsable_set.exists(  keccak256(abi.encodePacked(rep_addr)) );
     }
 
-    /**
-     * @dev Return a decentralized name mapping authority for a given id
-     * 
-     * @param rep_addr address
-     * @return provider_addr id 
-     */
+    // /**
+    //  * @dev Return a decentralized name mapping authority for a given id
+    //  * 
+    //  * @param rep_addr address
+    //  * @return provider_addr id 
+    //  */
     function get_proveider_addr(address rep_addr)
     public view 
     returns(address provider_addr) {

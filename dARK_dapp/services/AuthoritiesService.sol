@@ -34,8 +34,9 @@ contract AuthoritiesService {
     /**
      * @dev create a Decentralized Name Mapping Authority (Dnam)
      *
-     * @param ror_id ror_id of the authority
-     * @param s_prefix shoulder prefix that need to be beta 
+     * @param name ror_id of the authority
+     * @param email shoulder prefix that need to be beta 
+     * @param naan address of the responsble for the Dnam
      * @param responsable address of the responsble for the Dnam
      *
      * @return dnma_id id of the Dnam
@@ -59,10 +60,16 @@ contract AuthoritiesService {
     }
 
 
-    // actualu nam
-    // _id of authority
-    //TODO: ALTERAR NOME
-    function configure_noid_provider_dnma(string memory nam, bytes32 auth_id, uint8 noid_len, uint8 _type)
+    /**
+     * @dev configura o noid_provider, os dados de naan e prefixo vem do autoridade (auth)id
+     * 
+     * @param auth_id address of the responsble for the Dnam
+     * @param noid_len lenght o noid blade
+     * @param _type there only type 1
+     *
+     * @return provider_addr id of the Dnam
+     */
+    function configure_noid_provider(bytes32 auth_id, uint8 noid_len, uint8 _type)
     public 
     returns (address provider_addr)
     {
@@ -76,7 +83,6 @@ contract AuthoritiesService {
         string memory _sep_token = '3';
 
         NoidProvider provider = new NoidProvider();
-        // 
         
 
         if ( _type == 1){
@@ -96,7 +102,6 @@ contract AuthoritiesService {
         //     SystemEntities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(sma.dNMA_id);
         //     _dnma = dnma.shoulder_prefix;
         //     _sma = sma.shoulder_prefix;
-
         //     db.set_sma_noid(sma.id, address(provider));
         // }
         
