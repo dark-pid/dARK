@@ -37,11 +37,13 @@ contract AuthoritiesService {
      * @param name ror_id of the authority
      * @param email shoulder prefix that need to be beta 
      * @param naan address of the responsble for the Dnam
+     * @param shoulder the shoulder prefix
      * @param responsable address of the responsble for the Dnam
      *
      * @return dnma_id id of the Dnam
      */
-    function create_dnma(string memory name, string memory email, string memory naan, address responsable)
+     
+    function create_dnma(string memory name, string memory email, string memory naan, string memory shoulder, address responsable)
     public
     returns(bytes32 dnma_id)
     {
@@ -53,7 +55,7 @@ contract AuthoritiesService {
             SystemEntities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(naan);
             dnma_id = dnma.id;
         } else {
-            dnma_id = db.save_dnma(name,email,naan,'000',responsable);
+            dnma_id = db.save_dnma(name,email,naan,shoulder,responsable);
         }
         // REORETORNA O DNMA ID SE EXISTIR
         emit log_id(dnma_id);

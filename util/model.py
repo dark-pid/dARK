@@ -204,8 +204,9 @@ class DarkDeployer:
         # retriver noid parameters
         noid_config = ConfigParser()
         noid_config.read(noid_config_path)
-        nam = str(noid_config['one-noid-to-rule-them-all']['nam'])
-        ror_id = str(noid_config['one-noid-to-rule-them-all']['ror_id'])
+        dnma_name = str(noid_config['one-noid-to-rule-them-all']['dnma_name'])
+        dnma_contact_email = str(noid_config['one-noid-to-rule-them-all']['dnma_contact_email'])
+        naan = str(noid_config['one-noid-to-rule-them-all']['naan'])
         dshoulder_prefix = str(noid_config['one-noid-to-rule-them-all']['dshoulder_prefix'])
         noid_len = int(noid_config['one-noid-to-rule-them-all']['noid_len'])
 
@@ -216,14 +217,15 @@ class DarkDeployer:
         contract_addr = smart_contract_config['AuthoritiesService.sol']['addr']
         contract_interface = smart_contract_config['AuthoritiesService.sol']['abi']
         auth_service = self.dark_gateway.w3.eth.contract(address=contract_addr, abi=ast.literal_eval(contract_interface))
-        logging.info("    Creating a DNAM for {} (prefix={})".format(ror_id,dshoulder_prefix))
-        sign_tx = self.dark_gateway.signTransaction(auth_service,'create_dnam' , ror_id , dshoulder_prefix, self.dark_gateway.authority_addr)
+        logging.info("    Creating a DecentralizedNameMappingAuthority for {} (prefix={})".format(dnma_name,dshoulder_prefix))
+        sign_tx = self.dark_gateway.signTransaction(auth_service,'create_dnam' , dnma_name , dnma_contact_email , naan,
+                                                    dshoulder_prefix, self.dark_gateway.authority_addr)
         recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
         auth_id = recipt_tx['logs'][0]['topics'][1]
         logging.info("    Configuring a DNAM noid provider at {}".format(auth_id))
-        sign_tx = self.dark_gateway.signTransaction(auth_service,'configure_noid_provider_dnma' , nam, auth_id , noid_len , 1)
+        sign_tx = self.dark_gateway.signTransaction(auth_service,'configure_noid_provider' , auth_id , noid_len , 1)
         recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
-        logging.info("    Created noid provider for {} with {} digitis".format(nam,noid_len))
+        logging.info("    Created noid provider for {} with {} digitis".format(naan,noid_len))
         noid_addr = recipt_tx['logs'][0]['topics'][1][12:]
         logging.info("    dARK is readty to be used!")
         # noid_addr # endereco do contrato
