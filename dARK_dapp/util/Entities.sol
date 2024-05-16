@@ -43,13 +43,12 @@ library Entities {
     }
 
     struct PayloadSchema {
-        bytes32 id;
         string schema_name;
         string[] attribute_list;
+        bool configured;
     }
 
     struct Payload {
-        bytes32 id;
         bytes32 payload_schema;
         string[] attributes_values;
     }

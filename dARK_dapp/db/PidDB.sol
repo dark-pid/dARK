@@ -5,6 +5,8 @@ pragma solidity ^0.8.0;
 import "../util/NoidProvider.sol";
 import "../libs/HitchensUnorderedKeySet.sol";
 import "../util/Entities.sol";
+import "../libs/strings.sol";
+
 // import "../util/UUIDProvider.sol";
 
 contract PidDB {
@@ -15,6 +17,8 @@ contract PidDB {
 
     HitchensUnorderedKeySetLib.Set pid_set;
     mapping(bytes32 => Entities.PID) private pid_db;
+    mapping(bytes32 => Entities.Payload) private payload_db;
+    mapping(bytes32 => Entities.PayloadSchema) private payload_schema_db;
     
     // logs
     event ID(bytes32 indexed uuid, address indexed owner, uint timestamp);
@@ -151,6 +155,67 @@ contract PidDB {
         get(uuid);
         Entities.PID storage pid = pid_db[uuid];
         pid.payload = pid_payload;
+    }
+
+    
+    //
+    // PAYLOAD SCHEMA
+    //
+
+    function save_payload_schema(string memory schema_name)
+    public returns(bytes32)
+    {
+        schema_name = strings.upper(schema_name);
+        bytes32 id = keccak256(abi.encodePacked(schema_name));
+
+        // Check if the id already exists in the payload_schema_db
+        require(bytes(payload_schema_db[id].schema_name).length == 0, "Schema already exists");
+
+        Entities.PayloadSchema storage p = payload_schema_db[id];
+        p.schema_name = schema_name;
+        p.configured = false;
+        // p.owner = tx.origin;
+
+        // emit createURL(id, word, pid_hash, msg.sender);
+        return id;
+    }
+
+
+
+    function add_attribute_to_schema(string memory schema_name, string memory attribute_name)
+    public  {
+        schema_name = strings.upper(schema_name);
+        attribute_name = strings.upper(attribute_name);
+
+        bytes32 id = keccak256(abi.encodePacked(schema_name));
+
+        // Check if the id already exists in the payload_schema_db
+        require(bytes(payload_schema_db[id].schema_name).length != 0, "Schema does not exists");
+        require(payload_schema_db[id].configured != true, "Schema marked as configured");
+
+        Entities.PayloadSchema storage p = payload_schema_db[id];
+        p.attribute_list.push(attribute_name);
+    }
+
+    function mark_schema_as_configured(string memory schema_name)
+    public  {
+        schema_name = strings.upper(schema_name);
+
+        bytes32 id = keccak256(abi.encodePacked(schema_name));
+
+        // Check if the id already exists in the payload_schema_db
+        require(bytes(payload_schema_db[id].schema_name).length != 0, "Schema does not exists");
+
+        Entities.PayloadSchema storage p = payload_schema_db[id];
+        p.configured = true;
+    }
+
+    //
+    // PAYLOAD
+    //
+    function save_payload()
+    public {
+        
     }
 
 }
