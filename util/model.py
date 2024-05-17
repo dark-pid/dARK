@@ -195,6 +195,43 @@ class DarkDeployer:
         logging.info("")
 
     
+    def configure_payload_schema(self,deployed_contracts_config_path,bc_config_path):
+        logging.info("> Configuring dARK Payload Schema ...")
+        smart_contract_config = ConfigParser()
+        smart_contract_config.read(deployed_contracts_config_path)
+        bc_config = ConfigParser()
+        bc_config.read(bc_config_path)
+
+        logging.info("    Loading AuthoritiesService:")
+        #loading autority contract
+        contract_addr = smart_contract_config['PIDService.sol']['addr']
+        contract_interface = smart_contract_config['PIDService.sol']['abi']
+        pid_service = self.dark_gateway.w3.eth.contract(address=contract_addr, abi=ast.literal_eval(contract_interface))
+
+        # retrive parameters
+        scehma_name = str(bc_config['payload']['name'])
+        att_list = bc_config['payload']['attributes'].split()
+
+        initial_acc_balance = self.dark_gateway.get_account_balance()
+        logging.info("    account initial balance : " + str(initial_acc_balance) )
+        logging.info("    Created Payload schema {} with {} attributes ({})".format(scehma_name,len(att_list),att_list))
+
+        sign_tx = self.dark_gateway.signTransaction(pid_service,'create_payload_schema' , scehma_name )
+        recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
+        logging.info("\t\t    - schema_created ")
+        for att in att_list:
+            logging.info("\t\t\t    - add {} to the schema ".format(att))
+            sign_tx = self.dark_gateway.signTransaction(pid_service,'add_attribute_payload_schema' , scehma_name ,str(att))
+            recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
+        
+        sign_tx = self.dark_gateway.signTransaction(pid_service,'mark_payload_schema_ready', scehma_name )
+        recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
+        logging.info("\t\t    - schema marked as ready for use ")
+
+
+        
+
+
     def configure_noid_provider(self,deployed_contracts_config_path,noid_config_path):
         logging.info("> Configure noid provider...")
         # read deployd contracts
@@ -209,6 +246,8 @@ class DarkDeployer:
         naan = str(noid_config['one-noid-to-rule-them-all']['naan'])
         dshoulder_prefix = str(noid_config['one-noid-to-rule-them-all']['dshoulder_prefix'])
         noid_len = int(noid_config['one-noid-to-rule-them-all']['noid_len'])
+        payload_schema_name = str(noid_config['one-noid-to-rule-them-all']['payload_schema_name'])
+        
 
         initial_acc_balance = self.dark_gateway.get_account_balance()
         logging.info("    account initial balance : " + str(initial_acc_balance) )
@@ -218,11 +257,11 @@ class DarkDeployer:
         contract_interface = smart_contract_config['AuthoritiesService.sol']['abi']
         auth_service = self.dark_gateway.w3.eth.contract(address=contract_addr, abi=ast.literal_eval(contract_interface))
         logging.info("    Creating a DecentralizedNameMappingAuthority for {} (prefix={})".format(dnma_name,dshoulder_prefix))
-        sign_tx = self.dark_gateway.signTransaction(auth_service,'create_dnam' , dnma_name , dnma_contact_email , naan,
-                                                    dshoulder_prefix, self.dark_gateway.authority_addr)
+        sign_tx = self.dark_gateway.signTransaction(auth_service,'create_dnma' , dnma_name , dnma_contact_email , naan,
+                                                    dshoulder_prefix, payload_schema_name, self.dark_gateway.authority_addr)
         recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
         auth_id = recipt_tx['logs'][0]['topics'][1]
-        logging.info("    Configuring a DNAM noid provider at {}".format(auth_id))
+        logging.info("    Configuring a DNAM noid provider at {}".format(auth_id.hex()))
         sign_tx = self.dark_gateway.signTransaction(auth_service,'configure_noid_provider' , auth_id , noid_len , 1)
         recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
         logging.info("    Created noid provider for {} with {} digitis".format(naan,noid_len))

@@ -176,6 +176,7 @@ contract PidDB {
         p.configured = false;
         // p.owner = tx.origin;
 
+        //TODO EMITIR EVENTO
         // emit createURL(id, word, pid_hash, msg.sender);
         return id;
     }
@@ -195,6 +196,7 @@ contract PidDB {
 
         Entities.PayloadSchema storage p = payload_schema_db[id];
         p.attribute_list.push(attribute_name);
+        //TODO EMITIR EVENTO
     }
 
     function mark_schema_as_configured(string memory schema_name)
@@ -208,11 +210,25 @@ contract PidDB {
 
         Entities.PayloadSchema storage p = payload_schema_db[id];
         p.configured = true;
+        //TODO EMITIR EVENTO
+    }
+
+    function get_payload_schema(string memory schema_name) 
+    public view returns (Entities.PayloadSchema memory schema) {
+        schema_name = strings.upper(schema_name);
+
+        bytes32 id = keccak256(abi.encodePacked(schema_name));
+
+        // Check if the id already exists in the payload_schema_db
+        require(bytes(payload_schema_db[id].schema_name).length != 0, "Schema does not exists");
+
+        schema = payload_schema_db[id];
     }
 
     //
     // PAYLOAD
     //
+
     function save_payload()
     public {
         

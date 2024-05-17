@@ -54,8 +54,6 @@ library Entities {
     }
 
 
-
-
     // check wheter a pid is a draft
     // function is_a_draft(PID memory p)
     // public pure
@@ -80,6 +78,9 @@ library SystemEntities {
         address noid_proveider_addr;
         
         address responsable;
+        //TODO ADICIONAR O ESQUEMA DO PAYLOAD A AUTORIDADE
+
+        string default_payload_schema;
     }
 
 }

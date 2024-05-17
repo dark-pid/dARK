@@ -188,6 +188,50 @@ contract PIDService {
         is_a_valid_pid(p); // check if pid is a draft
         db.set_payload(pid_hash, pid_payload);
     }
+
+    // 
+    // PAYLOAD SCHEMA
+    // 
+
+
+    /**
+     * @notice Creates a new payload schema in the PidDB contract.
+     * @param schema_name The name of the schema to be created.
+     * @return schema_id The unique identifier of the created schema.
+     */
+    function create_payload_schema(string memory schema_name)
+    public returns(bytes32 schema_id) {
+
+        PidDB db = PidDB(pid_db_addr);
+        schema_id = db.save_payload_schema(schema_name);
+    }
+
+    /**
+     * @notice Adds an attribute to an existing payload schema in the PidDB contract.
+     * @param schema_name The name of the schema to which the attribute will be added.
+     * @param att_name The name of the attribute to be added to the schema.
+     */
+    function add_attribute_payload_schema(string memory schema_name, string memory att_name)
+    public {
+
+        PidDB db = PidDB(pid_db_addr);
+        db.add_attribute_to_schema(schema_name,att_name);
+    }
+
+    /**
+     * @notice Marks an existing payload schema as configured and ready for use in the PidDB contract.
+     * @param schema_name The name of the schema to be marked as ready.
+     */
+    function mark_payload_schema_ready(string memory schema_name)
+    public {
+
+        PidDB db = PidDB(pid_db_addr);
+        db.mark_schema_as_configured(schema_name);
+    }
+
+    //
+    // PAYLOAD
+    //
     
     
 }
