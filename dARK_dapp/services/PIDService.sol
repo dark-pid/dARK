@@ -183,7 +183,12 @@ contract PIDService {
     function set_payload(bytes32 pid_hash,string memory pid_payload)
     public
     {
+        AuthoritiesService aths = AuthoritiesService(auth_service_addr);
         PidDB db = PidDB(pid_db_addr);
+        address sender = msg.sender;
+
+        address proveider_addr = aths.get_proveider_addr(sender);
+
         Entities.PID memory p = db.get(pid_hash); //valida o uuid
         is_a_valid_pid(p); // check if pid is a draft
         db.set_payload(pid_hash, pid_payload);

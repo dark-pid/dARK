@@ -22,6 +22,7 @@ contract PidDB {
     
     // logs
     event ID(bytes32 indexed uuid, address indexed owner, uint timestamp);
+    event STORE_PAYLOAD(bytes32 id, bytes32 schema, int256 attribute);
 
 
     /**
@@ -140,28 +141,16 @@ contract PidDB {
         pid.extarnalPIDs.push(searchTerm_id);
     }
 
-    /**
-     * set Dπ PID payload.
-     * params::
-     * - uuid (bytes16)
-     * - payload (string)
-     *
-     * case uuid is unsee throws expcetion  :: id does not exist
-     *
-     */
-    function set_payload(bytes32 uuid,string memory pid_payload)
-    public
-    {
-        get(uuid);
-        Entities.PID storage pid = pid_db[uuid];
-        pid.payload = pid_payload;
-    }
 
     
     //
     // PAYLOAD SCHEMA
     //
 
+    /**
+     * @notice Create a new payload schema
+     * @param schema_name The name of the schema to which the attribute will be added.
+     */
     function save_payload_schema(string memory schema_name)
     public returns(bytes32)
     {
@@ -183,6 +172,11 @@ contract PidDB {
 
 
 
+    /**
+     * @notice Adds an attribute to an existing payload schema.
+     * @param schema_name The name of the schema to which the attribute will be added.
+     * @param attribute_name The name of the attribute to be added.
+     */
     function add_attribute_to_schema(string memory schema_name, string memory attribute_name)
     public  {
         schema_name = strings.upper(schema_name);
@@ -199,6 +193,10 @@ contract PidDB {
         //TODO EMITIR EVENTO
     }
 
+    /**
+     * @notice Marks an existing payload schema as configured.
+     * @param schema_name The name of the schema to be marked as configured.
+     */
     function mark_schema_as_configured(string memory schema_name)
     public  {
         schema_name = strings.upper(schema_name);
@@ -213,6 +211,11 @@ contract PidDB {
         //TODO EMITIR EVENTO
     }
 
+    /**
+     * @notice Retrieves a payload schema by its name.
+     * @param schema_name The name of the schema to be retrieved.
+     * @return schema The payload schema associated with the given name.
+     */
     function get_payload_schema(string memory schema_name) 
     public view returns (Entities.PayloadSchema memory schema) {
         schema_name = strings.upper(schema_name);
@@ -229,9 +232,45 @@ contract PidDB {
     // PAYLOAD
     //
 
-    function save_payload()
-    public {
+    /**
+     * @notice Retrieves a payload schema by its name.
+     * @param payload_noid the noid (bytes32) of the PID that the payload will assoietated
+     * @param payload_schema The name of the schema to be retrieved.
+     * @param payload_attribute The payload sttribute
+     * @param payload_value The payload value
+     */
+    function store_payload(bytes32 payload_noid,
+                            string memory payload_schema, string memory payload_attribute,
+                            string memory payload_value )
+    public returns (bytes32 payload_addr) {
+        Entities.PayloadSchema memory schema = get_payload_schema(payload_schema);
         
+        // Verifica se o atributo existe no schema
+        int256 pos = Entities.find_attribute_position(schema, payload_attribute);
+        require(pos != -1, "Attribute does not exist in Schema");
+        
+        
+        Entities.Payload storage payload = payload_db[payload_noid];
+        
+        // Verifica se o payload já existe; se não, cria um novo
+        if (payload.payload_schema == 0) {
+            payload_schema = strings.upper(payload_schema);
+            bytes32 schema_id = keccak256(abi.encodePacked(payload_schema));
+
+            // cria um novo array de tamanho especifico vazio
+            string[] memory newValues = new string[](schema.attribute_list.length);
+            payload.attributes_values = newValues;
+            // seta o schema
+            payload.payload_schema = schema_id;
+        }
+        
+        // Atribui o valor à posição correta no array
+        payload.attributes_values[uint256(pos)] = payload_value;
+        
+        //TODO: REVER TAMANHO VARIAVEL POS
+        emit STORE_PAYLOAD(payload_noid,payload.payload_schema,pos);
+        
+        return payload_noid;
     }
 
 }
