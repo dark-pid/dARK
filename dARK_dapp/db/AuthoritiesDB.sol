@@ -52,7 +52,7 @@ contract AuthoritiesDB
     }
 
     function save_dnma(string memory name, string memory email, string memory naan, 
-                        string memory shoulder,
+                        string memory shoulder,string memory default_payload_schema,
                         address responsable)
     public 
     returns(bytes32)
@@ -60,6 +60,7 @@ contract AuthoritiesDB
         name = strings.lower(name);
         email = strings.lower(email);
         naan = strings.lower(naan);
+        default_payload_schema = strings.upper(default_payload_schema);
 
         bytes32 id = keccak256(abi.encodePacked(naan));
 
@@ -79,6 +80,7 @@ contract AuthoritiesDB
         dnma.naan = naan;
         dnma.shoulder = shoulder;
         dnma.responsable = responsable;
+        dnma.default_payload_schema = default_payload_schema;
         
         // salva o responsavel
         save_responsable(id,responsable);
