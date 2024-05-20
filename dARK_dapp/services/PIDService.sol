@@ -171,16 +171,19 @@ contract PIDService {
         db.add_externalPid(pid_hash,epid_id);
     }
 
-    /**
-     * set Dπ PID payload.
-     * params::
-     * - uuid (bytes16)
-     * - payload (string)
-     *
-     * case uuid is unsee throws expcetion  :: id does not exist
-     *
+    // 
+    // PAYLOAD
+    // 
+
+     /**
+     * @notice Creates a new payload schema in the PidDB contract.
+     * @param pid_hash The name of the payload schema 
+     * @param pid_payload_name The attribute name
+     * @param pid_payload_value The attribute value
+     * 
      */
-    function set_payload(bytes32 pid_hash,string memory pid_payload)
+    function set_payload(bytes32 pid_hash,string memory pid_payload_name,
+                        string memory pid_payload_value)
     public
     {
         AuthoritiesService aths = AuthoritiesService(auth_service_addr);
@@ -188,10 +191,21 @@ contract PIDService {
         address sender = msg.sender;
 
         address proveider_addr = aths.get_proveider_addr(sender);
+        
+        //RECUPERANDO O DNMA
+        NoidProvider noidProvider = NoidProvider(proveider_addr);
+        // bytes32 dnma_id = noidProvider.DNMA_id;
+        bytes32 dnma_id = noidProvider.get_decentralized_name_mapping_id();
+        SystemEntities.DecentralizedNameMappingAuthority memory dnma = aths.get_dnma(dnma_id);
+        string memory schema = dnma.default_payload_schema;
+
+        // int256 att_pos = Entities.find_attribute_position(schema, pid_payload_name);
+        // require(att_pos != -1, "Attribute not found in Schema");
 
         Entities.PID memory p = db.get(pid_hash); //valida o uuid
         is_a_valid_pid(p); // check if pid is a draft
-        db.set_payload(pid_hash, pid_payload);
+
+        db.store_payload(pid_hash, schema , pid_payload_name , pid_payload_value);
     }
 
     // 

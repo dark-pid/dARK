@@ -2,6 +2,9 @@
 
 pragma solidity ^0.8.0;
 
+import "../libs/strings.sol";
+
+
 contract NoidProvider {
     
     // nice opaque identifier - NOId
@@ -35,6 +38,8 @@ contract NoidProvider {
     bool configured = false;
     bool full = false;
 
+    //endereco o DecentralizedNameMappingAuthority
+    bytes32 DNMA_id;
 
 
     constructor() {
@@ -55,6 +60,13 @@ contract NoidProvider {
         require(configured == false,"noid already configured");
 
         nam = bytes(_nam);
+        
+        //gerar id do DNMA
+        //TODO: melorara isso
+        string memory naan = strings.lower(_nam);
+        bytes32 id = keccak256(abi.encodePacked(naan));
+
+        DNMA_id = id;
 
         noid_len = tamanho;
         noid_gen_index = new uint8[](tamanho);
@@ -217,6 +229,15 @@ contract NoidProvider {
         // output = 
 
         return string(abi.encodePacked(id, _vd));
+    }
+
+    // 
+    // gets
+    // 
+    function get_decentralized_name_mapping_id()
+    public view
+    returns (bytes32) {
+        return DNMA_id;
     }
 
 }

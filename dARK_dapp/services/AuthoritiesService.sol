@@ -126,9 +126,15 @@ contract AuthoritiesService {
     returns(address provider_addr) {
         AuthoritiesDB db = AuthoritiesDB(db_addr);
         provider_addr = db.get_proveider_addr(rep_addr);
-
     }
     
+
+    function get_dnma(bytes32 _id) 
+    public view 
+    returns(SystemEntities.DecentralizedNameMappingAuthority memory dnma) {
+        AuthoritiesDB db = AuthoritiesDB(db_addr);
+        return db.get_dnma(_id);
+    }
 
 
     // function get_authority(address responsable_addr)
