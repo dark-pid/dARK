@@ -194,12 +194,12 @@ contract AuthoritiesDB
         status = responsable_set.exists(  keccak256(abi.encodePacked(rep_addr)) );
     }
 
-    // /**
-    //  * @dev Return a decentralized name mapping authority for a given id
-    //  * 
-    //  * @param rep_addr address
-    //  * @return provider_addr id 
-    //  */
+    /**
+     * @dev Return a decentralized name mapping authority for a given id
+     * 
+     * @param rep_addr address
+     * @return provider_addr id 
+     */
     function get_proveider_addr(address rep_addr)
     public view 
     returns(address provider_addr) {
