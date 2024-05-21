@@ -55,6 +55,8 @@ library Entities {
     }
 
 
+    //TODO: RESOLVER DEPOIS
+    // NAO ESTA FUNCIONADO AQUI COLOQUEI DIRETAMENTE 
     function find_attribute_position(Entities.PayloadSchema memory schema, string memory attribute)
     public pure returns (int256) {
         for (uint256 i = 0; i < schema.attribute_list.length; i++) {

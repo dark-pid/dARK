@@ -246,7 +246,8 @@ contract PidDB {
         Entities.PayloadSchema memory schema = get_payload_schema(payload_schema);
         
         // Verifica se o atributo existe no schema
-        int256 pos = Entities.find_attribute_position(schema, payload_attribute);
+        // int256 pos = Entities.find_attribute_position(schema, payload_attribute);
+        int256 pos = find_attribute_position(schema, payload_attribute);
         require(pos != -1, "Attribute does not exist in Schema");
         
         
@@ -271,6 +272,24 @@ contract PidDB {
         emit STORE_PAYLOAD(payload_noid,payload.payload_schema,pos);
         
         return payload_noid;
+    }
+
+    /**
+     * @notice TEMPORARY
+     * @notice RETURN THE THE INDEX OF THE ATTRIBUTE
+     * @param schema the noid (bytes32) of the PID that the payload will assoietated
+     * @param attribute the noid (bytes32) of the PID that the payload will assoietated
+     * @return int256 with the index, default -1 (notfound)
+     */
+    function find_attribute_position(Entities.PayloadSchema memory schema, string memory attribute)
+    public pure returns (int256) {
+        for (uint256 i = 0; i < schema.attribute_list.length; i++) {
+            if (keccak256(bytes(schema.attribute_list[i])) == keccak256(bytes(attribute))) {
+                return int256(i); // Retorna a posição do atributo se encontrado
+            }
+        }
+        return -1;
+        // return type(uint256).max; // Retorna um valor especial se o atributo não for encontrado
     }
 
 }
