@@ -228,6 +228,21 @@ contract PidDB {
         schema = payload_schema_db[id];
     }
 
+    /**
+     * @notice Retrieves a payload schema by its name.
+     * @param schema_hash The name of the schema to be retrieved.
+     * @return schema The payload schema associated with the given name.
+     */
+    function get_payload_schema(bytes32 schema_hash) 
+    public view returns (Entities.PayloadSchema memory schema) {
+        
+
+        // Check if the id already exists in the payload_schema_db
+        require(bytes(payload_schema_db[schema_hash].schema_name).length != 0, "Schema does not exists");
+
+        schema = payload_schema_db[schema_hash];
+    }
+
     //
     // PAYLOAD
     //
@@ -273,6 +288,23 @@ contract PidDB {
         
         return payload_noid;
     }
+
+        /**
+     * @notice Retrieves a payload schema by its name.
+     * @param id bytes32 id of payload
+     * @return payload The payload
+     */
+    function get_payload(bytes32 id) 
+    public view returns (Entities.Payload memory payload) {
+        // Check if the id already exists in the payload_schema_db
+        require(payload_db[id].payload_schema.length != 0, "Schema does not exists");
+
+        payload = payload_db[id];
+    }
+
+    // 
+    // MISC
+    // 
 
     /**
      * @notice TEMPORARY
