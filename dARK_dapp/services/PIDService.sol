@@ -140,11 +140,14 @@ contract PIDService {
         db.get(pid_hash); //valida o uuid
 
         bytes32 url_id = url_serv.get_or_create_url(url,pid_hash);
+        Entities.PID memory p = db.get(pid_hash); //valida o uuid
 
         // Entities.URL memory url_obj = url_serv.get(url_id);
         // require(url_obj.pid_hash == pid_hash, 'URL already linked to other pid');
 
-        db.add_url(pid_hash, url_id);
+        if (url_id != p.url){
+            db.add_url(pid_hash, url_id);
+        }
         
     }
 
@@ -167,8 +170,26 @@ contract PIDService {
         Entities.PID memory p = db.get(pid_hash); //valida o uuid
         is_a_valid_pid(p); // check if pid is a draft
         bytes32 epid_id = epid_service.get_or_create_externalPid(schema,external_pid,pid_hash);
+
+        // avoid duplicated urls in pid
+        bool add_epid_flag = true;
+        if (p.extarnalPIDs.length != 0) {
+            
+            for (uint i = 0; i < p.extarnalPIDs.length ; i++) {
+                bytes32 pid_epid_id = p.extarnalPIDs[i];
+                
+                if (pid_epid_id == epid_id) {
+                    add_epid_flag = false;
+                }
+            }
+        }
+        
+        
         //todo: verificar se o link nao existe
-        db.add_externalPid(pid_hash,epid_id);
+        if (add_epid_flag == true){
+            db.add_externalPid(pid_hash,epid_id);
+        }
+        
     }
 
     // 
@@ -247,10 +268,6 @@ contract PIDService {
         PidDB db = PidDB(pid_db_addr);
         db.mark_schema_as_configured(schema_name);
     }
-
-    //
-    // PAYLOAD
-    //
     
     
 }
