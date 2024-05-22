@@ -285,11 +285,20 @@ contract PidDB {
         
         //TODO: REVER TAMANHO VARIAVEL POS
         emit STORE_PAYLOAD(payload_noid,payload.payload_schema,pos);
-        
+                
         return payload_noid;
     }
 
-        /**
+    function set_payload_in_pid(bytes32 pid_hash_id,bytes32 payload_hash_id)
+    public {
+        get(pid_hash_id);
+        get_payload(payload_hash_id);
+
+        Entities.PID storage pid = pid_db[pid_hash_id];
+        pid.payload = payload_hash_id;
+    }
+
+    /**
      * @notice Retrieves a payload schema by its name.
      * @param id bytes32 id of payload
      * @return payload The payload

@@ -229,6 +229,30 @@ contract PIDService {
         db.store_payload(pid_hash, schema , pid_payload_name , pid_payload_value);
     }
 
+    /**
+     * @notice Creates a new payload schema in the PidDB contract.
+     * @param pid_hash The name of the payload schema 
+     * @param schema_name The payload schema name
+     * @param pid_payload_name The attribute name
+     * @param pid_payload_value The attribute value
+     * 
+     */
+    function set_payload_tmp(bytes32 pid_hash,
+                        string memory schema_name,
+                        string memory pid_payload_name,
+                        string memory pid_payload_value)
+    public
+    {
+        //TODO: ELIMINAR ESSE METODO
+        PidDB db = PidDB(pid_db_addr);
+
+        Entities.PID memory p = db.get(pid_hash); //valida o uuid
+        is_a_valid_pid(p); // check if pid is a draft
+
+        db.store_payload(pid_hash, schema_name , pid_payload_name , pid_payload_value);
+        db.set_payload_in_pid(pid_hash, pid_hash);        
+    }
+
     // 
     // PAYLOAD SCHEMA
     // 
