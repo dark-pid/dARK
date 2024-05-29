@@ -94,6 +94,7 @@ library SystemEntities {
         address responsable;
         //TODO ADICIONAR O ESQUEMA DO PAYLOAD A AUTORIDADE
 
+        //TODO MAKE THIS UNMATABLE
         string default_payload_schema;
     }
 
