@@ -31,5 +31,7 @@ dark_deployer = DarkDeployer(dark_gw)
 
 #configure smart contracts
 dark_deployer.setup_dark_onchain_contracts(deployed_contracts_config_path)
+#configure payloadschema
+dark_deployer.configure_payload_schema(deployed_contracts_config_path,config_file_path)
 #configure noid_provider
 dark_deployer.configure_noid_provider(deployed_contracts_config_path,noid_provider_config_path)

@@ -6,28 +6,22 @@ pragma solidity >=0.4.0 <0.9.0;
  *
  *
  */
-library Entities {
+library Entities {  
 
-    /// DARK ENTITIES
+    struct PID{
 
-    struct DecentralizedNameMappingAuthority {
-        bytes32 id;
-        string ror_id;
-        string shoulder_prefix;
-
-        bytes32[] section_authorities; //SectionMappingAuthority
+        // ID - X dígitos hexadecimais (2 são reservados para verificação de validez, exemplo: c1bd-d228-1cf9-7d99)
+        bytes32 pid_hash; //0
+        string noid; //1
         
-        address noid_proveider_addr;
-        address responsable;
-    }
+        bytes32[] extarnalPIDs; //2
+        bytes32 url; //3
+        // JSON
+        // string payload; //4
+        bytes32 payload; //4
 
-    struct SectionMappingAuthority {
-        bytes32 id;
-        string shoulder_prefix;
-        bytes32 dNMA_id; //DecentralizedNameMappingAuthority
-
-        address noid_proveider_addr;
-        address responsable;
+        // OWNER
+        address owner; //5
     }
 
     /// ARK
@@ -49,20 +43,29 @@ library Entities {
         address owner;
     }
 
+    struct PayloadSchema {
+        string schema_name;
+        string[] attribute_list;
+        bool configured;
+    }
 
-    struct PID{
+    struct Payload {
+        bytes32 payload_schema;
+        string[] attributes_values;
+    }
 
-        // ID - X dígitos hexadecimais (2 são reservados para verificação de validez, exemplo: c1bd-d228-1cf9-7d99)
-        bytes32 pid_hash; //0
-        string noid; //1
-        
-        bytes32[] extarnalPIDs; //2
-        bytes32 url; //3
-        // JSON
-        string payload; //4
 
-        // OWNER
-        address owner; //5
+    //TODO: RESOLVER DEPOIS
+    // NAO ESTA FUNCIONADO AQUI COLOQUEI DIRETAMENTE 
+    function find_attribute_position(Entities.PayloadSchema memory schema, string memory attribute)
+    public pure returns (int256) {
+        for (uint256 i = 0; i < schema.attribute_list.length; i++) {
+            if (keccak256(bytes(schema.attribute_list[i])) == keccak256(bytes(attribute))) {
+                return int256(i); // Retorna a posição do atributo se encontrado
+            }
+        }
+        return -1;
+        // return type(uint256).max; // Retorna um valor especial se o atributo não for encontrado
     }
 
     // check wheter a pid is a draft
@@ -73,3 +76,27 @@ library Entities {
     // }
 
 }
+
+    /// DARK ENTITIES
+library SystemEntities {
+
+    struct DecentralizedNameMappingAuthority {
+
+        bytes32 id;
+        string name;
+        string mail;
+        string naan;
+
+        string shoulder;
+        
+        address noid_proveider_addr;
+        
+        address responsable;
+        //TODO ADICIONAR O ESQUEMA DO PAYLOAD A AUTORIDADE
+
+        //TODO MAKE THIS UNMATABLE
+        string default_payload_schema;
+    }
+
+}
+    

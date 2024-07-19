@@ -5,6 +5,8 @@ pragma solidity ^0.8.0;
 import "../util/NoidProvider.sol";
 import "../libs/HitchensUnorderedKeySet.sol";
 import "../util/Entities.sol";
+import "../libs/strings.sol";
+
 // import "../util/UUIDProvider.sol";
 
 contract PidDB {
@@ -15,9 +17,12 @@ contract PidDB {
 
     HitchensUnorderedKeySetLib.Set pid_set;
     mapping(bytes32 => Entities.PID) private pid_db;
+    mapping(bytes32 => Entities.Payload) private payload_db;
+    mapping(bytes32 => Entities.PayloadSchema) private payload_schema_db;
     
     // logs
     event ID(bytes32 indexed uuid, address indexed owner, uint timestamp);
+    event STORE_PAYLOAD(bytes32 id, bytes32 schema, int256 attribute);
 
 
     /**
@@ -136,21 +141,196 @@ contract PidDB {
         pid.extarnalPIDs.push(searchTerm_id);
     }
 
+
+    
+    //
+    // PAYLOAD SCHEMA
+    //
+
     /**
-     * set Dπ PID payload.
-     * params::
-     * - uuid (bytes16)
-     * - payload (string)
-     *
-     * case uuid is unsee throws expcetion  :: id does not exist
-     *
+     * @notice Create a new payload schema
+     * @param schema_name The name of the schema to which the attribute will be added.
      */
-    function set_payload(bytes32 uuid,string memory pid_payload)
-    public
+    function save_payload_schema(string memory schema_name)
+    public returns(bytes32)
     {
-        get(uuid);
-        Entities.PID storage pid = pid_db[uuid];
-        pid.payload = pid_payload;
+        schema_name = strings.upper(schema_name);
+        bytes32 id = keccak256(abi.encodePacked(schema_name));
+
+        // Check if the id already exists in the payload_schema_db
+        require(bytes(payload_schema_db[id].schema_name).length == 0, "Schema already exists");
+
+        Entities.PayloadSchema storage p = payload_schema_db[id];
+        p.schema_name = schema_name;
+        p.configured = false;
+        // p.owner = tx.origin;
+
+        //TODO EMITIR EVENTO
+        // emit createURL(id, word, pid_hash, msg.sender);
+        return id;
+    }
+
+
+
+    /**
+     * @notice Adds an attribute to an existing payload schema.
+     * @param schema_name The name of the schema to which the attribute will be added.
+     * @param attribute_name The name of the attribute to be added.
+     */
+    function add_attribute_to_schema(string memory schema_name, string memory attribute_name)
+    public  {
+        schema_name = strings.upper(schema_name);
+        attribute_name = strings.upper(attribute_name);
+
+        bytes32 id = keccak256(abi.encodePacked(schema_name));
+
+        // Check if the id already exists in the payload_schema_db
+        require(bytes(payload_schema_db[id].schema_name).length != 0, "Schema does not exists");
+        require(payload_schema_db[id].configured != true, "Schema marked as configured");
+
+        Entities.PayloadSchema storage p = payload_schema_db[id];
+        p.attribute_list.push(attribute_name);
+        //TODO EMITIR EVENTO
+    }
+
+    /**
+     * @notice Marks an existing payload schema as configured.
+     * @param schema_name The name of the schema to be marked as configured.
+     */
+    function mark_schema_as_configured(string memory schema_name)
+    public  {
+        schema_name = strings.upper(schema_name);
+
+        bytes32 id = keccak256(abi.encodePacked(schema_name));
+
+        // Check if the id already exists in the payload_schema_db
+        require(bytes(payload_schema_db[id].schema_name).length != 0, "Schema does not exists");
+
+        Entities.PayloadSchema storage p = payload_schema_db[id];
+        p.configured = true;
+        //TODO EMITIR EVENTO
+    }
+
+    /**
+     * @notice Retrieves a payload schema by its name.
+     * @param schema_name The name of the schema to be retrieved.
+     * @return schema The payload schema associated with the given name.
+     */
+    function get_payload_schema(string memory schema_name) 
+    public view returns (Entities.PayloadSchema memory schema) {
+        schema_name = strings.upper(schema_name);
+
+        bytes32 id = keccak256(abi.encodePacked(schema_name));
+
+        // Check if the id already exists in the payload_schema_db
+        require(bytes(payload_schema_db[id].schema_name).length != 0, "Schema does not exists");
+
+        schema = payload_schema_db[id];
+    }
+
+    /**
+     * @notice Retrieves a payload schema by its name.
+     * @param schema_hash The name of the schema to be retrieved.
+     * @return schema The payload schema associated with the given name.
+     */
+    function get_payload_schema(bytes32 schema_hash) 
+    public view returns (Entities.PayloadSchema memory schema) {
+        
+
+        // Check if the id already exists in the payload_schema_db
+        require(bytes(payload_schema_db[schema_hash].schema_name).length != 0, "Schema does not exists");
+
+        schema = payload_schema_db[schema_hash];
+    }
+
+    //
+    // PAYLOAD
+    //
+
+    /**
+     * @notice Retrieves a payload schema by its name.
+     * @param payload_noid the noid (bytes32) of the PID that the payload will assoietated
+     * @param payload_schema The name of the schema to be retrieved.
+     * @param payload_attribute The payload sttribute
+     * @param payload_value The payload value
+     */
+    function store_payload(bytes32 payload_noid,
+                            string memory payload_schema, string memory payload_attribute,
+                            string memory payload_value )
+    public returns (bytes32 payload_addr) {
+        Entities.PayloadSchema memory schema = get_payload_schema(payload_schema);
+        
+        // Verifica se o atributo existe no schema
+        // int256 pos = Entities.find_attribute_position(schema, payload_attribute);
+        int256 pos = find_attribute_position(schema, payload_attribute);
+        require(pos != -1, "Attribute does not exist in Schema");
+        
+        
+        Entities.Payload storage payload = payload_db[payload_noid];
+        
+        // Verifica se o payload já existe; se não, cria um novo
+        if (payload.payload_schema == 0) {
+            payload_schema = strings.upper(payload_schema);
+            bytes32 schema_id = keccak256(abi.encodePacked(payload_schema));
+
+            // cria um novo array de tamanho especifico vazio
+            string[] memory newValues = new string[](schema.attribute_list.length);
+            payload.attributes_values = newValues;
+            // seta o schema
+            payload.payload_schema = schema_id;
+        }
+        
+        // Atribui o valor à posição correta no array
+        payload.attributes_values[uint256(pos)] = payload_value;
+        
+        //TODO: REVER TAMANHO VARIAVEL POS
+        emit STORE_PAYLOAD(payload_noid,payload.payload_schema,pos);
+                
+        return payload_noid;
+    }
+
+    function set_payload_in_pid(bytes32 pid_hash_id,bytes32 payload_hash_id)
+    public {
+        get(pid_hash_id);
+        get_payload(payload_hash_id);
+
+        Entities.PID storage pid = pid_db[pid_hash_id];
+        pid.payload = payload_hash_id;
+    }
+
+    /**
+     * @notice Retrieves a payload schema by its name.
+     * @param id bytes32 id of payload
+     * @return payload The payload
+     */
+    function get_payload(bytes32 id) 
+    public view returns (Entities.Payload memory payload) {
+        // Check if the id already exists in the payload_schema_db
+        require(payload_db[id].payload_schema.length != 0, "Schema does not exists");
+
+        payload = payload_db[id];
+    }
+
+    // 
+    // MISC
+    // 
+
+    /**
+     * @notice TEMPORARY
+     * @notice RETURN THE THE INDEX OF THE ATTRIBUTE
+     * @param schema the noid (bytes32) of the PID that the payload will assoietated
+     * @param attribute the noid (bytes32) of the PID that the payload will assoietated
+     * @return int256 with the index, default -1 (notfound)
+     */
+    function find_attribute_position(Entities.PayloadSchema memory schema, string memory attribute)
+    public pure returns (int256) {
+        for (uint256 i = 0; i < schema.attribute_list.length; i++) {
+            if (keccak256(bytes(schema.attribute_list[i])) == keccak256(bytes(attribute))) {
+                return int256(i); // Retorna a posição do atributo se encontrado
+            }
+        }
+        return -1;
+        // return type(uint256).max; // Retorna um valor especial se o atributo não for encontrado
     }
 
 }

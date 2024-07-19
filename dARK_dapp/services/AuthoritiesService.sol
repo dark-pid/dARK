@@ -34,106 +34,83 @@ contract AuthoritiesService {
     /**
      * @dev create a Decentralized Name Mapping Authority (Dnam)
      *
-     * @param ror_id ror_id of the authority
-     * @param s_prefix shoulder prefix that need to be beta 
+     * @param name ror_id of the authority
+     * @param email shoulder prefix that need to be beta 
+     * @param naan address of the responsble for the Dnam
+     * @param shoulder the shoulder prefix
      * @param responsable address of the responsble for the Dnam
      *
      * @return dnma_id id of the Dnam
      */
-    function create_dnam(string memory ror_id, string memory s_prefix, address responsable)
+     
+    function create_dnma(string memory name, string memory email, string memory naan, string memory shoulder,
+                            string memory default_payload_schema, address responsable)
     public
     returns(bytes32 dnma_id)
     {
         AuthoritiesDB db = AuthoritiesDB(db_addr);
-        ror_id = strings.lower(ror_id);
-        //TODO: check s_prefix compatibility with betanumeric
-        s_prefix = strings.lower(s_prefix);
         
-        bool exist_flag = db.exist_dnma(ror_id);
+        bool exist_flag = db.exist_dnma(naan);
 
         if ( exist_flag ) {
-            Entities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma_by_ror(ror_id);
+            SystemEntities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(naan);
             dnma_id = dnma.id;
         } else {
-            dnma_id = db.save_dnma(ror_id,s_prefix,responsable);
+            dnma_id = db.save_dnma(name,email,naan,shoulder,default_payload_schema,responsable);
         }
         // REORETORNA O DNMA ID SE EXISTIR
         emit log_id(dnma_id);
     }
 
+
     /**
-     * @dev create a Section Mapping Authority (sma)
+     * @dev configura o noid_provider, os dados de naan e prefixo vem do autoridade (auth)id
+     * 
+     * @param auth_id address of the responsble for the Dnam
+     * @param noid_len lenght o noid blade
+     * @param _type there only type 1
      *
-     * @param ror_id ror_id of the authority
-     * @param sma_sprefix shoulder prefix that need to be beta 
-     * @param responsable address of the responsble for the sma
-     *
-     * @return sma_id id of the sma
+     * @return provider_addr id of the Dnam
      */
-    function create_sma(string memory ror_id, string memory sma_sprefix, address responsable)
-    public
-    returns(bytes32 sma_id)
-    {
-        AuthoritiesDB db = AuthoritiesDB(db_addr);
-        ror_id = strings.lower(ror_id);
-        Entities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma_by_ror(ror_id);
-        //TODO: check sma_sprefix compatibility with betanumeric
-        sma_sprefix = strings.lower(sma_sprefix);
-
-        
-        bytes32 id_sma = keccak256(abi.encodePacked(dnma.id,sma_sprefix));
-        
-        bool exist_flag = db.exist_sma(id_sma);
-
-        if ( exist_flag ) {
-            Entities.SectionMappingAuthority memory sma = db.get_sma(id_sma);
-            sma_id = sma.id;
-        } else {
-            sma_id = db.save_sma(ror_id,sma_sprefix,responsable);
-        }
-        emit log_id(sma_id);
-    }
-
-
-    // actualu nam
-    // _id of authority
-    //TODO: ALTERAR NOME
-    function configure_noid_provider_dnma(string memory nam, bytes32 auth_id, uint8 noid_len, uint8 _type)
+    function configure_noid_provider(bytes32 auth_id, uint8 noid_len, uint8 _type)
     public 
     returns (address provider_addr)
     {
-        require(_type == 1 || _type == 2,"use type=1 for dnma or type=2 for sma");
+        require(_type == 1 || _type == 2,"use type=1 for dnma");
         
         AuthoritiesDB db = AuthoritiesDB(db_addr);
         
         
-        string memory _dnma;
-        string memory _sma;
+        string memory _naan;
+        string memory _shoulder;
         string memory _sep_token = '3';
 
         NoidProvider provider = new NoidProvider();
-
         
 
         if ( _type == 1){
-            Entities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(auth_id);
-            _dnma = dnma.shoulder_prefix;
-            _sma = 'f';
+            SystemEntities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(auth_id);
+            _naan = dnma.naan;
+            _shoulder = dnma.shoulder;
 
             db.set_dnma_noid(dnma.id, address(provider));
         }
-
-        if ( _type == 2){
-            Entities.SectionMappingAuthority memory sma = db.get_sma(auth_id);
-            Entities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(sma.dNMA_id);
-            _dnma = dnma.shoulder_prefix;
-            _sma = sma.shoulder_prefix;
-
-            db.set_sma_noid(sma.id, address(provider));
+        else{
+            revert("Not Implemented");
         }
+
+
+        // if ( _type == 2){
+        //     SystemEntities.SectionMappingAuthority memory sma = db.get_sma(auth_id);
+        //     SystemEntities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(sma.dNMA_id);
+        //     _dnma = dnma.shoulder_prefix;
+        //     _sma = sma.shoulder_prefix;
+        //     db.set_sma_noid(sma.id, address(provider));
+        // }
         
-        
-        provider.configure(noid_len,nam,_dnma, _sma, _sep_token);
+        //TODO AJUSTAR ESSE PONTO
+        // provider.configure(noid_len,nam,_dnma, _sma, _sep_token);
+        provider.configure(noid_len,_naan, _shoulder,  _sep_token);
         provider_addr = address(provider);
         emit log_addr(provider_addr);
     }
@@ -149,9 +126,15 @@ contract AuthoritiesService {
     returns(address provider_addr) {
         AuthoritiesDB db = AuthoritiesDB(db_addr);
         provider_addr = db.get_proveider_addr(rep_addr);
-
     }
     
+
+    function get_dnma(bytes32 _id) 
+    public view 
+    returns(SystemEntities.DecentralizedNameMappingAuthority memory dnma) {
+        AuthoritiesDB db = AuthoritiesDB(db_addr);
+        return db.get_dnma(_id);
+    }
 
 
     // function get_authority(address responsable_addr)

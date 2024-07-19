@@ -2,6 +2,9 @@
 
 pragma solidity ^0.8.0;
 
+import "../libs/strings.sol";
+
+
 contract NoidProvider {
     
     // nice opaque identifier - NOId
@@ -20,6 +23,7 @@ contract NoidProvider {
     // Dados do dono
     bytes nam;
     bytes dnam;
+    //TODO REMOVER sec_nam
     bytes sec_nam;
     bytes1 sep_token;
 
@@ -34,6 +38,8 @@ contract NoidProvider {
     bool configured = false;
     bool full = false;
 
+    //endereco o DecentralizedNameMappingAuthority
+    bytes32 DNMA_id;
 
 
     constructor() {
@@ -48,12 +54,19 @@ contract NoidProvider {
     function configure(uint8 tamanho,
                        string memory _nam, 
                        string memory dnam_id, 
-                       string memory secnam_id,
+                    //    string memory secnam_id,
                        string memory _sep_token)
     public {
         require(configured == false,"noid already configured");
 
         nam = bytes(_nam);
+        
+        //gerar id do DNMA
+        //TODO: melorara isso
+        string memory naan = strings.lower(_nam);
+        bytes32 id = keccak256(abi.encodePacked(naan));
+
+        DNMA_id = id;
 
         noid_len = tamanho;
         noid_gen_index = new uint8[](tamanho);
@@ -71,7 +84,8 @@ contract NoidProvider {
         }
 
         dnam = bytes(dnam_id);
-        sec_nam = bytes(secnam_id);
+        // sec_nam = bytes(secnam_id);
+        sec_nam = bytes('');
         sep_token = bytes1(bytes(_sep_token));
         
     }
@@ -215,6 +229,15 @@ contract NoidProvider {
         // output = 
 
         return string(abi.encodePacked(id, _vd));
+    }
+
+    // 
+    // gets
+    // 
+    function get_decentralized_name_mapping_id()
+    public view
+    returns (bytes32) {
+        return DNMA_id;
     }
 
 }
