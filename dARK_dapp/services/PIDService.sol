@@ -96,6 +96,7 @@ contract PIDService {
         address proveider_addr = aths.get_proveider_addr(sender);
         
         pid_hash = db.assing_id(proveider_addr);
+        // TODO: REMOVER ESSE EMIT NO FUTURO
         emit log_id(pid_hash);
         return pid_hash;
     }
