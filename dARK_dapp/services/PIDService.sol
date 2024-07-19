@@ -96,6 +96,7 @@ contract PIDService {
         address proveider_addr = aths.get_proveider_addr(sender);
         
         pid_hash = db.assing_id(proveider_addr);
+        // TODO: REMOVER ESSE EMIT NO FUTURO
         emit log_id(pid_hash);
         return pid_hash;
     }
@@ -140,11 +141,14 @@ contract PIDService {
         db.get(pid_hash); //valida o uuid
 
         bytes32 url_id = url_serv.get_or_create_url(url,pid_hash);
+        Entities.PID memory p = db.get(pid_hash); //valida o uuid
 
         // Entities.URL memory url_obj = url_serv.get(url_id);
         // require(url_obj.pid_hash == pid_hash, 'URL already linked to other pid');
 
-        db.add_url(pid_hash, url_id);
+        if (url_id != p.url){
+            db.add_url(pid_hash, url_id);
+        }
         
     }
 
@@ -167,26 +171,127 @@ contract PIDService {
         Entities.PID memory p = db.get(pid_hash); //valida o uuid
         is_a_valid_pid(p); // check if pid is a draft
         bytes32 epid_id = epid_service.get_or_create_externalPid(schema,external_pid,pid_hash);
+
+        // avoid duplicated urls in pid
+        bool add_epid_flag = true;
+        if (p.extarnalPIDs.length != 0) {
+            
+            for (uint i = 0; i < p.extarnalPIDs.length ; i++) {
+                bytes32 pid_epid_id = p.extarnalPIDs[i];
+                
+                if (pid_epid_id == epid_id) {
+                    add_epid_flag = false;
+                }
+            }
+        }
+        
+        
         //todo: verificar se o link nao existe
-        db.add_externalPid(pid_hash,epid_id);
+        if (add_epid_flag == true){
+            db.add_externalPid(pid_hash,epid_id);
+        }
+        
+    }
+
+    // 
+    // PAYLOAD
+    // 
+
+     /**
+     * @notice Creates a new payload schema in the PidDB contract.
+     * @param pid_hash The name of the payload schema 
+     * @param pid_payload_name The attribute name
+     * @param pid_payload_value The attribute value
+     * 
+     */
+    function set_payload(bytes32 pid_hash,string memory pid_payload_name,
+                        string memory pid_payload_value)
+    public
+    {
+        AuthoritiesService aths = AuthoritiesService(auth_service_addr);
+        PidDB db = PidDB(pid_db_addr);
+        address sender = msg.sender;
+
+        address proveider_addr = aths.get_proveider_addr(sender);
+        
+        //RECUPERANDO O DNMA
+        NoidProvider noidProvider = NoidProvider(proveider_addr);
+        // bytes32 dnma_id = noidProvider.DNMA_id;
+        bytes32 dnma_id = noidProvider.get_decentralized_name_mapping_id();
+        SystemEntities.DecentralizedNameMappingAuthority memory dnma = aths.get_dnma(dnma_id);
+        string memory schema = dnma.default_payload_schema;
+
+        // int256 att_pos = Entities.find_attribute_position(schema, pid_payload_name);
+        // require(att_pos != -1, "Attribute not found in Schema");
+
+        Entities.PID memory p = db.get(pid_hash); //valida o uuid
+        is_a_valid_pid(p); // check if pid is a draft
+
+        db.store_payload(pid_hash, schema , pid_payload_name , pid_payload_value);
     }
 
     /**
-     * set Dπ PID payload.
-     * params::
-     * - uuid (bytes16)
-     * - payload (string)
-     *
-     * case uuid is unsee throws expcetion  :: id does not exist
-     *
+     * @notice Creates a new payload schema in the PidDB contract.
+     * @param pid_hash The name of the payload schema 
+     * @param schema_name The payload schema name
+     * @param pid_payload_name The attribute name
+     * @param pid_payload_value The attribute value
+     * 
      */
-    function set_payload(bytes32 pid_hash,string memory pid_payload)
+    function set_payload_tmp(bytes32 pid_hash,
+                        string memory schema_name,
+                        string memory pid_payload_name,
+                        string memory pid_payload_value)
     public
     {
+        //TODO: ELIMINAR ESSE METODO
         PidDB db = PidDB(pid_db_addr);
+
         Entities.PID memory p = db.get(pid_hash); //valida o uuid
         is_a_valid_pid(p); // check if pid is a draft
-        db.set_payload(pid_hash, pid_payload);
+
+        db.store_payload(pid_hash, schema_name , pid_payload_name , pid_payload_value);
+        db.set_payload_in_pid(pid_hash, pid_hash);        
+    }
+
+    // 
+    // PAYLOAD SCHEMA
+    // 
+
+
+    /**
+     * @notice Creates a new payload schema in the PidDB contract.
+     * @param schema_name The name of the schema to be created.
+     * @return schema_id The unique identifier of the created schema.
+     */
+    function create_payload_schema(string memory schema_name)
+    public returns(bytes32 schema_id) {
+
+        PidDB db = PidDB(pid_db_addr);
+        schema_id = db.save_payload_schema(schema_name);
+    }
+
+    /**
+     * @notice Adds an attribute to an existing payload schema in the PidDB contract.
+     * @param schema_name The name of the schema to which the attribute will be added.
+     * @param att_name The name of the attribute to be added to the schema.
+     */
+    function add_attribute_payload_schema(string memory schema_name, string memory att_name)
+    public {
+
+        PidDB db = PidDB(pid_db_addr);
+        db.add_attribute_to_schema(schema_name,att_name);
+    }
+
+    /**
+     * @notice Marks an existing payload schema as configured and ready for use in the PidDB contract.
+     * @param schema_name The name of the schema to be marked as ready.
+     */
+    function mark_payload_schema_ready(string memory schema_name)
+    public {
+
+        PidDB db = PidDB(pid_db_addr);
+        db.mark_schema_as_configured(schema_name);
     }
     
     

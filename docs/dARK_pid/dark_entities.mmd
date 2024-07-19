@@ -1,0 +1,108 @@
+classDiagram
+    direction TB
+    
+    namespace Core {
+        
+        class dARK{
+            - pid_hash: bytes32
+            - noid : string
+            - ark_id: string
+            - responsible: address
+
+            %% -authorized_proxy: address
+            +is_a_draft() bool
+            +get_external_pids() List~ExternalPID~external_pids
+            %% add doi set attribute
+            %% +set_authorized_proxy(address) bool
+        }
+
+        class ExternalPID{
+            -id : bytes32
+            %% -pid_hash : bytes32 %% lista com os pids que apontam para esse PID
+
+            -pid_type: bytes1
+            -pid_value : string
+            -responsible: address
+        }
+
+        class URL{
+            -id : bytes32
+            -value : string
+            -responsible: address
+        }
+
+        %% note for ObjectType "The first payload will be always the default value"
+        %% PayloadSchema
+        class PayloadSchema{
+            name: schema_name
+            configured : bool
+            List~string~attribute_list
+
+            +is_configured() bool
+            +find_attribute_position(PayloadSchema schema, string attribute_name): int
+        }
+
+        class Payload{
+            - List~string~attribute_values
+            
+            + set_attribute(int atribute, string attribute_value)
+            + gen_json(): string
+            
+        }
+    }
+
+
+    namespace System {
+        class DecentralizedNameMappingAuthority{
+            -id: bytes32
+            -name: string
+            -mail: string
+            -naan: string
+            -shoulder : string
+
+            %% employed to create pids
+            - payload_schema : string
+
+            %% -noid_proveider_addr: address
+            -responsable: address
+        }
+
+        class NoidProvider{
+            
+            %% -dnam: bytes
+            -shoulder: string
+            -sep_token: bytes1
+            -noid_len: uint8
+
+
+
+            +get_blade() string
+            +get_shoulder(): string
+        }
+    }
+
+
+
+
+    %%
+    %% Core
+    %%
+    %% note for Payload "The first payload will be always the default value
+    %%                \n we "
+
+    dARK "1" --o "0..*" ExternalPID : has
+    dARK "1" --o "1..*" URL : has
+    dARK "1" --o "0..1" Payload : has
+
+    %% dARK "1" *--  "1" PayloadSchema : has
+
+    Payload "1" --  "1" PayloadSchema : is defined
+    
+    dARK "1" *--  "0..*" ExternalPID
+    dARK "1" *--  "1" URL
+
+    %%
+    %% System
+    %%
+    DecentralizedNameMappingAuthority "1" --o "1" PayloadSchema: has
+    DecentralizedNameMappingAuthority "1" --o "1" NoidProvider: manage
