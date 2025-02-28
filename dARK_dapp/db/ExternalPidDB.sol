@@ -7,8 +7,12 @@ import "../libs/strings.sol";
 import "../util/Entities.sol";
 // import {Entities.Person} from "./libs/EntitiesLib.sol";
 
-contract ExternalPidDB
- {
+/**
+ * @title ExternalPidDB
+ * @dev Storage contract for External PIDs in the dARK system
+ * @notice Manages the mapping between external PIDs and dARK PIDs
+ */
+contract ExternalPidDB {
     
     using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;
     HitchensUnorderedKeySetLib.Set externalPid_set;
@@ -17,15 +21,15 @@ contract ExternalPidDB
 
     mapping(bytes32 => Entities.ExternalPID) private externalPid_db;
     
-    // logs
-    event createExternalPID(bytes32 indexed id,bytes32 indexed dpi_uuid, address indexed owner);
-
+    // Events
+    /** @dev Emitted when a new external PID mapping is created */
+    event createExternalPID(bytes32 indexed id, bytes32 indexed dpi_uuid, address indexed owner);
 
     /**
-     * @dev Set contract deployer as owner
+     * @dev Contract constructor
+     * @notice Sets the contract deployer as the owner, used for access control
      */
     constructor() {
-        //usar para controle de acesso
         owner = msg.sender; 
     }
 
@@ -58,7 +62,7 @@ contract ExternalPidDB
         p.pid_type = schema;
         p.pid = pid;
         p.pid_hash = _pid_hash;
-        p.owner = tx.origin;
+        p.owner = msg.sender;
 
         emit createExternalPID(id, _pid_hash, p.owner);
         return id;

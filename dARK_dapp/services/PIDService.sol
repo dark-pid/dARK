@@ -25,23 +25,25 @@ contract PIDService {
         owner = msg.sender;
     }
 
+    /**
+     * @dev Checks if a PID has a URL associated with it
+     * @param p The PID to check
+     * @return has_url Whether the PID has a URL
+     */
     function is_a_draft(Entities.PID memory p)
     public pure
-    returns (bool draft_flag){
-        if (p.url == bytes32(0)) {
-            draft_flag = false;
-        } else {
-            draft_flag = true;
-        }
+    returns (bool has_url) {
+        // A PID is considered a draft if it doesn't have a URL
+        return p.url != bytes32(0);
     }
 
     /**
-     * check if a pid is not a draft
+     * @dev Verifies that a PID is valid (has a URL associated)
+     * @param p The PID to validate
      */
     function is_a_valid_pid(Entities.PID memory p)
     public pure {
-        // bool draft_flag = is_a_draft(p);
-        require( is_a_draft(p) == true, 'This PID is a draft.');
+        require(is_a_draft(p), 'This PID is a draft and has no URL.');
     }
 
     /**
@@ -82,8 +84,9 @@ contract PIDService {
     //
 
     /**
-     *  Assing a new Dπ uuid to the tx.origin
-     *  - return uuid (bytes19)
+     * @dev Assigns a new dARK PID
+     * @param sender The address to assign as the owner
+     * @return pid_hash The hash of the generated PID
      */
     function assingID(address sender)
     public
@@ -92,19 +95,17 @@ contract PIDService {
         AuthoritiesService aths = AuthoritiesService(auth_service_addr);
         PidDB db = PidDB(pid_db_addr);
 
-        // address proveider_addr = aths.get_proveider_addr(msg.sender);
         address proveider_addr = aths.get_proveider_addr(sender);
         
         pid_hash = db.assing_id(proveider_addr);
-        // TODO: REMOVER ESSE EMIT NO FUTURO
         emit log_id(pid_hash);
         return pid_hash;
     }
 
     /**
-     * Bulk assing 100 pids
-     * 
-     * - return 
+     * @dev Bulk assigns 100 PIDs at once
+     * @param sender The address to assign as the owner
+     * @return pid_hashes Array of 100 generated PID hashes
      */
     function bulk_assingID(address sender)
     public
@@ -113,7 +114,6 @@ contract PIDService {
         AuthoritiesService aths = AuthoritiesService(auth_service_addr);
         PidDB db = PidDB(pid_db_addr);
 
-        // address proveider_addr = aths.get_proveider_addr(msg.sender);
         address proveider_addr = aths.get_proveider_addr(sender);
         
         for (uint i = 0; i < 100; i++) {
@@ -172,12 +172,12 @@ contract PIDService {
         is_a_valid_pid(p); // check if pid is a draft
         bytes32 epid_id = epid_service.get_or_create_externalPid(schema,external_pid,pid_hash);
 
-        // avoid duplicated urls in pid
+        // avoid duplicated external PIDs
         bool add_epid_flag = true;
-        if (p.extarnalPIDs.length != 0) {
+        if (p.externalPIDs.length != 0) {
             
-            for (uint i = 0; i < p.extarnalPIDs.length ; i++) {
-                bytes32 pid_epid_id = p.extarnalPIDs[i];
+            for (uint i = 0; i < p.externalPIDs.length ; i++) {
+                bytes32 pid_epid_id = p.externalPIDs[i];
                 
                 if (pid_epid_id == epid_id) {
                     add_epid_flag = false;

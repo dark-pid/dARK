@@ -16,21 +16,36 @@ pragma solidity ^0.8.0;
 
 // }
 
+/**
+ * @title UUIDProvider
+ * @dev Provides UUID generation functionality for the dARK system
+ * @notice An alternative identifier provider using UUIDs
+ */
 contract UUIDProvider {
 
     address private owner;
 
+    /**
+     * @dev Contract constructor
+     * @notice Sets the contract deployer as the owner
+     */
     constructor() {
-        //usar para controle de acesso
         owner = msg.sender;
     }
 
+    /**
+     * @dev Generates a random number between 0 and 250
+     * @return random_int A pseudo-random number
+     */
     function random() public view returns (uint8 random_int) {
             return uint8(uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, msg.sender )))%251);
     }
 
+    /**
+     * @dev Generates entropy for UUID creation
+     * @return key A bytes32 value with high entropy
+     */
     function getEntropy() public view returns (bytes32 key) {
-
         uint r1 = random();
         bytes32 random_key_part;
         random_key_part = keccak256(abi.encodePacked(block.timestamp,r1));
@@ -54,7 +69,7 @@ contract UUIDProvider {
             key = keccak256(abi.encodePacked(block.difficulty,random_key_part));
         }
         if (op == 3) {
-            key = keccak256(abi.encodePacked(tx.origin,random_key_part));
+            key = keccak256(abi.encodePacked(msg.sender,random_key_part));
         }
         if (op == 4) {
             key = keccak256(abi.encodePacked(msg.sender,random_key_part));
@@ -73,25 +88,30 @@ contract UUIDProvider {
     }
 
 
-    function getUUID4() public view returns (bytes16 uuid,bytes16 alternative_uuid) {
-
-
-        bytes16 seed = bytes16(keccak256(abi.encodePacked(msg.sender, block.timestamp , random() , getEntropy())));
+    /**
+     * @dev Generates a UUID version 4 identifier and an alternative
+     * @return uuid The primary UUID
+     * @return alternative_uuid A secondary UUID derived from the primary
+     */
+    function getUUID4() public view returns (bytes16 uuid, bytes16 alternative_uuid) {
+        bytes16 seed = bytes16(keccak256(abi.encodePacked(msg.sender, block.timestamp, random(), getEntropy())));
         
-        bytes32 buf =  keccak256(abi.encodePacked(seed, getEntropy()));
+        bytes32 buf = keccak256(abi.encodePacked(seed, getEntropy()));
         uuid = bytes16(buf);
-        // uuid = setUUID4Bytes(bytes16(buf));
 
         uint128 cast_buf = uint128(uint256(buf) / 2 ** 128);
         alternative_uuid = bytes16(cast_buf);
-        // alternative_uuid = setUUID4Bytes(bytes16(cast_buf));
     }
 
-    function getUUID4(bytes16 seed) public returns (bytes16 uuid,bytes16 alternative_uuid) {
-        
-        bytes32 buf =  keccak256(abi.encodePacked(seed, getEntropy()));
+    /**
+     * @dev Generates a UUID version 4 identifier from a provided seed
+     * @param seed The seed to use for generation
+     * @return uuid The primary UUID
+     * @return alternative_uuid A secondary UUID derived from the primary
+     */
+    function getUUID4(bytes16 seed) public returns (bytes16 uuid, bytes16 alternative_uuid) {
+        bytes32 buf = keccak256(abi.encodePacked(seed, getEntropy()));
         uuid = bytes16(buf);
-        // uuid = setUUID4Bytes(bytes16(buf));
 
         uint128 cast_buf = uint128(uint256(buf) / 2 ** 128);
         alternative_uuid = bytes16(cast_buf);
@@ -99,7 +119,9 @@ contract UUIDProvider {
 
 
     /**
-     *  metodo de validacao sem utilizacao
+     * @dev Ensures a bytes16 value conforms to UUID version 4 format
+     * @param v The bytes16 value to format as UUID v4
+     * @return The formatted UUID v4 bytes16 value
      */
     function setUUID4Bytes(bytes16 v) public view returns (bytes16) {
 

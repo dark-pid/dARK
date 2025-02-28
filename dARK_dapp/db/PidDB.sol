@@ -9,6 +9,11 @@ import "../libs/strings.sol";
 
 // import "../util/UUIDProvider.sol";
 
+/**
+ * @title PidDB
+ * @dev Storage contract for Persistent Identifiers (PIDs) in the dARK system
+ * @notice Manages the creation, storage, and retrieval of PIDs and their associated data
+ */
 contract PidDB {
     
     using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;
@@ -20,25 +25,25 @@ contract PidDB {
     mapping(bytes32 => Entities.Payload) private payload_db;
     mapping(bytes32 => Entities.PayloadSchema) private payload_schema_db;
     
-    // logs
+    // Events
+    /** @dev Emitted when a new PID is created */
     event ID(bytes32 indexed uuid, address indexed owner, uint timestamp);
+    /** @dev Emitted when payload data is stored */
     event STORE_PAYLOAD(bytes32 id, bytes32 schema, int256 attribute);
 
-
     /**
-     * @dev Set contract deployer as owner
-     *  max indexed 2^256
+     * @dev Contract constructor
+     * @notice Sets the contract deployer as the owner, used for access control
      */
     constructor() {
-        //usar para controle de acesso
         owner = msg.sender;
     }
 
     /**
-    *  Assing a new Dπ PID
-    *
-    * - return :: Dπ uuid (bytes16)
-    **/
+    * @dev Assigns a new dARK PID
+    * @param proveider_addr The address of the NOID provider contract
+    * @return The PID hash (bytes32)
+    */
     function assing_id(address proveider_addr)
     public 
     returns(bytes32)
@@ -54,8 +59,7 @@ contract PidDB {
         Entities.PID storage pid = pid_db[b32_noid];
         pid.pid_hash = b32_noid;
         pid.noid = noid;
-        // pid.owner = msg.sender;
-        pid.owner = tx.origin;
+        pid.owner = msg.sender;
 
         emit ID(pid.pid_hash, pid.owner, block.timestamp);
 
@@ -125,20 +129,16 @@ contract PidDB {
     }
 
     /**
-     * Add a ExternalPID to a  Dπ PID.
-     * params::
-     * - uuid (bytes16)
-     * - ExternalPID_id (bytes32)
-     *
-     * case uuid is unsee throws expcetion  :: id does not exist
-     *
+     * @dev Add an ExternalPID to a dARK PID
+     * @param uuid The PID hash
+     * @param external_pid_id The external PID identifier
      */
-    function add_externalPid(bytes32 uuid,bytes32 searchTerm_id)
+    function add_externalPid(bytes32 uuid, bytes32 external_pid_id)
     public
     {
         get(uuid);
         Entities.PID storage pid = pid_db[uuid];
-        pid.extarnalPIDs.push(searchTerm_id);
+        pid.externalPIDs.push(external_pid_id);
     }
 
 
@@ -163,10 +163,9 @@ contract PidDB {
         Entities.PayloadSchema storage p = payload_schema_db[id];
         p.schema_name = schema_name;
         p.configured = false;
-        // p.owner = tx.origin;
-
-        //TODO EMITIR EVENTO
-        // emit createURL(id, word, pid_hash, msg.sender);
+        
+        // Emit event for schema creation
+        emit STORE_PAYLOAD(id, bytes32(0), -1);
         return id;
     }
 
@@ -190,7 +189,9 @@ contract PidDB {
 
         Entities.PayloadSchema storage p = payload_schema_db[id];
         p.attribute_list.push(attribute_name);
-        //TODO EMITIR EVENTO
+        
+        // Emit event for attribute addition
+        emit STORE_PAYLOAD(id, id, int256(p.attribute_list.length - 1));
     }
 
     /**
@@ -208,7 +209,9 @@ contract PidDB {
 
         Entities.PayloadSchema storage p = payload_schema_db[id];
         p.configured = true;
-        //TODO EMITIR EVENTO
+        
+        // Emit event for schema configuration
+        emit STORE_PAYLOAD(id, id, -2);
     }
 
     /**
@@ -316,21 +319,14 @@ contract PidDB {
     // 
 
     /**
-     * @notice TEMPORARY
-     * @notice RETURN THE THE INDEX OF THE ATTRIBUTE
-     * @param schema the noid (bytes32) of the PID that the payload will assoietated
-     * @param attribute the noid (bytes32) of the PID that the payload will assoietated
-     * @return int256 with the index, default -1 (notfound)
+     * @notice Returns the index of the attribute in the schema
+     * @param schema The payload schema to search in
+     * @param attribute The attribute name to find
+     * @return int256 with the index, -1 if not found
      */
     function find_attribute_position(Entities.PayloadSchema memory schema, string memory attribute)
     public pure returns (int256) {
-        for (uint256 i = 0; i < schema.attribute_list.length; i++) {
-            if (keccak256(bytes(schema.attribute_list[i])) == keccak256(bytes(attribute))) {
-                return int256(i); // Retorna a posição do atributo se encontrado
-            }
-        }
-        return -1;
-        // return type(uint256).max; // Retorna um valor especial se o atributo não for encontrado
+        return Entities.find_attribute_position(schema, attribute);
     }
 
 }

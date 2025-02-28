@@ -7,31 +7,32 @@ import "../libs/strings.sol";
 import "../util/Entities.sol";
 // import {Entities.Person} from "./libs/EntitiesLib.sol";
 
-contract UrlDB
- {
+/**
+ * @title UrlDB
+ * @dev Storage contract for URLs in the dARK system
+ * @notice Manages the creation, storage, and retrieval of URLs associated with PIDs
+ */
+contract UrlDB {
     
     using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;
-    
     
     HitchensUnorderedKeySetLib.Set url_set;
 
     address private owner;
     mapping(bytes32 => Entities.URL) private url_db;
-    
-    // UnorderedKeySetLib.Set pid_set;
-    // mapping(bytes16 => Entities.PID) private pid_db;
     mapping(bytes32 => HitchensUnorderedKeySetLib.Set) private pid_set;
 
-    // logs
-    event createURL(bytes32 indexed url_id,string indexed url, bytes32 indexed pid_hash, address owner);
+    // Events
+    /** @dev Emitted when a new URL is created */
+    event createURL(bytes32 indexed url_id, string indexed url, bytes32 indexed pid_hash, address owner);
+    /** @dev Emitted when a PID is linked to a URL */
     event link_pid_2_url(bytes32 url_id, bytes32 pid_hash, address user);
 
-
     /**
-     * @dev Set contract deployer as owner
+     * @dev Contract constructor
+     * @notice Sets the contract deployer as the owner, used for access control
      */
     constructor() {
-        //usar para controle de acesso
         owner = msg.sender; 
     }
 
@@ -55,12 +56,12 @@ contract UrlDB
         Entities.URL storage p = url_db[id];
         p.id = id;
         p.url = word;
-        p.owner = tx.origin;
+        p.owner = msg.sender;
 
         HitchensUnorderedKeySetLib.Set storage pids = pid_set[id];
         if ( !pids.exists(pid_hash) ) {
             pids.insert(pid_hash);
-            emit link_pid_2_url(id, pid_hash, tx.origin);
+            emit link_pid_2_url(id, pid_hash, msg.sender);
         }
 
         emit createURL(id, word, pid_hash, msg.sender);
