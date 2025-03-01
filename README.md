@@ -1,12 +1,24 @@
+![dARK Logo](docs/figures/dARK_logo.png)
+
 # dARK Core Layer
 dARK (Decentralized Archival Resource Key) is a blockchain-based implementation of the [ARK](https://arks.org/) (Archival Resource Key) identifier scheme.  It provides a decentralized approach to managing ARK identifiers, enhancing their persistence, immutability, and availability.  dARK is *not* a new PID system; it is an extension and decentralized implementation of the existing ARK standard.
 
-This document explains the on-chain (the code thats execute within a blockchain) architecture of dARK, components, and mechanisms of the dARK system.
+Further detail of our project see our whitepaper [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7442743.svg)](https://doi.org/10.5281/zenodo.7442743).
 
-1. [Overview](#dark-overview)
-   * [Technologies](#technologies)
-2. [Deployment and Configuration](#deployment-and-configuration)
-3. [Interacting with dARK: Libraries, Resolvers, and APIs](#interacting-with-dark-libraries-resolvers-and-apis)
+This document explains the on-chain (the code thats execute within a blockchain) architecture of dARK, components, and mechanisms of the dARK system.
+<!-- no toc -->
+- [dARK Core Layer](#dark-core-layer)
+  - [The On-Chain Foundation](#the-on-chain-foundation)
+  - [dARK Overview](#dark-overview)
+    - [Technologies](#technologies)
+  - [Deployment and Configuration](#deployment-and-configuration)
+    - [System Requirements](#system-requirements)
+    - [Deployment Steps](#deployment-steps)
+  - [Interacting with dARK: Libraries, Resolvers, and APIs](#interacting-with-dark-libraries-resolvers-and-apis)
+    - [dARK Python Library](#dark-python-library)
+    - [dARK Resolver](#dark-resolver)
+    - [dARK Minter API](#dark-minter-api)
+  - [dARK Technical Documentation \& Architure](#dark-technical-documentation--architure)
 
 ## The On-Chain Foundation
 
@@ -236,3 +248,18 @@ The Minter API acts as an intermediary, abstracting away the complexities of blo
 *   **Integration with dARK Python Library:** Uses the dARK Python Library internally.
 
 The Minter API repository provides documentation on the available endpoints, request/response formats, and any required authentication.  If you're integrating a repository system with dARK, the Minter API is the recommended approach.  To use your own instance, you would deploy the Minter API and configure your repository software to use its URL.
+
+## dARK Technical Documentation & Architure
+
+The [technical documentation](./docs/technical_overview.md) file provides a deep dive into the technical architecture of the dARK system.  It serves as a comprehensive reference for developers, administrators, and anyone who wants to understand the inner workings of dARK. The file includes:
+
+*   **Introduction to dARK:**  A high-level overview of the dARK system, its purpose, and its relationship to the ARK identifier scheme.
+*   **Core Components and Data Models:** A detailed explanation of the fundamental building blocks of dARK, including:
+    *   **Persistent Identifier (PID)** 
+    *   **Decentralized Name Mapping Authority (DNMA)** 
+    * **NOID provider**
+*   **dARK Key Processes:**  Illustrations and explanations of the core workflows within dARK, such as `PID Creation Process` and `PID Resolution Process`.
+*   **Smart Contract Details and Architecture:** A thorough description of each smart contract in the dARK system,
+ with secevral diagram visually representing the relationships and dependencies between the various smart contracts to provide a high-level overview of the system's structure.
+
+In summary, [technical documentation](./docs/technical_overview.md)is the go-to resource for a complete technical understanding of the dARK system's on-chain implementation,to provide a comprehensive and explanation of dARK's inner workings.

@@ -1,11 +1,14 @@
 # Contribution Guide
 
->> Table of Content
->> 1. [Code of Conduct](#code-of-conduct)
->> 1. [Handling Issues](#project-issues)
->> 1. [How to use git](#using-git-flow-for-development)
-
 This document intendes to guides contributors to their first contribution. It helps new contributors find a project they want to work with, learn about that project, and then find a task that is suitable to their skills and interests and not already assigned to someone else.
+
+> Table of Content
+> 1. [Code of Conduct](#code-of-conduct)
+> 1. [Handling Issues](#project-issues)
+> 1. [How to use git](#using-git-flow-for-development)
+> 1. [Documentation Tools](#documentarion-tools)
+
+
 
 ## Code of Conduct
 This code of conduct outlines expectations for participation in dARK open source communities. We are committed to providing a welcoming and inspiring community for all. Examples of behavior that contributes to a positive environment for our community include:
@@ -189,3 +192,46 @@ This actions will be performed by the Project PO.
 - After merging a release or hotfix, consider adding a tag to the `main` branch to mark the release version.
 
 Remember, while Git Flow provides a structured approach, adapt it to your team's needs. The main goal is to maintain a clear distinction between stable production-ready code (`main`) and ongoing development (`develop`), while using feature branches to isolate changes.
+
+
+## Misc
+
+### Documentarion Tools
+
+The documentation was build usin the visual studio code and and the [mermaid markup languege](https://mermaid.live). We also use the following extensions.
+
+
+> [Visual Studio Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio)
+> 
+> [Markdown Preview Mermaid Support](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid)
+
+
+<details>
+ <summary>Windows</summary>
+1. Install scoop https://scoop.sh/
+
+```
+> Set-ExecutionPolicy RemoteSigned -Scope CurrentUser # Optional: Needed to run a remote script the first time
+> irm get.scoop.sh | iex
+```
+
+2. Install MARP
+```
+scoop install marp
+```
+</details>
+
+
+1. Exporting Files
+
+```
+marp .\presentation.md --pdf
+marp .\presentation.md --html
+```
+
+If inside visual studio code use the full path of marp comand
+
+```
+C:\Users\thiag\scoop\shims\marp.exe .\presentation.md --pdf
+```
+
