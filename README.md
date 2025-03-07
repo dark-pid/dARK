@@ -36,12 +36,12 @@ The dARK Core Layer is the heart of the dARK system, representing the on-chain b
 
 The dARK architecture allows for the creation of multiple, independent blockchain networks. This is illustrated in the diagram below:
 
-![dARK Overview](docs/figures/macro_vision.png)
+![dARK Overview](docs/figures/architecture.png)
 
 
-The dARK system, as illustrated in the diagram, is structured in three main layers: the Governance Layer, the Service Layer, and the Core Layer. The Governance Layer represents the organizational structure, showing how different authorities, such as the Brazilian, Latam, and UE Authorities, can manage their respective blockchain networks. The Service Layer includes additional services that interact with the Core Layer; for instance, a "Quality Service" for data quality checks and "HyperDrive" (note that HyperDrive is not part of this specific repository but is shown for overall architectural context).
+The dARK system, as illustrated in the diagram, is structured in layers: the the Service Layer, and the Core Layer. The Service Layer includes additional services that interact with the Core Layer; for instance, a `dARK Resolver` integrated with the global [nt2.info](http://n2t.info) resolver or the `dARK Minter` (Hyperdrive) employed to mint new PIDs. Note that HyperDrive or Resolver is not part of this specific repository but is shown for overall architectural context.
 
-The Core Layer, which is the primary focus of this repository, demonstrates the possibility of multiple, independent blockchain networks. These networks, including the Brazilian dARK Net, Latam dARK Net, and UE dARK Net, are each managed by their corresponding authorities. Each network comprises the underlying blockchain technology (like Hyperledger Besu) for decentralized ledger and smart contract execution, and optionally, IPFS (InterPlanetary File System) for decentralized off-chain storage of larger metadata payloads (not implemented yet), with their hashes stored on-chain for verification. While this repository concentrates on the on-chain aspects, the potential role of IPFS is important to acknowledge. Finally, various organizations, represented as users (e.g., `br_org_1`, `ar_org_1`), interact with their respective blockchain networks.
+The Core Layer, which is the primary focus of this repository, demonstrates the possibility of multiple, independent blockchain networks. These networks, can be managed by their corresponding authorities. Each network comprises the underlying blockchain technology (like Hyperledger Besu) for decentralized ledger and smart contract execution, and optionally, IPFS (InterPlanetary File System) for decentralized off-chain storage of larger metadata payloads (not implemented yet), with their hashes stored on-chain for verification. While this repository concentrates on the on-chain aspects, the potential role of IPFS is important to acknowledge. 
 
 
 <!-- **Diagram Explanation:**
