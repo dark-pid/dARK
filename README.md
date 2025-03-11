@@ -9,20 +9,21 @@ This document explains the on-chain (the code thats execute within a blockchain)
 <!-- no toc -->
 - [dARK Core Layer](#dark-core-layer)
   - [The On-Chain Foundation](#the-on-chain-foundation)
-  - [dARK Overview](#dark-overview)
+  - [dARK Overview](#dark-core-overview)
     - [Technologies](#technologies)
   - [Deployment and Configuration](#deployment-and-configuration)
     - [System Requirements](#system-requirements)
     - [Deployment Steps](#deployment-steps)
   - [Interacting with dARK: Libraries, Resolvers, and APIs](#interacting-with-dark-libraries-resolvers-and-apis)
-    - [dARK Python Library](#dark-python-library)
-    - [dARK Resolver](#dark-resolver)
-    - [dARK Minter API](#dark-minter-api)
   - [dARK Technical Documentation \& Architure](#dark-technical-documentation--architure)
 
 ## The On-Chain Foundation
 
-The dARK Core Layer is the heart of the dARK system, representing the on-chain blockchain application that enables multiple organizations to interact securely and independently.  This repository focuses *exclusively* on this Core Layer – the smart contracts and associated logic that run directly on the blockchain.
+The dARK Core Layer is the heart of the dARK system, representing the on-chain blockchain application that enables multiple organizations to interact securely and independently with the PID system.  This repository focuses *exclusively* on this Core Layer – the smart contracts and associated logic that run directly on the blockchain.
+
+![dARK Overview](docs/figures/architecture.png)
+
+The key takeaway is that the dARK Core Layer (dAPP), as implemented in this repository, provides a robust and flexible foundation for building decentralized ARK identifier systems. Different organizations can collaborate by joining existing networks or creating their own, all while maintaining the security and immutability benefits of blockchain technology. The use of smart contracts ensures that the rules of the system are enforced consistently and transparently.
 
 **Key Properties of the dARK Core Layer:**
 
@@ -31,33 +32,6 @@ The dARK Core Layer is the heart of the dARK system, representing the on-chain b
 *   **Independent Operation:** Each participating organization maintains its own nodes on the blockchain network. This allows them to interact with the system independently, without relying on a central authority.
 *   **Smart Contract Based:** The core logic of dARK is implemented as smart contracts (written in Solidity). These contracts define the rules for minting ARKs, managing metadata, and handling permissions.
 *   **On-Chain Data:** Stores the data on-chain.
-
-**Multiple Blockchain Networks (Flexibility):**
-
-The dARK architecture allows for the creation of multiple, independent blockchain networks. This is illustrated in the diagram below:
-
-![dARK Overview](docs/figures/architecture.png)
-
-
-The dARK system, as illustrated in the diagram, is structured in layers: the the Service Layer, and the Core Layer. The Service Layer includes additional services that interact with the Core Layer; for instance, a `dARK Resolver` integrated with the global [nt2.info](http://n2t.info) resolver or the `dARK Minter` (Hyperdrive) employed to mint new PIDs. Note that HyperDrive or Resolver is not part of this specific repository but is shown for overall architectural context.
-
-The Core Layer (`dARK dApp`), which is the primary focus of this repository, demonstrates the possibility of multiple, independent blockchain networks. These networks, can be managed by their corresponding authorities. Each network comprises the underlying blockchain technology (like Hyperledger Besu) for decentralized ledger and smart contract execution, and optionally, IPFS (InterPlanetary File System) for decentralized off-chain storage of larger metadata payloads (not implemented yet), with their hashes stored on-chain for verification. While this repository concentrates on the on-chain aspects, the potential role of IPFS is important to acknowledge. 
-
-
-<!-- **Diagram Explanation:**
-
-*   **dARK Governance Layer:** This layer represents the organizational structure and agreements between participating institutions. Different authorities (e.g., Brazilian Authority, Latam Authority, UE Authority) can manage their respective blockchain networks.
-*   **dARK Service Layer:** This layer represents additional services that interact with the Core Layer. Examples include a "Quality Service" (for data quality checks) and "HyperDrive" (which is *not* applicable to this specific repository, as noted in previous sections, but is shown here for completeness of the overall dARK architecture).
-*   **dARK Core Layer:** This is the focus of this repository. It shows multiple, independent blockchain networks:
-    *   **Brazilian dARK Net:** A blockchain network managed by the Brazilian Authority.
-    *   **Latam dARK Net:** A blockchain network managed by the Latam Authority.
-    *   **UE dARK Net:** A blockchain network managed by the UE Authority.
-    *   Each network consists of:
-        *   **Blockchain:** The underlying blockchain technology (e.g., Hyperledger Besu) that provides the decentralized ledger and smart contract execution.
-        *   **IPFS:** (InterPlanetary File System - *Optional, but often used with blockchains*) A decentralized storage system that can be used to store larger metadata payloads off-chain, while their hashes are stored on-chain for verification. This repository's code primarily deals with the *on-chain* aspects, but it's important to understand the potential role of IPFS.
-*   **Users:** Different organizations (represented by `br_org_1`, `ar_org_1`, etc.) interact with their respective blockchain networks. -->
-
-**Focus of this Repository:**
 
 This repository contains the code and configuration for the *on-chain* components of the dARK Core Layer. This includes:
 
@@ -69,18 +43,14 @@ This repository contains the code and configuration for the *on-chain* component
 It *does not* include the code for:
 
 *   The dARK Governance Layer (organizational agreements).
-*   The dARK Service Layer (external services like "Quality Service").
 *   Off-chain storage systems (like IPFS).
 *   User interface components.
 *   The minter API.
 *   The resolver.
 
-The key takeaway is that the dARK Core Layer, as implemented in this repository, provides a robust and flexible foundation for building decentralized ARK identifier systems. Different organizations can collaborate by joining existing networks or creating their own, all while maintaining the security and immutability benefits of blockchain technology. The use of smart contracts ensures that the rules of the system are enforced consistently and transparently.
+For further information of the dARK ecosystem see our main [site](https://www.dark-pid.net/).
 
-
-
-## dARK Overview
-
+## dARK Core Overview
 
 dARK extends the well know ARK system to a decentralized environment, leveraging blockchain technology. The on-chain part of dARK is responsible for the following core functionalities:
 
@@ -196,12 +166,12 @@ Once these steps are complete, **your dARK instance will be fully deployed and c
 
 This section provides an overview of how to interact with the dARK system, whether you're using a public dARK, consortium, or your own locally deployed instance.  It covers the available tools and their roles, linking to relevant repositories.
 
-1. [dARK Python Library](#dark-python-library) : Direct Blockchain Interaction
-2. [dARK Resolver](#dark-resolver) : Resolving ARK Identifiers
-3. [dARK Minter API](#dark-minter-api) : Simplified ARK Minting
+1. [dARK Python Library](https://github.com/dark-pid/dark-gateway) : The [dARK Python Library](https://github.com/dark-pid/dark-gateway) provides a convenient, low-level way to interact directly with the dARK smart contracts from your Python applications.
+2. [dARK Resolver](https://github.com/dark-pid/dark-resolver) : The dARK system utilizes a resolver to translate ARK identifiers into the location of the identified resource or its associated metadata.
+3. [dARK Minter API](https://github.com/dark-pid/hyperdrive) : The [dARK Minter API](https://github.com/dark-pid/hyperdrive) provides a simplified, RESTful interface for minting ARK identifiers.  It's designed for use by repository software (like DSpace, OJS, Dataverse, etc.) and other applications that need to obtain persistent identifiers *without* directly interacting with the blockchain. 
 
 
-### dARK Python Library
+<!-- ### dARK Python Library
 
 The [dARK Python Library](https://github.com/dark-pid/dark-gateway) provides a convenient, low-level way to interact directly with the dARK smart contracts from your Python applications.  This library works regardless of whether you're connecting to a public dARK network, a consortium network, or your own local/organizational deployment. It allows you to:
 
@@ -210,9 +180,9 @@ The [dARK Python Library](https://github.com/dark-pid/dark-gateway) provides a c
 *   **Manage metadata:** (If supported by your dARK instance) Update or extend the metadata of existing ARK IDs.
 *   **Query the blockchain:** Access on-chain information, such as checking for the existence of an ARK ID, retrieving the owner of an ARK, and listing associated external PIDs.
 
-The repository contains detailed documentation, installation instructions, and usage examples.  It's the recommended approach for developers building applications that need fine-grained control over dARK interactions or that need to integrate directly with the blockchain logic.  To connect to your own instance, you'll configure the library using your instance's (`config.ini` and `deployed_contracts.ini`) files, specifying the appropriate blockchain network and contract addresses.
+The repository contains detailed documentation, installation instructions, and usage examples.  It's the recommended approach for developers building applications that need fine-grained control over dARK interactions or that need to integrate directly with the blockchain logic.  To connect to your own instance, you'll configure the library using your instance's (`config.ini` and `deployed_contracts.ini`) files, specifying the appropriate blockchain network and contract addresses. -->
 
-### dARK Resolver
+<!-- ### dARK Resolver
 
 The dARK system utilizes a resolver to translate ARK identifiers into the location of the identified resource or its associated metadata.  The resolver acts as a central point of access for resolving ARKs.
 
@@ -228,9 +198,9 @@ The dARK system utilizes a resolver to translate ARK identifiers into the locati
     curl http://localhost:8000/ark:/your-naan/your-ark-id  # Example local resolver URL
     ```
 
-Regardless of which resolver you use, the process is the same: the resolver receives the ARK ID, queries the appropriate dARK blockchain (based on the NAAN), and returns the metadata or a redirect to the resource.
+Regardless of which resolver you use, the process is the same: the resolver receives the ARK ID, queries the appropriate dARK blockchain (based on the NAAN), and returns the metadata or a redirect to the resource. -->
 
-### dARK Minter API
+<!-- ### dARK Minter API
 
 The [dARK Minter API](https://github.com/dark-pid/hyperdrive) provides a simplified, RESTful interface for minting ARK identifiers.  It's designed for use by repository software (like DSpace, OJS, Dataverse, etc.) and other applications that need to obtain persistent identifiers *without* directly interacting with the blockchain.  You can deploy your own instance of the Minter API, or you might use a shared instance provided by a dARK consortium.
 
@@ -247,7 +217,7 @@ The Minter API acts as an intermediary, abstracting away the complexities of blo
 *   **Idempotency (Optional but Recommended):** Prevents duplicate ARKs.
 *   **Integration with dARK Python Library:** Uses the dARK Python Library internally.
 
-The Minter API repository provides documentation on the available endpoints, request/response formats, and any required authentication.  If you're integrating a repository system with dARK, the Minter API is the recommended approach.  To use your own instance, you would deploy the Minter API and configure your repository software to use its URL.
+The Minter API repository provides documentation on the available endpoints, request/response formats, and any required authentication.  If you're integrating a repository system with dARK, the Minter API is the recommended approach.  To use your own instance, you would deploy the Minter API and configure your repository software to use its URL. -->
 
 ## dARK Technical Documentation & Architure
 
