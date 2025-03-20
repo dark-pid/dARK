@@ -47,7 +47,8 @@ contract UrlDB
     public 
     returns(bytes32)
     {
-        word = strings.upper(word);
+        // word = strings.upper(word);
+
         bytes32 id = keccak256(abi.encodePacked(word));
         //Note: it will fail automatically if the key already exists.
         url_set.insert(id); 
@@ -75,7 +76,8 @@ contract UrlDB
     function exist(string memory word)
     public view 
     returns(bool status) {
-        status = url_set.exists( keccak256(abi.encodePacked(strings.upper(word))) );
+        // status = url_set.exists( keccak256(abi.encodePacked(strings.upper(word))) );
+        status = url_set.exists( keccak256(abi.encodePacked(word)) );
     }
 
     /**
@@ -98,7 +100,7 @@ contract UrlDB
     function get(string memory word) 
     public view 
     returns(Entities.URL memory term) {
-        word = strings.upper(word);
+        // word = strings.upper(word);
         bytes32 _id = keccak256(abi.encodePacked(word));
         return get(_id);
     }

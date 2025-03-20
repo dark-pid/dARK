@@ -1,123 +1,39 @@
 
 ![dARK Logo](figures/dARK_logo.png)
 
+# dARK Documentation
 
-# dARK Project Documents
+This directory contains comprehensive documentation for the dARK (Decentralized Archival Resource Key) project.  It provides information for users, developers, and administrators who want to understand, use, contribute to, or deploy the dARK system.
 
+## Contents
 
-![dark Overview](figures/macro_vision.svg)
+The documentation is organized into the following files and directories:
 
-<details>
-<summary>dARK Governance Layer</summary>
-Description here
-</details>
+*   **`configuration_files.md`:** This document provides a detailed explanation of the various configuration files used by the dARK system, primarily `config.ini`, `noid_provider_config.ini`, and `deployed_contracts.ini`. It describes each parameter within these files, their purpose, allowed values, and how they affect the system's behavior.  This is crucial for setting up and customizing a dARK instance.  It covers both general settings and blockchain-specific configurations.
 
-<details>
-<summary>dARK Core Layer</summary>
-Description here
-</details>
+*   **`contribution_guide.md`:**  This guide outlines the process for contributing to the dARK project. It covers topics such as reporting bugs, suggesting features, submitting code changes (pull requests), coding style guidelines, and the overall development workflow. This document is essential for anyone who wants to contribute to the project's development. It includes details on how to open and resolve project issues, adapting aspects of standard issue workflows to the specifics of dARK.
 
-<details>
-<summary>dARK Service Layer</summary>
-Description here
-</details>
+*   **`technical_overview.md`:**  This document provides a deep dive into the technical architecture of the dARK system.  It covers the core components, data models, smart contract details, and key processes (like PID creation and resolution).  It includes diagrams (class diagrams and sequence diagrams) to illustrate the relationships between different parts of the system. The document explains:
+    * The **dARK Core Layer**: the heart of the system.
+    * **Interacting with dARK**: how to use the system through libraries, resolvers, and APIs.
+    * The **dARK implementation details**: on-chain components, including smart contracts.
 
-<details>
-<summary>dARK Users</summary>
-Description here
-</details>
+*   **`dARK_pid/` (Directory):**  This directory likely contains additional, more specialized documentation related to specific aspects of the dARK PID implementation.  This could include details on the NOID generation algorithm, metadata schemas, or other implementation-specific details.
 
+*   **`diagrams/` (Directory):** This directory contains diagrams (e.g., UML diagrams, flowcharts, architectural diagrams) that visually represent different aspects of the dARK system. These diagrams are referenced from other documentation files (like `technical_overview.md`) to aid in understanding.
 
-# dARK Layers
+*   **`figures/` (Directory):** This directory likely contains images used within the documentation files, such as screenshots or other illustrative figures.
 
-## dARK Governance Layer
+*   **`notebooks/` (Directory):**  This directory might contain Jupyter notebooks or other interactive documents that provide tutorials, examples, or demonstrations of how to use the dARK system.  This is a good place for practical, hands-on guides.
 
-## dARK Core Layer
+## Navigating the Documentation
 
-Description here
+*   **Start with `technical_overview.md`:** For a comprehensive understanding of the dARK system's architecture and technical details, begin with this file.
+*   **Refer to `configuration_files.md`:** When deploying or configuring a dARK instance, this is your essential guide.
+*   **Consult `contribution_guide.md`:** If you plan to contribute to the dARK project, read this document first.
+*  **Explore `dARK_pid/`, `diagrams/`, `figures/` and `notebooks`**: For a complete understanding.
 
-### dARK PID System
-
-For further detail see [PID Desing](./dARK_pid/) section.
-
-### dARK Core
-
-BC Code
-
-### dARK Metadata Storage
-
-IPFS Code
-
-## dARK Service Layer
-
-## dARK Users
-
-#  Project Status
-
-| module | submodule | status | PoC   | release |
-| ---    | ---       | ---  | :---: | :---: |
-| dARK Governance Layer | - | - | - | - |
-| dARK Core Layer | dARK | updating | [v1](https://doi.org/10.5281/zenodo.7442743) | - |
-| dARK Core Layer | PiD Metadata | working | [v1](https://doi.org/10.5281/zenodo.7442743)  | - |
-| dARK Core Layer | dARK Metadata Storage | on hold | - | - |
-| dARK Service Layer | Data Extractor* | working | - | - |
-| dARK Service Layer | Search Service | - | - | - |
-| dARK Service Layer | Quality Service | - | - | - |
-| dARK Users | HyperDrive | working | - | - |
-
-HyperDrive : Founded by RNP
-
-## Project Proof Of Concept (PoC)
+This structure provides a well-organized and comprehensive documentation set for the dARK project, covering various aspects from configuration and technical details to contribution guidelines. The use of separate files for different topics and the inclusion of diagrams and figures make the documentation easy to navigate and understand.
 
 
 
-<details>
-<summary>PoC v1 </summary>
-Washington Segundo, Lautaro Matas, Thiago Nóbrega, J. Edilson S. Filho, & Jesús Mena-Chalco. (2022). dARK: A decentralized blockchain implementation of ARK Persistent Identifiers (1.0). Zenodo. 
-</details>
-
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7442743.svg)](https://doi.org/10.5281/zenodo.7442743)
-
-
-# Misc
-
-<details>
- <summary>Documentarion Tools</summary>
-
-The documentation was build usin the visual studio code and and the [mermaid markup languege](https://mermaid.live). We also use the following extensions.
-
-
-> [Visual Studio Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio)
-> 
-> [Markdown Preview Mermaid Support](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid)
-
-### Windows
-
-1. Install scoop https://scoop.sh/
-
-```
-> Set-ExecutionPolicy RemoteSigned -Scope CurrentUser # Optional: Needed to run a remote script the first time
-> irm get.scoop.sh | iex
-```
-
-2. Install MARP
-```
-scoop install marp
-```
-
-3. Export Files
-
-
-```
-marp .\presentation.md --pdf
-marp .\presentation.md --html
-```
-
-If inside visual studio code use the full path of marp comand
-
-```
-C:\Users\thiag\scoop\shims\marp.exe .\presentation.md --pdf
-```
-
-TODO: add system marp to code ps path
-</details>
