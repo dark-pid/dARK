@@ -31,28 +31,29 @@ classDiagram
             -responsible: address
         }
 
-        %% note for ObjectType "The first payload will be always the default value"
-        %% PayloadSchema
-        class PayloadSchema{
-            name: schema_name
-            configured : bool
-            List~string~attribute_list
-
-            +is_configured() bool
-            +find_attribute_position(PayloadSchema schema, string attribute_name): int
-        }
 
         class Payload{
-            - List~string~attribute_values
+            -id: address
+            -schema: bytes32
+            -ipfs_hash: bytes32      
             
-            + set_attribute(int atribute, string attribute_value)
-            + gen_json(): string
+            %% + set_attribute(int atribute, string attribute_value)
+            %% + gen_json(): string
             
         }
     }
 
 
     namespace System {
+        %% note for ObjectType "The first payload will be always the default value"
+        %% PayloadSchema
+        class PayloadSchema{
+            schema_name : string
+            schema_version : string
+            configured : bool
+            ipfs_servers : List~string~
+        }
+
         class DecentralizedNameMappingAuthority{
             -id: bytes32
             -name: string
@@ -104,5 +105,5 @@ classDiagram
     %%
     %% System
     %%
-    DecentralizedNameMappingAuthority "1" --o "1" PayloadSchema: has
+    %% DecentralizedNameMappingAuthority "1" --o "1" PayloadSchema: has
     DecentralizedNameMappingAuthority "1" --o "1" NoidProvider: manage

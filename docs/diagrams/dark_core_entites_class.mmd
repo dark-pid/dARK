@@ -21,7 +21,8 @@ classDiagram
 
     class Payload{
         -id: address
-        -payload: string
+        -schema: bytes32
+        -ipfs_hash: bytes32
     }
 
     dARK "1" o-- "0..1" Payload : has
