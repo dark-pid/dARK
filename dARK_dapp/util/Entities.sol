@@ -43,42 +43,25 @@ library Entities {
         address owner;
     }
 
-    struct PayloadSchema {
-        string schema_name;
-        string[] attribute_list;
-        bool configured;
-    }
 
     struct Payload {
         bytes32 payload_schema;
-        string[] attributes_values;
+        bytes32 ipfs_hash;
     }
 
 
-    //TODO: RESOLVER DEPOIS
-    // NAO ESTA FUNCIONADO AQUI COLOQUEI DIRETAMENTE 
-    function find_attribute_position(Entities.PayloadSchema memory schema, string memory attribute)
-    public pure returns (int256) {
-        for (uint256 i = 0; i < schema.attribute_list.length; i++) {
-            if (keccak256(bytes(schema.attribute_list[i])) == keccak256(bytes(attribute))) {
-                return int256(i); // Retorna a posição do atributo se encontrado
-            }
-        }
-        return -1;
-        // return type(uint256).max; // Retorna um valor especial se o atributo não for encontrado
-    }
-
-    // check wheter a pid is a draft
-    // function is_a_draft(PID memory p)
-    // public pure
-    // returns (bool draft_flag){
-    //     draft_flag = p.url == bytes32(0);
-    // }
 
 }
 
     /// DARK ENTITIES
 library SystemEntities {
+    
+    struct PayloadSchema {
+        string schema_name;
+        string schema_version;
+        bool configured;
+        string[] ipfs_servers;
+    }
 
     struct DecentralizedNameMappingAuthority {
 
