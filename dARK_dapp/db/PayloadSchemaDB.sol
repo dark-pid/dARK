@@ -68,7 +68,7 @@ contract PayloadSchemaDB {
      * @param schema_version The version of the schema
      * @param configured whether the pauload schema is configured or not
      */
-    function save_payload_schema(string memory schema_name, 
+    function save(string memory schema_name, 
                                  string memory schema_version,
                                  bool memory configured
                                 )
@@ -99,7 +99,7 @@ contract PayloadSchemaDB {
      * @param schema_hash The name of the schema to be retrieved.
      * @return schema The payload schema associated with the given name.
      */
-    function get_payload_schema(bytes32 schema_hash) 
+    function get(bytes32 schema_hash) 
     public view returns (SystemEntities.PayloadSchema memory schema) {
         
         // Check if the id already exists in the payload_schema_db
@@ -114,10 +114,14 @@ contract PayloadSchemaDB {
      * @param schema_name The name of the schema to be retrieved.
      * @return schema The payload schema associated with the given name.
      */
-    function get_payload_schema(string memory schema_name, string memory schema_version) 
+    function get(string memory schema_name, string memory schema_version) 
     public view returns (SystemEntities.PayloadSchema memory schema) {
         bytes32 b32id = gen_schema_id(schema_name, schema_version);
-        schema = get_payload_schema(b32id);
+        schema = get(b32id);
+    }
+
+    function get_by_index(uint256 index) public view returns(bytes32 key) {
+        return payload_schema_set.keyAtIndex(index);
     }
 
     /**

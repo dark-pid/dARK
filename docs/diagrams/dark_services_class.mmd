@@ -43,6 +43,26 @@ classDiagram
         +count() uint256
     }
 
+    class PayloadSchemaDB{
+        -Set~bytes32~PayloadSchema
+
+        
+        +gen_schema_id(schema_name:string,schema_version:string) bytes32
+
+        +save(schema_name:string,schema_version:string,configured:bool) bytes32
+        +add_server_to_schema(ps_id:bytes32,server_addr:string)
+        +add_server_to_schema(schema_name:string,schema_version:string,server_addr:string)
+        +set_schema_status(ps_id:bytes32,configured:bool)
+        +set_schema_status(schema_name:string,schema_version:string,configured:bool)
+
+        +exist(pid:string) bool
+        +get(id:bytes32) PayloadSchema
+        +get(schema_name:string,schema_version:string) PayloadSchema
+        +get_by_index(index:uint256) PayloadSchema
+        +count() uint256
+    }
+
+%%% Services
 
     class AuthoritiesService{
         +create_dnam(ror_id: string, s_prefix : string, responsable: address) bytes32
