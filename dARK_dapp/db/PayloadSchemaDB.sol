@@ -44,7 +44,7 @@ contract PayloadSchemaDB {
     * @return The generated schema ID as a bytes32 value.
     **/
     function gen_schema_id(string memory schema_name, string memory schema_version) 
-        private view returns (bytes32) {
+        public pure returns (bytes32) {
         
         strings.slice memory name_slice = strings.toSlice(schema_name);
         strings.slice memory version_slice = strings.toSlice(schema_version);

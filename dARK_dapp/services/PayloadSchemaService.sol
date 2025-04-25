@@ -5,7 +5,8 @@ import "../libs/openzeppelin/Ownable.sol";
 import "../db/PayloadSchemaDB.sol";
 import "../util/Entities.sol";
 
-contract PayloadSchemaService is Ownable {
+// contract PayloadSchemaService is Ownable {
+contract PayloadSchemaService {
     address private db_addr;
 
     constructor() {
@@ -17,7 +18,9 @@ contract PayloadSchemaService is Ownable {
      * @param addr The address of the PayloadSchemaDB contract.
      * Only the owner can set this address.
      */
-    function set_db(address addr) public onlyOwner {
+    
+    function set_db(address addr) public { 
+        // function set_db(address addr) public onlyOwner {
         db_addr = addr;
     }
 
@@ -26,7 +29,7 @@ contract PayloadSchemaService is Ownable {
      * @param schema_name The name of the schema.
      * @param schema_version The version of the schema.
      * @param configured Whether the payload schema is configured or not.
-     * @return The ID of the created or existing schema.
+     * @return schema_id The ID of the created or existing schema.
      */
     function get_or_create_payload_schema(string memory schema_name, 
                                             string memory schema_version, 
@@ -48,7 +51,7 @@ contract PayloadSchemaService is Ownable {
      * @param schema_id The ID of the schema to retrieve.
      * @return The payload schema associated with the given ID.
      */
-    function get_payload_schema(bytes32 schema_id) 
+    function get(bytes32 schema_id) 
     public view returns (SystemEntities.PayloadSchema memory) 
     {
         PayloadSchemaDB db = PayloadSchemaDB(db_addr);
@@ -61,7 +64,7 @@ contract PayloadSchemaService is Ownable {
      * @param schema_version The version of the schema.
      * @return The payload schema associated with the given name and version.
      */
-    function get_payload_schema(string memory schema_name, string memory schema_version) 
+    function get(string memory schema_name, string memory schema_version) 
     public view returns (SystemEntities.PayloadSchema memory) 
     {
         PayloadSchemaDB db = PayloadSchemaDB(db_addr);

@@ -10,6 +10,7 @@ import "../db/PidDB.sol";
 import "./UrlService.sol";
 import "./ExternalPIDService.sol";
 import "./AuthoritiesService.sol";
+import "./PayloadSchemaService.sol";
 
 contract PIDService {
 
@@ -18,6 +19,7 @@ contract PIDService {
     address private url_service_addr;
     address private externalpid_service_addr;
     address private auth_service_addr;
+    address private payload_schema_service_addr;
 
     event log_id(bytes32 id);
 
@@ -25,23 +27,11 @@ contract PIDService {
         owner = msg.sender;
     }
 
-    function is_a_draft(Entities.PID memory p)
-    public pure
-    returns (bool draft_flag){
-        if (p.url == bytes32(0)) {
-            draft_flag = false;
-        } else {
-            draft_flag = true;
-        }
-    }
 
-    /**
-     * check if a pid is not a draft
-     */
     function is_a_valid_pid(Entities.PID memory p)
     public pure {
         // bool draft_flag = is_a_draft(p);
-        require( is_a_draft(p) == true, 'This PID is a draft.');
+        require( Entities.isDraft(p) == true, 'This PID is a draft.');
     }
 
     /**
@@ -75,6 +65,15 @@ contract PIDService {
     function set_url_service(address addr) 
     public {
         url_service_addr = addr;
+    }
+
+    /**
+     * set the PID DB address
+     */
+     //TODO: COLOCAR NO SETUP
+    function set_payload_schema_service(address addr) 
+    public {
+        payload_schema_service_addr = addr;
     }
 
     //
@@ -200,99 +199,125 @@ contract PIDService {
      /**
      * @notice Creates a new payload schema in the PidDB contract.
      * @param pid_hash The name of the payload schema 
-     * @param pid_payload_name The attribute name
-     * @param pid_payload_value The attribute value
+     * @param payload_schema The attribute name
+     * @param payload_hash The attribute value
      * 
      */
-    function set_payload(bytes32 pid_hash,string memory pid_payload_name,
-                        string memory pid_payload_value)
+    function set_payload(bytes32 pid_hash,
+                        bytes32 payload_schema,
+                        bytes32 payload_hash)
     public
     {
         AuthoritiesService aths = AuthoritiesService(auth_service_addr);
         PidDB db = PidDB(pid_db_addr);
-        address sender = msg.sender;
-
-        address proveider_addr = aths.get_proveider_addr(sender);
+        // address sender = msg.sender;
+        // address proveider_addr = aths.get_proveider_addr(sender);
+        PayloadSchemaService ps_serv = PayloadSchemaService(payload_schema_service_addr);
         
-        //RECUPERANDO O DNMA
-        NoidProvider noidProvider = NoidProvider(proveider_addr);
-        // bytes32 dnma_id = noidProvider.DNMA_id;
-        bytes32 dnma_id = noidProvider.get_decentralized_name_mapping_id();
-        SystemEntities.DecentralizedNameMappingAuthority memory dnma = aths.get_dnma(dnma_id);
-        string memory schema = dnma.default_payload_schema;
-
-        // int256 att_pos = Entities.find_attribute_position(schema, pid_payload_name);
-        // require(att_pos != -1, "Attribute not found in Schema");
 
         Entities.PID memory p = db.get(pid_hash); //valida o uuid
-        is_a_valid_pid(p); // check if pid is a draft
+        is_a_valid_pid(p); 
+        SystemEntities.PayloadSchema memory ps = ps_serv.get(payload_schema);
+        if (SystemEntities.isSchemaActive(ps) != true) {
+            revert('Schema is not active');
+        }
 
-        db.store_payload(pid_hash, schema , pid_payload_name , pid_payload_value);
+
+        db.store_payload(pid_hash,payload_hash,payload_schema);
     }
 
     /**
-     * @notice Creates a new payload schema in the PidDB contract.
+     * @notice Updates an existing payload schema in the PidDB contract.
      * @param pid_hash The name of the payload schema 
-     * @param schema_name The payload schema name
-     * @param pid_payload_name The attribute name
-     * @param pid_payload_value The attribute value
-     * 
+     * @param old_payload_schema The old payload schema name
+     * @param old_payload_hash The old payload hash
+     * @param new_payload_schema The new payload schema name
+     * @param new_payload_hash The new payload hash
      */
-    function set_payload_tmp(bytes32 pid_hash,
-                        string memory schema_name,
-                        string memory pid_payload_name,
-                        string memory pid_payload_value)
+    function update_payload(bytes32 pid_hash,
+                        bytes32 old_payload_schema,
+                        bytes32 old_payload_hash,
+                        bytes32 new_payload_schema,
+                        bytes32 new_payload_hash)
     public
     {
-        //TODO: ELIMINAR ESSE METODO
+        AuthoritiesService aths = AuthoritiesService(auth_service_addr);
         PidDB db = PidDB(pid_db_addr);
+        // address sender = msg.sender;
+        // address proveider_addr = aths.get_proveider_addr(sender);
+        PayloadSchemaService ps_serv = PayloadSchemaService(payload_schema_service_addr);
+        
 
         Entities.PID memory p = db.get(pid_hash); //valida o uuid
-        is_a_valid_pid(p); // check if pid is a draft
+        is_a_valid_pid(p);
+        SystemEntities.PayloadSchema memory ps = ps_serv.get(old_payload_schema);
+        if (SystemEntities.isSchemaActive(ps) != true) {
+            revert('Old Schema is not active');
+        }
 
-        db.store_payload(pid_hash, schema_name , pid_payload_name , pid_payload_value);
-        db.set_payload_in_pid(pid_hash, pid_hash);        
+        Entities.Payload memory old_payload = Entities.Payload(old_payload_schema, old_payload_hash);
+
+        int pindex = Entities.findPayloadIndex(p, old_payload);
+        if (pindex == -1) {
+            revert('Payload not registred in pid');
+        }
+
+        ps = ps_serv.get(new_payload_schema);
+        if (SystemEntities.isSchemaActive(ps) != true) {
+            revert('New Schema is not active');
+        }
+
+        db.update_payload(pid_hash, uint256(pindex), new_payload_hash, new_payload_schema);
     }
+
+    // OLD
+    // function set_payload_old(bytes32 pid_hash,string memory pid_payload_name,
+    //                     string memory pid_payload_value)
+    // public
+    // {
+    //     AuthoritiesService aths = AuthoritiesService(auth_service_addr);
+    //     PidDB db = PidDB(pid_db_addr);
+    //     address sender = msg.sender;
+
+    //     address proveider_addr = aths.get_proveider_addr(sender);
+        
+    //     //RECUPERANDO O DNMA
+    //     NoidProvider noidProvider = NoidProvider(proveider_addr);
+    //     // bytes32 dnma_id = noidProvider.DNMA_id;
+    //     bytes32 dnma_id = noidProvider.get_decentralized_name_mapping_id();
+    //     SystemEntities.DecentralizedNameMappingAuthority memory dnma = aths.get_dnma(dnma_id);
+    //     string memory schema = dnma.default_payload_schema;
+
+    //     // int256 att_pos = Entities.find_attribute_position(schema, pid_payload_name);
+    //     // require(att_pos != -1, "Attribute not found in Schema");
+
+    //     Entities.PID memory p = db.get(pid_hash); //valida o uuid
+    //     is_a_valid_pid(p); // check if pid is a draft
+
+    //     db.store_payload(pid_hash, schema , pid_payload_name , pid_payload_value);
+    // }
+
+
+    // function set_payload_tmp(bytes32 pid_hash,
+    //                     string memory schema_name,
+    //                     string memory pid_payload_name,
+    //                     string memory pid_payload_value)
+    // public
+    // {
+    //     //TODO: ELIMINAR ESSE METODO
+    //     PidDB db = PidDB(pid_db_addr);
+
+    //     Entities.PID memory p = db.get(pid_hash); //valida o uuid
+    //     is_a_valid_pid(p); // check if pid is a draft
+
+    //     db.store_payload(pid_hash, schema_name , pid_payload_name , pid_payload_value);
+    //     db.set_payload_in_pid(pid_hash, pid_hash);        
+    // }
 
     // 
     // PAYLOAD SCHEMA
     // 
 
-
-    /**
-     * @notice Creates a new payload schema in the PidDB contract.
-     * @param schema_name The name of the schema to be created.
-     * @return schema_id The unique identifier of the created schema.
-     */
-    function create_payload_schema(string memory schema_name)
-    public returns(bytes32 schema_id) {
-
-        PidDB db = PidDB(pid_db_addr);
-        schema_id = db.save_payload_schema(schema_name);
-    }
-
-    /**
-     * @notice Adds an attribute to an existing payload schema in the PidDB contract.
-     * @param schema_name The name of the schema to which the attribute will be added.
-     * @param att_name The name of the attribute to be added to the schema.
-     */
-    function add_attribute_payload_schema(string memory schema_name, string memory att_name)
-    public {
-
-        PidDB db = PidDB(pid_db_addr);
-        db.add_attribute_to_schema(schema_name,att_name);
-    }
-
-    /**
-     * @notice Marks an existing payload schema as configured and ready for use in the PidDB contract.
-     * @param schema_name The name of the schema to be marked as ready.
-     */
-    function mark_payload_schema_ready(string memory schema_name)
-    public {
-
-        PidDB db = PidDB(pid_db_addr);
-        db.mark_schema_as_configured(schema_name);
-    }
     
     
 }

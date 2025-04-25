@@ -18,7 +18,7 @@ library Entities {
         bytes32 url; //3
         // JSON
         // string payload; //4
-        bytes32 payload; //4
+        Payload[] payload; //
 
         // OWNER
         address owner; //5
@@ -49,7 +49,47 @@ library Entities {
         bytes32 ipfs_hash;
     }
 
+    ///
+    /// methods
+    /// 
 
+    function isDraft(Entities.PID memory p)
+    public pure
+    returns (bool draft_flag){
+        if (p.url == bytes32(0)) {
+            draft_flag = false;
+        } else {
+            draft_flag = true;
+        }
+    }
+
+    /**
+     * @dev Busca a posição de um Payload em um PID.
+     * @param pid O PID onde o Payload será buscado.
+     * @param payload O Payload que estamos procurando.
+     * @return index O índice do Payload no array, ou um valor de erro se não encontrado.
+     */
+    function findPayloadIndex(PID storage pid, Payload memory payload) 
+    public view returns (int) 
+    {
+        for (uint i = 0; i < pid.payload.length; i++) {
+            if (pid.payload[i].payload_schema == payload.payload_schema && pid.payload[i].ipfs_hash == payload.ipfs_hash) {
+                return int(i); 
+            }
+        }
+        return -1; 
+    }
+
+    /**
+     * @dev Updates a Payload in a PID at the specified index.
+     * @param pid The PID containing the Payload to be updated.
+     * @param index The index of the Payload to update.
+     * @param newPayload The new Payload data to set.
+     */
+    function updatePayload(PID storage pid, uint index, Payload memory newPayload) public {
+        require(index < pid.payload.length, "Index out of bounds"); 
+        pid.payload[index] = newPayload;
+    }
 
 }
 
@@ -79,6 +119,12 @@ library SystemEntities {
 
         //TODO MAKE THIS UNMATABLE
         string default_payload_schema;
+    }
+
+    function isSchemaActive(SystemEntities.PayloadSchema memory p)
+    public pure
+    returns (bool draft_flag){
+        return p.configured;
     }
 
 }
