@@ -46,7 +46,9 @@ contract PayloadSchemaDB {
     function gen_schema_id(string memory schema_name, string memory schema_version) 
         private view returns (bytes32) {
         
-        string memory tmp_id = strings.concat(schema_name, schema_version);
+        strings.slice memory name_slice = strings.toSlice(schema_name);
+        strings.slice memory version_slice = strings.toSlice(schema_version);
+        string memory tmp_id = strings.concat(name_slice, version_slice);
         tmp_id = strings.lower(tmp_id);
         bytes32 b32id = keccak256(abi.encodePacked(tmp_id));
         return b32id;
@@ -70,7 +72,7 @@ contract PayloadSchemaDB {
      */
     function save(string memory schema_name, 
                                  string memory schema_version,
-                                 bool memory configured
+                                 bool configured
                                 )
     public returns(bytes32)
     {
