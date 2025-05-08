@@ -29,9 +29,33 @@ contract PIDService {
 
 
     function is_a_valid_pid(Entities.PID memory p)
-    public pure {
+    public pure returns (bool) 
+    {
         // bool draft_flag = is_a_draft(p);
-        require( Entities.isDraft(p) == true, 'This PID is a draft.');
+        require(p.url == bytes32(0), 'This is a draft.');
+        // if (p.pid_hash == bytes32(0)) {
+        //     revert('This PID does not exist.');
+        // }
+        // if ( p.url == bytes32(0) ) {
+        //     revert('This is a draft.');
+        // }
+        
+        return true;
+    }
+
+    function is_a_valid_payloadSchema(SystemEntities.PayloadSchema memory ps)
+    public pure returns (bool) 
+    {
+        // bool draft_flag = is_a_draft(p);
+        require(ps.configured != true, 'Schema is not configured');
+        // if (p.pid_hash == bytes32(0)) {
+        //     revert('This PID does not exist.');
+        // }
+        // if ( p.url == bytes32(0) ) {
+        //     revert('This is a draft.');
+        // }
+        
+        return true;
     }
 
     /**
@@ -168,7 +192,14 @@ contract PIDService {
         ExternalPIDService epid_service = ExternalPIDService(externalpid_service_addr);
 
         Entities.PID memory p = db.get(pid_hash); //valida o uuid
-        is_a_valid_pid(p); // check if pid is a draft
+        
+        // check if pid is a draft
+        is_a_valid_pid(p); 
+        // require(p.url == bytes32(0), 'This is a draft.');
+        // if ( Entities.isDraft(p) == true) {
+        //     revert('This is a draft.');
+        // }
+
         bytes32 epid_id = epid_service.get_or_create_externalPid(schema,external_pid,pid_hash);
 
         // avoid duplicated urls in pid
@@ -208,116 +239,54 @@ contract PIDService {
                         bytes32 payload_hash)
     public
     {
-        AuthoritiesService aths = AuthoritiesService(auth_service_addr);
+        // AuthoritiesService aths = AuthoritiesService(auth_service_addr);
         PidDB db = PidDB(pid_db_addr);
         // address sender = msg.sender;
         // address proveider_addr = aths.get_proveider_addr(sender);
         PayloadSchemaService ps_serv = PayloadSchemaService(payload_schema_service_addr);
-        
-
         Entities.PID memory p = db.get(pid_hash); //valida o uuid
         is_a_valid_pid(p); 
         SystemEntities.PayloadSchema memory ps = ps_serv.get(payload_schema);
-        if (SystemEntities.isSchemaActive(ps) != true) {
-            revert('Schema is not active');
-        }
-
+        is_a_valid_payloadSchema(ps);
 
         db.store_payload(pid_hash,payload_hash,payload_schema);
     }
 
-    /**
-     * @notice Updates an existing payload schema in the PidDB contract.
-     * @param pid_hash The name of the payload schema 
-     * @param old_payload_schema The old payload schema name
-     * @param old_payload_hash The old payload hash
-     * @param new_payload_schema The new payload schema name
-     * @param new_payload_hash The new payload hash
-     */
-    function update_payload(bytes32 pid_hash,
-                        bytes32 old_payload_schema,
-                        bytes32 old_payload_hash,
-                        bytes32 new_payload_schema,
-                        bytes32 new_payload_hash)
-    public
-    {
-        AuthoritiesService aths = AuthoritiesService(auth_service_addr);
-        PidDB db = PidDB(pid_db_addr);
-        // address sender = msg.sender;
-        // address proveider_addr = aths.get_proveider_addr(sender);
-        PayloadSchemaService ps_serv = PayloadSchemaService(payload_schema_service_addr);
-        
-
-        Entities.PID memory p = db.get(pid_hash); //valida o uuid
-        is_a_valid_pid(p);
-        SystemEntities.PayloadSchema memory ps = ps_serv.get(old_payload_schema);
-        if (SystemEntities.isSchemaActive(ps) != true) {
-            revert('Old Schema is not active');
-        }
-
-        Entities.Payload memory old_payload = Entities.Payload(old_payload_schema, old_payload_hash);
-
-        int pindex = Entities.findPayloadIndex(p, old_payload);
-        if (pindex == -1) {
-            revert('Payload not registred in pid');
-        }
-
-        ps = ps_serv.get(new_payload_schema);
-        if (SystemEntities.isSchemaActive(ps) != true) {
-            revert('New Schema is not active');
-        }
-
-        db.update_payload(pid_hash, uint256(pindex), new_payload_hash, new_payload_schema);
-    }
-
-    // OLD
-    // function set_payload_old(bytes32 pid_hash,string memory pid_payload_name,
-    //                     string memory pid_payload_value)
+    // /**
+    //  * @notice Updates an existing payload schema in the PidDB contract.
+    //  * @param pid_hash The name of the payload schema 
+    //  * @param old_payload_schema The old payload schema name
+    //  * @param old_payload_hash The old payload hash
+    //  * @param new_payload_schema The new payload schema name
+    //  * @param new_payload_hash The new payload hash
+    //  */
+    // function update_payload(bytes32 pid_hash,
+    //                     bytes32 old_payload_schema,
+    //                     bytes32 old_payload_hash,
+    //                     bytes32 new_payload_schema,
+    //                     bytes32 new_payload_hash)
     // public
     // {
-    //     AuthoritiesService aths = AuthoritiesService(auth_service_addr);
+    //     // AuthoritiesService aths = AuthoritiesService(auth_service_addr);
     //     PidDB db = PidDB(pid_db_addr);
-    //     address sender = msg.sender;
-
-    //     address proveider_addr = aths.get_proveider_addr(sender);
+    //     // address sender = msg.sender;
+    //     // address proveider_addr = aths.get_proveider_addr(sender);
+    //     PayloadSchemaService ps_serv = PayloadSchemaService(payload_schema_service_addr);
         
-    //     //RECUPERANDO O DNMA
-    //     NoidProvider noidProvider = NoidProvider(proveider_addr);
-    //     // bytes32 dnma_id = noidProvider.DNMA_id;
-    //     bytes32 dnma_id = noidProvider.get_decentralized_name_mapping_id();
-    //     SystemEntities.DecentralizedNameMappingAuthority memory dnma = aths.get_dnma(dnma_id);
-    //     string memory schema = dnma.default_payload_schema;
-
-    //     // int256 att_pos = Entities.find_attribute_position(schema, pid_payload_name);
-    //     // require(att_pos != -1, "Attribute not found in Schema");
 
     //     Entities.PID memory p = db.get(pid_hash); //valida o uuid
-    //     is_a_valid_pid(p); // check if pid is a draft
+    //     is_a_valid_pid(p);
 
-    //     db.store_payload(pid_hash, schema , pid_payload_name , pid_payload_value);
+    //     Entities.Payload memory old_payload = Entities.Payload(old_payload_schema, old_payload_hash);
+    //     int pindex = Entities.findPayloadIndex(p, old_payload);
+    //     require(pindex >= 0, 'Payload not registred in pid');
+
+    //     SystemEntities.PayloadSchema memory ps = ps_serv.get(new_payload_schema);
+    //     is_a_valid_payloadSchema(ps);
+        
+
+    //     db.update_payload(pid_hash, uint256(pindex), new_payload_hash, new_payload_schema);
     // }
-
-
-    // function set_payload_tmp(bytes32 pid_hash,
-    //                     string memory schema_name,
-    //                     string memory pid_payload_name,
-    //                     string memory pid_payload_value)
-    // public
-    // {
-    //     //TODO: ELIMINAR ESSE METODO
-    //     PidDB db = PidDB(pid_db_addr);
-
-    //     Entities.PID memory p = db.get(pid_hash); //valida o uuid
-    //     is_a_valid_pid(p); // check if pid is a draft
-
-    //     db.store_payload(pid_hash, schema_name , pid_payload_name , pid_payload_value);
-    //     db.set_payload_in_pid(pid_hash, pid_hash);        
-    // }
-
-    // 
-    // PAYLOAD SCHEMA
-    // 
-
     
     
 }

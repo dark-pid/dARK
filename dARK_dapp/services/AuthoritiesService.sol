@@ -23,6 +23,10 @@ contract AuthoritiesService {
         owner = msg.sender;
     }
 
+    function get_db() public view returns (address){
+        return db_addr;
+    }
+
     /**
      * set the PID DB address
      */
@@ -43,8 +47,8 @@ contract AuthoritiesService {
      * @return dnma_id id of the Dnam
      */
      
-    function create_dnma(string memory name, string memory email, string memory naan, string memory shoulder,
-                            string memory default_payload_schema, address responsable)
+    function create_dnma(string memory name, string memory email, string memory naan, 
+                        string memory shoulder, address responsable)
     public
     returns(bytes32 dnma_id)
     {
@@ -56,7 +60,7 @@ contract AuthoritiesService {
             SystemEntities.DecentralizedNameMappingAuthority memory dnma = db.get_dnma(naan);
             dnma_id = dnma.id;
         } else {
-            dnma_id = db.save_dnma(name,email,naan,shoulder,default_payload_schema,responsable);
+            dnma_id = db.save_dnma(name,email,naan,shoulder,responsable);
         }
         // REORETORNA O DNMA ID SE EXISTIR
         emit log_id(dnma_id);

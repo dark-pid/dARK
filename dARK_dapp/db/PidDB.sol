@@ -164,26 +164,26 @@ contract PidDB {
         // pid.payload.push(payload_hash);
     }
 
-    /**
-     * @notice Update a payload schema
-     *
-     * @param darkid The ID of the schema
-     * @param index The index of the payload to update
-     * @param payload_hash The hash of the payload
-     * @param payload_schema The schema of the payload
-     **/
-    function update_payload(bytes32 darkid, uint index, bytes32 payload_hash, bytes32 payload_schema)
-    public {
-        get(darkid);
+    // /**
+    //  * @notice Update a payload schema
+    //  *
+    //  * @param darkid The ID of the schema
+    //  * @param index The index of the payload to update
+    //  * @param payload_hash The hash of the payload
+    //  * @param payload_schema The schema of the payload
+    //  **/
+    // function update_payload(bytes32 darkid, uint index, bytes32 payload_hash, bytes32 payload_schema)
+    // public {
+    //     get(darkid);
 
-        Entities.PID storage pid = pid_db[darkid];
-        Entities.Payload memory new_payload = Entities.Payload(payload_schema, payload_hash);
+    //     Entities.PID storage pid = pid_db[darkid];
+    //     Entities.Payload memory new_payload = Entities.Payload(payload_schema, payload_hash);
 
-        Entities.updatePayload(pid, index, new_payload);
+    //     Entities.updatePayload(pid, index, new_payload);
 
-        emit SET_PAYLOAD(darkid,payload_schema,payload_hash, block.timestamp);
-        // pid.payload.push(payload_hash);
-    }
+    //     emit SET_PAYLOAD(darkid,payload_schema,payload_hash, block.timestamp);
+    //     // pid.payload.push(payload_hash);
+    // }
 
 
     // 
