@@ -1,4 +1,3 @@
-
 import os
 import logging
 import ast
@@ -75,6 +74,7 @@ class DarkDeployer:
         deployed_contract_dict = {}
         
         for contract_name in lista:
+            # if contract_name not in ['NoidProvider.sol']:
             if contract_name not in ['Entities.sol' , 'NoidProvider.sol']:
                 for ci in compiled_contracts.keys():
                     #TODO IMPROVE THIS METHOD TO AVOID COLISION
@@ -115,11 +115,13 @@ class DarkDeployer:
         auth_service = self.dark_gateway.w3.eth.contract(address=contract_addr, abi=ast.literal_eval(contract_interface))
         sign_tx = self.dark_gateway.signTransaction(auth_service,'set_db' ,(auth_db_addr))
         receipt, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
+        # logging.info(receipt)
         #TODO CHECK receipt['status'] == 1
 
         logging.info("        - db configured")
         logging.info("        - AuthoritiesService configured")
         configured_contracts['AuthoritiesService'] = auth_service
+        
 
         ##
         ## pid db
@@ -163,6 +165,25 @@ class DarkDeployer:
         logging.info("        - db configured")
         configured_contracts['ExternalPIDService'] = epid_service
 
+
+        ##
+        ## PayloadSchema Service
+        ##
+        logging.info("    Configuring PayloadSchemaService:")
+        ps_db_addr = smart_contract_config['PayloadSchemaDB.sol']['addr']
+        contract_interface = smart_contract_config['PayloadSchemaDB.sol']['abi']
+        ps_db = self.dark_gateway.w3.eth.contract(address=ps_db_addr, abi=ast.literal_eval(contract_interface))
+        logging.info("        - db configured")
+        contract_addr = smart_contract_config['PayloadSchemaService.sol']['addr']
+        contract_interface = smart_contract_config['PayloadSchemaService.sol']['abi']
+        # print(contract_addr,contract_interface)
+        ps_service = self.dark_gateway.w3.eth.contract(address=contract_addr, abi=ast.literal_eval(contract_interface))
+        sign_tx = self.dark_gateway.signTransaction(ps_service,'set_db' ,(ps_db_addr))
+        receipt, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
+        configured_contracts['PayloadSchemaService'] = ps_service
+        logging.info("        - PayloadSchemaService configured")
+        
+
         ##
         ## dARK PID Service
         ##
@@ -184,6 +205,9 @@ class DarkDeployer:
         sign_tx = self.dark_gateway.signTransaction(pid_service,'set_auth_service' ,(auth_service.address))
         receipt, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
         logging.info("        - authoritiesService configured")
+        sign_tx = self.dark_gateway.signTransaction(pid_service,'set_payload_schema_service' ,(ps_service.address))
+        receipt, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
+        logging.info("        - authoritiesService configured")
         configured_contracts['PIDService'] = pid_service
 
         ### all set
@@ -195,42 +219,39 @@ class DarkDeployer:
         logging.info("")
 
     
-    def configure_payload_schema(self,deployed_contracts_config_path,bc_config_path):
-        logging.info("> Configuring dARK Payload Schema ...")
-        smart_contract_config = ConfigParser()
-        smart_contract_config.read(deployed_contracts_config_path)
-        bc_config = ConfigParser()
-        bc_config.read(bc_config_path)
+    # TODO REMOVE THIS NOT USED
+    # def configure_payload_schema(self,deployed_contracts_config_path,bc_config_path):
+    #     logging.info("> Configuring dARK Payload Schema ...")
+    #     smart_contract_config = ConfigParser()
+    #     smart_contract_config.read(deployed_contracts_config_path)
+    #     bc_config = ConfigParser()
+    #     bc_config.read(bc_config_path)
 
-        logging.info("    Loading AuthoritiesService:")
-        #loading autority contract
-        contract_addr = smart_contract_config['PIDService.sol']['addr']
-        contract_interface = smart_contract_config['PIDService.sol']['abi']
-        pid_service = self.dark_gateway.w3.eth.contract(address=contract_addr, abi=ast.literal_eval(contract_interface))
+    #     logging.info("    Loading AuthoritiesService:")
+    #     #loading autority contract
+    #     contract_addr = smart_contract_config['PIDService.sol']['addr']
+    #     contract_interface = smart_contract_config['PIDService.sol']['abi']
+    #     pid_service = self.dark_gateway.w3.eth.contract(address=contract_addr, abi=ast.literal_eval(contract_interface))
 
-        # retrive parameters
-        scehma_name = str(bc_config['payload']['name'])
-        att_list = bc_config['payload']['attributes'].split()
+    #     # retrive parameters
+    #     scehma_name = str(bc_config['payload']['name'])
+    #     att_list = bc_config['payload']['attributes'].split()
 
-        initial_acc_balance = self.dark_gateway.get_account_balance()
-        logging.info("    account initial balance : " + str(initial_acc_balance) )
-        logging.info("    Created Payload schema {} with {} attributes ({})".format(scehma_name,len(att_list),att_list))
+    #     initial_acc_balance = self.dark_gateway.get_account_balance()
+    #     logging.info("    account initial balance : " + str(initial_acc_balance) )
+    #     logging.info("    Created Payload schema {} with {} attributes ({})".format(scehma_name,len(att_list),att_list))
 
-        sign_tx = self.dark_gateway.signTransaction(pid_service,'create_payload_schema' , scehma_name )
-        recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
-        logging.info("\t\t    - schema_created ")
-        for att in att_list:
-            logging.info("\t\t\t    - add {} to the schema ".format(att))
-            sign_tx = self.dark_gateway.signTransaction(pid_service,'add_attribute_payload_schema' , scehma_name ,str(att))
-            recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
+    #     sign_tx = self.dark_gateway.signTransaction(pid_service,'create_payload_schema' , scehma_name )
+    #     recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
+    #     logging.info("\t\t    - schema_created ")
+    #     for att in att_list:
+    #         logging.info("\t\t\t    - add {} to the schema ".format(att))
+    #         sign_tx = self.dark_gateway.signTransaction(pid_service,'add_attribute_payload_schema' , scehma_name ,str(att))
+    #         recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
         
-        sign_tx = self.dark_gateway.signTransaction(pid_service,'mark_payload_schema_ready', scehma_name )
-        recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
-        logging.info("\t\t    - schema marked as ready for use ")
-
-
-        
-
+    #     sign_tx = self.dark_gateway.signTransaction(pid_service,'mark_payload_schema_ready', scehma_name )
+    #     recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
+    #     logging.info("\t\t    - schema marked as ready for use ")
 
     def configure_noid_provider(self,deployed_contracts_config_path,noid_config_path):
         logging.info("> Configure noid provider...")
@@ -246,28 +267,40 @@ class DarkDeployer:
         naan = str(noid_config['one-noid-to-rule-them-all']['naan'])
         dshoulder_prefix = str(noid_config['one-noid-to-rule-them-all']['dshoulder_prefix'])
         noid_len = int(noid_config['one-noid-to-rule-them-all']['noid_len'])
-        payload_schema_name = str(noid_config['one-noid-to-rule-them-all']['payload_schema_name'])
+        
         
 
         initial_acc_balance = self.dark_gateway.get_account_balance()
         logging.info("    account initial balance : " + str(initial_acc_balance) )
         logging.info("    Loading AuthoritiesService:")
+        
+                ##
+        ## Authorities Service
+        ##
+        auth_db_addr = smart_contract_config['AuthoritiesDB.sol']['addr']
         #loading autority contract
         contract_addr = smart_contract_config['AuthoritiesService.sol']['addr']
         contract_interface = smart_contract_config['AuthoritiesService.sol']['abi']
         auth_service = self.dark_gateway.w3.eth.contract(address=contract_addr, abi=ast.literal_eval(contract_interface))
+        sign_tx = self.dark_gateway.signTransaction(auth_service,'set_db' ,(auth_db_addr))
+        receipt, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
+
         logging.info("    Creating a DecentralizedNameMappingAuthority for {} (prefix={})".format(dnma_name,dshoulder_prefix))
         sign_tx = self.dark_gateway.signTransaction(auth_service,'create_dnma' , dnma_name , dnma_contact_email , naan,
-                                                    dshoulder_prefix, payload_schema_name, self.dark_gateway.authority_addr)
+                                                    dshoulder_prefix, self.dark_gateway.authority_addr)
         recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
+        
+        # logging.info('-----------------------------------------------------------')
+        # logging.info(tx_hash.hex())
+        # logging.info(recipt_tx)
+        # logging.info('-----------------------------------------------------------')
+
         auth_id = recipt_tx['logs'][0]['topics'][1]
         logging.info("    Configuring a DNAM noid provider at {}".format(auth_id.hex()))
         sign_tx = self.dark_gateway.signTransaction(auth_service,'configure_noid_provider' , auth_id , noid_len , 1)
         recipt_tx, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
         logging.info("    Created noid provider for {} with {} digitis".format(naan,noid_len))
         noid_addr = recipt_tx['logs'][0]['topics'][1][12:]
+        logging.info("    account final balance : " + str(self.dark_gateway.get_account_balance()) )
         logging.info("    dARK is readty to be used!")
         # noid_addr # endereco do contrato
-
-
-
