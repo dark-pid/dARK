@@ -69,7 +69,7 @@ library Entities {
      * @param payload O Payload que estamos procurando.
      * @return index O índice do Payload no array, ou um valor de erro se não encontrado.
      */
-    function findPayloadIndex(PID storage pid, Payload memory payload) 
+    function findPayloadIndex(PID memory pid, Payload memory payload) 
     public view returns (int) 
     {
         for (uint i = 0; i < pid.payload.length; i++) {
@@ -86,7 +86,7 @@ library Entities {
      * @param index The index of the Payload to update.
      * @param newPayload The new Payload data to set.
      */
-    function updatePayload(PID storage pid, uint index, Payload memory newPayload) public {
+    function updatePayload(PID memory pid, uint index, Payload memory newPayload) public pure {
         require(index < pid.payload.length, "Index out of bounds"); 
         pid.payload[index] = newPayload;
     }
@@ -117,8 +117,6 @@ library SystemEntities {
         address responsable;
         //TODO ADICIONAR O ESQUEMA DO PAYLOAD A AUTORIDADE
 
-        //TODO MAKE THIS UNMATABLE
-        string default_payload_schema;
     }
 
     function isSchemaActive(SystemEntities.PayloadSchema memory p)
