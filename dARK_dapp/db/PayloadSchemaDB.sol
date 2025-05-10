@@ -81,7 +81,7 @@ contract PayloadSchemaDB {
 
         // Check if the id already exists in the payload_schema_db
         require(bytes(payload_schema_db[b32id].schema_name).length == 0, "Schema already exists");
-        require(payload_schema_db[b32id].configured == true, "Schema already exists");
+        // require(payload_schema_db[b32id].configured == true, "Schema already exists");
 
         payload_schema_set.insert(b32id);
 

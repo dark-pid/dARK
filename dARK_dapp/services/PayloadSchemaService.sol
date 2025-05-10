@@ -9,6 +9,8 @@ import "../util/Entities.sol";
 contract PayloadSchemaService {
     address private db_addr;
 
+    event STORE_PAYLOAD_SCHEMA(bytes32 id, string schema_name, string schema_version);
+
     constructor() {
         // The owner is set to the deployer of the contract
     }
@@ -39,10 +41,11 @@ contract PayloadSchemaService {
         PayloadSchemaDB db = PayloadSchemaDB(db_addr);
         
         try db.get(schema_name, schema_version) returns (SystemEntities.PayloadSchema memory existingSchema) {
-            return db.gen_schema_id(schema_name, schema_version);
+             schema_id = db.gen_schema_id(existingSchema.schema_name, existingSchema.schema_version);
         } catch {
+            // schema_id = db.save(schema_name, schema_version, configured);
             schema_id = db.save(schema_name, schema_version, configured);
-            return schema_id;
+            emit STORE_PAYLOAD_SCHEMA(schema_id, schema_name, schema_version);
         }
     }
 
