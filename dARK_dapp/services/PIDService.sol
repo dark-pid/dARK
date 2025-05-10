@@ -32,7 +32,7 @@ contract PIDService {
     public pure returns (bool) 
     {
         // bool draft_flag = is_a_draft(p);
-        require(p.url == bytes32(0), 'This is a draft.');
+        require(p.url != bytes32(0), 'This is a draft.');
         // if (p.pid_hash == bytes32(0)) {
         //     revert('This PID does not exist.');
         // }
