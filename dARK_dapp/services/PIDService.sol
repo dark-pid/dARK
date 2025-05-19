@@ -46,14 +46,18 @@ contract PIDService {
     function is_a_valid_payloadSchema(SystemEntities.PayloadSchema memory ps)
     public pure returns (bool) 
     {
+        ps.configured;
+        // essa era o que esta ativa
+        // require(ps.configured != true, 'Schema is not configured');
+
         // bool draft_flag = is_a_draft(p);
-        require(ps.configured != true, 'Schema is not configured');
         // if (p.pid_hash == bytes32(0)) {
         //     revert('This PID does not exist.');
         // }
         // if ( p.url == bytes32(0) ) {
         //     revert('This is a draft.');
         // }
+        
         
         return true;
     }

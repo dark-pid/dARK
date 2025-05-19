@@ -18,7 +18,7 @@ library Entities {
         bytes32 url; //3
         // JSON
         // string payload; //4
-        Payload[] payload; //
+        Payload payload; //
 
         // OWNER
         address owner; //5
@@ -63,33 +63,33 @@ library Entities {
         }
     }
 
-    /**
-     * @dev Busca a posição de um Payload em um PID.
-     * @param pid O PID onde o Payload será buscado.
-     * @param payload O Payload que estamos procurando.
-     * @return index O índice do Payload no array, ou um valor de erro se não encontrado.
-     */
-    function findPayloadIndex(PID memory pid, Payload memory payload) 
-    public view returns (int) 
-    {
-        for (uint i = 0; i < pid.payload.length; i++) {
-            if (pid.payload[i].payload_schema == payload.payload_schema && pid.payload[i].ipfs_hash == payload.ipfs_hash) {
-                return int(i); 
-            }
-        }
-        return -1; 
-    }
+    // /**
+    //  * @dev Busca a posição de um Payload em um PID.
+    //  * @param pid O PID onde o Payload será buscado.
+    //  * @param payload O Payload que estamos procurando.
+    //  * @return index O índice do Payload no array, ou um valor de erro se não encontrado.
+    //  */
+    // function findPayloadIndex(PID memory pid, Payload memory payload) 
+    // public view returns (int) 
+    // {
+    //     for (uint i = 0; i < pid.payload.length; i++) {
+    //         if (pid.payload[i].payload_schema == payload.payload_schema && pid.payload[i].ipfs_hash == payload.ipfs_hash) {
+    //             return int(i); 
+    //         }
+    //     }
+    //     return -1; 
+    // }
 
-    /**
-     * @dev Updates a Payload in a PID at the specified index.
-     * @param pid The PID containing the Payload to be updated.
-     * @param index The index of the Payload to update.
-     * @param newPayload The new Payload data to set.
-     */
-    function updatePayload(PID memory pid, uint index, Payload memory newPayload) public pure {
-        require(index < pid.payload.length, "Index out of bounds"); 
-        pid.payload[index] = newPayload;
-    }
+    // /**
+    //  * @dev Updates a Payload in a PID at the specified index.
+    //  * @param pid The PID containing the Payload to be updated.
+    //  * @param index The index of the Payload to update.
+    //  * @param newPayload The new Payload data to set.
+    //  */
+    // function updatePayload(PID memory pid, uint index, Payload memory newPayload) public pure {
+    //     require(index < pid.payload.length, "Index out of bounds"); 
+    //     pid.payload[index] = newPayload;
+    // }
 
 }
 

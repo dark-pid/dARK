@@ -158,7 +158,8 @@ contract PidDB {
 
         Entities.PID storage pid = pid_db[darkid];
         Entities.Payload memory payload = Entities.Payload(payload_schema, payload_hash);
-        pid.payload.push(payload);
+        // pid.payload.push(payload); alterado para remover o array
+        pid.payload = payload;
 
         emit SET_PAYLOAD(darkid,payload_schema,payload_hash, block.timestamp);
         // pid.payload.push(payload_hash);
