@@ -20,7 +20,7 @@ contract PidDB {
     
     // logs
     event ID(bytes32 indexed uuid, address indexed owner, uint timestamp);
-    event SET_PAYLOAD(bytes32 id, bytes32 schema, bytes32 ipfs_hash, uint timestamp);
+    event SET_PAYLOAD(bytes32 id, bytes32 schema, string ipfs_hash, uint timestamp);
 
 
     /**
@@ -152,7 +152,7 @@ contract PidDB {
      * @param payload_hash The hash of the payload
      * @param payload_schema The schema of the payload
      **/
-    function store_payload(bytes32 darkid,bytes32 payload_hash, bytes32 payload_schema)
+    function store_payload(bytes32 darkid, string memory payload_hash, bytes32 payload_schema)
     public {
         get(darkid);
 

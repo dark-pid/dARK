@@ -46,7 +46,7 @@ library Entities {
 
     struct Payload {
         bytes32 payload_schema;
-        bytes32 ipfs_hash;
+        string ipfs_hash;
     }
 
     ///

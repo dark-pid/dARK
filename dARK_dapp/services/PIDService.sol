@@ -240,7 +240,7 @@ contract PIDService {
      */
     function set_payload(bytes32 pid_hash,
                         bytes32 payload_schema,
-                        bytes32 payload_hash)
+                        string memory payload_hash)
     public
     {
         // AuthoritiesService aths = AuthoritiesService(auth_service_addr);
