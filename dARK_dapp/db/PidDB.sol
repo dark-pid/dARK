@@ -20,6 +20,7 @@ contract PidDB {
     
     // logs
     event ID(bytes32 indexed uuid, address indexed owner, uint timestamp);
+    event ID(bytes32 indexed uuid, address owner);
     event SET_PAYLOAD(bytes32 id, bytes32 schema, string ipfs_hash, uint timestamp);
 
 
@@ -55,7 +56,8 @@ contract PidDB {
         // pid.owner = msg.sender;
         pid.owner = tx.origin;
 
-        emit ID(pid.pid_hash, pid.owner, block.timestamp);
+        // emit ID(pid.pid_hash, pid.owner, block.timestamp);
+        emit ID(pid.pid_hash, pid.owner);
 
         return b32_noid;
     }

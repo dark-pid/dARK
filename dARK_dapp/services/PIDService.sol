@@ -20,11 +20,13 @@ contract PIDService {
     address private externalpid_service_addr;
     address private auth_service_addr;
     address private payload_schema_service_addr;
+    uint private BULK_LEN;
 
     event log_id(bytes32 id);
 
     constructor() {
         owner = msg.sender;
+        BULK_LEN = 20;
     }
 
 
@@ -104,6 +106,11 @@ contract PIDService {
         payload_schema_service_addr = addr;
     }
 
+    function set_bulk_len(uint n) 
+    public {
+        BULK_LEN = n;
+    }
+
     //
     // Methods
     //
@@ -135,7 +142,7 @@ contract PIDService {
      */
     function bulk_assingID(address sender)
     public
-    returns(bytes32[100] memory pid_hashes)
+    returns(bytes32[20] memory pid_hashes)
     {
         AuthoritiesService aths = AuthoritiesService(auth_service_addr);
         PidDB db = PidDB(pid_db_addr);
@@ -143,7 +150,7 @@ contract PIDService {
         // address proveider_addr = aths.get_proveider_addr(msg.sender);
         address proveider_addr = aths.get_proveider_addr(sender);
         
-        for (uint i = 0; i < 100; i++) {
+        for (uint i = 0; i < 20; i++) {
             pid_hashes[i] = db.assing_id(proveider_addr);
             emit log_id(pid_hashes[i]);
         }
