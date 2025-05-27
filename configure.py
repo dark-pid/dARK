@@ -6,6 +6,7 @@ import ast
 
 from util import DarkDeployer
 from dark.gateway import DarkGateway
+from dark import DarkMap
 
 ###
 ### VARIABLES

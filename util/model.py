@@ -182,7 +182,11 @@ class DarkDeployer:
         receipt, tx_hash = invoke_contract_sync(self.dark_gateway,sign_tx)
         configured_contracts['PayloadSchemaService'] = ps_service
         logging.info("        - PayloadSchemaService configured")
-        
+        ################## aquiPayload
+        logging.info("        - Configuring Dublin Core")
+        # Dublin Core
+        signed_tx = self.dark_gateway.signTransaction(ps_service,'get_or_create_payload_schema' ,"DC","none",True)
+        receipt, r_tx = invoke_contract_sync(self.dark_gateway,signed_tx)
 
         ##
         ## dARK PID Service

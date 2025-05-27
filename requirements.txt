@@ -8,8 +8,9 @@ tqdm
 ijson>=3.1.4      
 
 # pip install web3 --only-binary :all:
-web3==5.29.0
+web3==6.19.0
 py-solc-x >= 1.1.1
 
 # dark
-dark-gateway==0.1.0
+# dark-gateway==0.1.6
+dark-gateway==2.0.0b
